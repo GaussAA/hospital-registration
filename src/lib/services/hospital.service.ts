@@ -1,0 +1,121 @@
+import { getPrisma } from "@/lib/db";
+import { NotFoundError } from "@/lib/utils/errors";
+
+export interface HospitalListParams {
+  city?: string;
+  level?: string;
+  keyword?: string;
+  page?: number;
+  pageSize?: number;
+}
+
+export interface HospitalListItem {
+  id: string;
+  name: string;
+  address: string;
+  city: string;
+  level: string;
+  phone: string;
+  description: string;
+  imageUrl: string;
+  departmentCount: number;
+  doctorCount: number;
+}
+
+export interface HospitalDetail {
+  id: string;
+  name: string;
+  address: string;
+  city: string;
+  level: string;
+  phone: string;
+  description: string;
+  imageUrl: string;
+  departmentCount: number;
+  doctorCount: number;
+  createdAt: Date;
+}
+
+export async function listHospitals(params: HospitalListParams) {
+  const prisma = await getPrisma();
+  const { city, level, keyword, page = 1, pageSize = 12 } = params;
+
+  const where: Record<string, unknown> = {};
+
+  if (city) {
+    where.city = city;
+  }
+  if (level) {
+    where.level = level;
+  }
+  if (keyword) {
+    where.name = { contains: keyword };
+  }
+
+  const [hospitals, total] = await Promise.all([
+    prisma.hospital.findMany({
+      where,
+      skip: (page - 1) * pageSize,
+      take: pageSize,
+      orderBy: { createdAt: "desc" },
+      include: {
+        _count: {
+          select: {
+            departments: true,
+            doctors: true,
+          },
+        },
+      },
+    }),
+    prisma.hospital.count({ where }),
+  ]);
+
+  const list: HospitalListItem[] = hospitals.map((h) => ({
+    id: h.id,
+    name: h.name,
+    address: h.address,
+    city: h.city,
+    level: h.level,
+    phone: h.phone,
+    description: h.description,
+    imageUrl: h.imageUrl,
+    departmentCount: h._count.departments,
+    doctorCount: h._count.doctors,
+  }));
+
+  return { list, total, page, pageSize };
+}
+
+export async function getHospitalById(id: string): Promise<HospitalDetail> {
+  const prisma = await getPrisma();
+
+  const hospital = await prisma.hospital.findUnique({
+    where: { id },
+    include: {
+      _count: {
+        select: {
+          departments: true,
+          doctors: true,
+        },
+      },
+    },
+  });
+
+  if (!hospital) {
+    throw new NotFoundError("医院不存在");
+  }
+
+  return {
+    id: hospital.id,
+    name: hospital.name,
+    address: hospital.address,
+    city: hospital.city,
+    level: hospital.level,
+    phone: hospital.phone,
+    description: hospital.description,
+    imageUrl: hospital.imageUrl,
+    departmentCount: hospital._count.departments,
+    doctorCount: hospital._count.doctors,
+    createdAt: hospital.createdAt,
+  };
+}

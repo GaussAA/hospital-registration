@@ -41,10 +41,11 @@ yarn-error.log*
 next-env.d.ts
 
 # prisma
-/generated/prisma
+/generated
 
 # agents
 .agents/
+.workbuddy/
 
 # other
 .omc/

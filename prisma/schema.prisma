@@ -1,8 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
   provider = "prisma-client"
   output   = "../generated/prisma"
@@ -10,4 +5,127 @@ generator client {
 
 datasource db {
   provider = "sqlite"
+}
+
+model User {
+  id           String   @id @default(cuid())
+  name         String
+  email        String?  @unique
+  phone        String?  @unique
+  passwordHash String
+  role         String   @default("patient")
+  createdAt    DateTime @default(now())
+
+  patientProfiles PatientProfile[]
+  registrations   Registration[]
+
+  @@index([email])
+  @@index([phone])
+}
+
+model PatientProfile {
+  id     String @id @default(cuid())
+  userId String
+  name   String
+  idCard String
+  phone  String
+  gender String
+
+  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  registrations Registration[]
+
+  @@index([userId])
+}
+
+model Hospital {
+  id          String   @id @default(cuid())
+  name        String
+  address     String
+  city        String
+  level       String
+  phone       String
+  description String   @default("")
+  imageUrl    String   @default("")
+  createdAt   DateTime @default(now())
+
+  departments Department[]
+  doctors     Doctor[]
+
+  @@index([city])
+  @@index([level])
+}
+
+model Department {
+  id          String @id @default(cuid())
+  name        String
+  description String @default("")
+  hospitalId  String
+
+  hospital Hospital @relation(fields: [hospitalId], references: [id], onDelete: Cascade)
+  doctors  Doctor[]
+
+  @@unique([name, hospitalId])
+  @@index([hospitalId])
+}
+
+model Doctor {
+  id           String @id @default(cuid())
+  name         String
+  title        String
+  specialty    String
+  introduction String @default("")
+  avatarUrl    String @default("")
+  departmentId String
+  hospitalId   String
+
+  department    Department     @relation(fields: [departmentId], references: [id], onDelete: Cascade)
+  hospital      Hospital       @relation(fields: [hospitalId], references: [id])
+  schedules     Schedule[]
+  registrations Registration[]
+
+  @@index([departmentId])
+  @@index([hospitalId])
+  @@index([name])
+}
+
+model Schedule {
+  id          String   @id @default(cuid())
+  doctorId    String
+  date        String
+  timeSlot    String
+  quota       Int
+  bookedCount Int      @default(0)
+  type        String   @default("normal")
+  createdAt   DateTime @default(now())
+
+  doctor        Doctor         @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  registrations Registration[]
+
+  @@unique([doctorId, date, timeSlot, type])
+  @@index([doctorId, date])
+  @@index([date])
+}
+
+model Registration {
+  id         String   @id @default(cuid())
+  patientId  String
+  profileId  String
+  doctorId   String
+  scheduleId String
+  date       String
+  timeSlot   String
+  type       String
+  status     String   @default("pending")
+  createdAt  DateTime @default(now())
+
+  patient  User           @relation(fields: [patientId], references: [id])
+  profile  PatientProfile @relation(fields: [profileId], references: [id])
+  doctor   Doctor         @relation(fields: [doctorId], references: [id])
+  schedule Schedule       @relation(fields: [scheduleId], references: [id])
+
+  @@index([patientId])
+  @@index([doctorId])
+  @@index([scheduleId])
+  @@index([date])
+  @@index([patientId, date, timeSlot])
 }
