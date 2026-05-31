@@ -43,7 +43,7 @@ interface ToolCall {
  * Returns a ReadableStream that produces SSE events.
  */
 export async function createStreamResponse(
-  messages: Array<{ role: string; content: string }>,
+  messages: ChatMessage[],
   context: ToolContext
 ): Promise<ReadableStream> {
   const encoder = new TextEncoder();
@@ -102,10 +102,20 @@ export async function createStreamResponse(
   // ── 构建消息列表并使用上下文压缩 ──
   const allMessages: ChatMessage[] = [
     { role: "system", content: systemContent },
-    ...messages.map((m) => ({
-      role: m.role as "user" | "assistant" | "system",
-      content: m.content || "",
-    })),
+    ...messages.map((m) => {
+      const chatMsg: ChatMessage = {
+        role: m.role,
+        content: m.content || "",
+      };
+      // Preserve tool call data for DeepSeek API
+      if (m.tool_calls) {
+        chatMsg.tool_calls = m.tool_calls;
+      }
+      if (m.tool_call_id) {
+        chatMsg.tool_call_id = m.tool_call_id;
+      }
+      return chatMsg;
+    }),
   ];
 
   // 自动压缩超长上下文
@@ -149,6 +159,7 @@ async function runAgentLoop(
   const toolMap = new Map(toolDefs.map((t) => [t.name, t]));
   const overallStartTime = Date.now();
   const MAX_TOTAL_MS = 60000; // 60s total timeout
+  const initialMsgCount = messages.length; // Track initial messages to avoid re-persisting history
 
   for (let round = 0; round < 8; round++) {
     // 总超时检查
@@ -340,15 +351,15 @@ async function runAgentLoop(
     SessionMemoryStore.set(sessionId, sessionMem);
   }
 
-  // Emit complete tool call chain for persistence (single-line SSE event)
-  const toolMessagesForPersistence = messages
+  // Emit only NEW tool call chain for persistence (skip ones already in DB)
+  const newMessages = messages.slice(initialMsgCount);
+  const toolMessagesForPersistence = newMessages
     .filter((m) => {
       return (
         (m.role === "assistant" && m.tool_calls && m.tool_calls.length > 0) ||
         m.role === "tool"
       );
     })
-    .slice(-10)
     .map((m) => {
       if (m.role === "assistant") {
         return {

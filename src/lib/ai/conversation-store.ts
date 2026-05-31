@@ -77,6 +77,8 @@ export class ConversationStore {
    * Load conversation history as ChatMessage[] with full tool call reconstruction.
    * - Assistant messages with toolCalls → parse JSON to restore tool_calls array
    * - Tool messages (role="tool") with toolCalls → extract tool_call_id from JSON
+   * - Filters out incomplete tool call rounds (missing tool_call_id due to
+   *   legacy data or partial persistence) to avoid DeepSeek API validation errors.
    */
   static async loadHistoryAsChatMessages(
     conversationId: string,
@@ -89,7 +91,8 @@ export class ConversationStore {
       take: maxMessages,
     });
 
-    return rawMessages.map((m) => {
+    // Step 1: Reconstruct messages with tool call info
+    const reconstructed: ChatMessage[] = rawMessages.map((m) => {
       const msg: ChatMessage = {
         role: m.role as ChatMessage["role"],
         content: m.content,
@@ -118,6 +121,56 @@ export class ConversationStore {
 
       return msg;
     });
+
+    // Step 2: Filter out incomplete tool call rounds
+    // DeepSeek API requires every "tool" message to have tool_call_id,
+    // and every assistant tool_calls entry must have a corresponding tool result.
+    // Drop any tool message without a valid tool_call_id, and also drop
+    // the preceding assistant message that triggered it (to keep history coherent).
+    const filtered: ChatMessage[] = [];
+    let skipNextToolRound = false;
+
+    for (let i = 0; i < reconstructed.length; i++) {
+      const msg = reconstructed[i];
+
+      if (msg.role === "assistant" && msg.tool_calls && msg.tool_calls.length > 0) {
+        // This assistant message contains tool calls. Check if the FOLLOWING
+        // tool messages have valid tool_call_ids.
+        let hasValidToolResults = true;
+        let toolResultCount = 0;
+
+        for (let j = i + 1; j < reconstructed.length && reconstructed[j].role === "tool"; j++) {
+          toolResultCount++;
+          if (!reconstructed[j].tool_call_id) {
+            hasValidToolResults = false;
+            break;
+          }
+        }
+
+        if (hasValidToolResults && toolResultCount > 0) {
+          // Valid — keep everything
+          filtered.push(msg);
+        } else {
+          // Invalid — skip this assistant message and all following tool messages
+          skipNextToolRound = true;
+        }
+      } else if (msg.role === "tool") {
+        // Only add tool message if we're not skipping and it has a valid ID
+        if (!skipNextToolRound && msg.tool_call_id) {
+          filtered.push(msg);
+        }
+        // If this is the last tool message in the round, reset skip flag
+        const nextMsg = reconstructed[i + 1];
+        if (!nextMsg || nextMsg.role !== "tool") {
+          skipNextToolRound = false;
+        }
+      } else {
+        // Normal user/assistant message — always keep
+        filtered.push(msg);
+      }
+    }
+
+    return filtered;
   }
 
   /** ... existing methods unchanged ... */

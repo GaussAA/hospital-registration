@@ -74,9 +74,9 @@ export async function POST(req: NextRequest) {
     // 7. Build ToolContext
     const context: ToolContext = { userId, userRole };
 
-    // 8. Create streaming response
+    // 8. Create streaming response — pass full ChatMessage[] so tool_calls and tool_call_id are preserved
     const aiStream = await createStreamResponse(
-      [...history.map((m) => ({ role: m.role, content: m.content || "" })), { role: "user" as const, content: message.trim() }],
+      [...history, { role: "user", content: message.trim() }],
       context
     );
 
