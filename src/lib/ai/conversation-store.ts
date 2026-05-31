@@ -1,5 +1,5 @@
 import { getPrisma } from "@/lib/db";
-import type { ConversationSummary, ConversationDetail } from "./types";
+import type { ConversationSummary, ConversationDetail, ChatMessage } from "./types";
 
 /**
  * Conversation persistence layer.
@@ -72,6 +72,55 @@ export class ConversationStore {
       })),
     });
   }
+
+  /**
+   * Load conversation history as ChatMessage[] with full tool call reconstruction.
+   * - Assistant messages with toolCalls → parse JSON to restore tool_calls array
+   * - Tool messages (role="tool") with toolCalls → extract tool_call_id from JSON
+   */
+  static async loadHistoryAsChatMessages(
+    conversationId: string,
+    maxMessages: number = 40
+  ): Promise<ChatMessage[]> {
+    const prisma = await getPrisma();
+    const rawMessages = await prisma.message.findMany({
+      where: { conversationId },
+      orderBy: { createdAt: "asc" },
+      take: maxMessages,
+    });
+
+    return rawMessages.map((m) => {
+      const msg: ChatMessage = {
+        role: m.role as ChatMessage["role"],
+        content: m.content,
+      };
+
+      // Restore tool_calls from stored JSON for assistant messages
+      if (m.role === "assistant" && m.toolCalls) {
+        try {
+          msg.tool_calls = JSON.parse(m.toolCalls);
+        } catch {
+          // Invalid JSON stored, skip tool_calls restoration
+        }
+      }
+
+      // Restore tool_call_id from stored JSON for tool messages
+      if (m.role === "tool" && m.toolCalls) {
+        try {
+          const parsed = JSON.parse(m.toolCalls);
+          if (parsed && parsed.tool_call_id) {
+            msg.tool_call_id = parsed.tool_call_id;
+          }
+        } catch {
+          // Invalid JSON stored, skip tool_call_id restoration
+        }
+      }
+
+      return msg;
+    });
+  }
+
+  /** ... existing methods unchanged ... */
 
   /**
    * List conversation summaries for a session.

@@ -40,7 +40,8 @@ const BASE_SYSTEM_PROMPT = `你是"健康挂号"AI挂号助手，一个专业的
 - 挂号完成后，询问是否需要查看挂号记录或再挂一个号
 
 ## 重要原则
-- 用户未登录时，工具会提示需要登录，此时引导用户去登录页面
+- **用户已登录，直接调用工具查询即可**，无需询问登录状态
+- 如果工具提示了"未登录"或"参数错误"，请如实告知用户工具返回的信息
 - 如果用户不知道自己要挂什么科，根据常见症状推荐科室（如发烧→呼吸内科/发热门诊）
 - 解释工具返回的数据时用通俗语言，不要说"根据系统显示"等机械表达
 - 号源即将约满时提醒用户（剩余≤3个时标注"余号紧张"）`;
@@ -54,13 +55,16 @@ const BASE_SYSTEM_PROMPT = `你是"健康挂号"AI挂号助手，一个专业的
 const MEMORY_SECTION_PREFIX = "\n\n## 用户记忆\n";
 
 /**
- * 获取系统提示，可选注入用户记忆。
+ * 获取系统提示，可选注入用户记忆和认证状态。
  */
-export function getSystemPrompt(user?: { name?: string; memory?: string }): string {
+export function getSystemPrompt(user?: { name?: string; memory?: string; isAuthenticated?: boolean }): string {
   let prompt = BASE_SYSTEM_PROMPT;
 
-  if (user?.name) {
-    prompt += `\n\n当前用户：${user.name}`;
+  // 注入认证状态（明确告知LLM是否登录，避免它猜测）
+  if (user?.isAuthenticated) {
+    prompt += `\n\n## 用户状态\n- **登录状态**：已登录\n- **用户名称**：${user?.name || "用户"}\n- **说明**：用户已登录系统，调用工具查询数据无需询问登录状态，直接执行即可。`;
+  } else {
+    prompt += `\n\n## 用户状态\n- **登录状态**：未登录（游客）\n- **说明**：当前用户未登录，调用需要用户身份的工具时可能会返回未登录提示。`;
   }
 
   if (user?.memory) {

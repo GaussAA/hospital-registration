@@ -8,13 +8,14 @@ import type { ToolContext } from "@/lib/ai/types";
  * POST /api/chat/stream — SSE streaming chat endpoint.
  *
  * Uses direct DeepSeek Chat Completions API with streaming + tool calling.
- * Messages are persisted to the database on stream completion.
+ * Messages are persisted to the database on stream completion,
+ * including tool call chains for context preservation across conversations.
  */
 export async function POST(req: NextRequest) {
   try {
     // 1. Parse request body
     const body = await req.json();
-    const { message, conversationId: existingConvId } = body;
+    const { message, conversationId: existingConvId, userId: bodyUserId } = body;
     if (!message || typeof message !== "string" || !message.trim()) {
       return new Response(JSON.stringify({ error: "消息不能为空" }), { status: 400 });
     }
@@ -22,7 +23,9 @@ export async function POST(req: NextRequest) {
     // 2. Get or create session ID
     const sessionId = req.headers.get("x-session-id") || crypto.randomUUID();
 
-    // 3. Parse JWT token (optional)
+    // 3. Parse JWT token (optional) — dual authentication:
+    //    Primary: cookie-based JWT (httpOnly security)
+    //    Fallback: userId from request body (from useUser context)
     const token = req.cookies.get("token")?.value;
     let userId: string | undefined;
     let userRole: string | undefined;
@@ -32,37 +35,57 @@ export async function POST(req: NextRequest) {
         userId = payload.userId;
         userRole = payload.role;
       } catch {
-        // Token invalid — treat as anonymous
+        // Token invalid — fall through to body fallback
       }
     }
 
+    // Fallback: if cookie auth failed but client provided userId from auth context
+    if (!userId && bodyUserId && typeof bodyUserId === "string") {
+      userId = bodyUserId;
+    }
+
+    // Log auth status for diagnostics (no personal info)
+    console.log(`[chat/stream] session=${sessionId.slice(0,8)}... auth=${!!userId}`);
+
     // 4. Get or create conversation
-    const conversationId = existingConvId || (await ConversationStore.getOrCreate(sessionId, userId));
+    //    If existingConvId is provided (from a "new conversation" action or existing),
+    //    use it directly. Otherwise, create a brand new conversation.
+    let conversationId: string;
+    if (existingConvId) {
+      conversationId = existingConvId;
+    } else {
+      // When no conversationId provided, always create new (not getOrCreate)
+      conversationId = await ConversationStore.create(sessionId, userId);
+    }
 
     // 5. Save user message immediately, capture its ID for feedback
-    const userMessageId = await ConversationStore.addMessage(conversationId, "user", message.trim());
+    const userMessageId = await ConversationStore.addMessage(
+      conversationId,
+      "user",
+      message.trim()
+    );
 
-    // 6. Load recent history (last 30 messages)
-    const detail = await ConversationStore.getDetail(conversationId);
-    const history = (detail?.messages || [])
-      .slice(-30)
-      .map((m) => ({
-        role: m.role,
-        content: m.content || "",
-      }));
+    // 6. Load recent history with full tool call reconstruction
+    const history = await ConversationStore.loadHistoryAsChatMessages(
+      conversationId,
+      40 // Max messages to load
+    );
 
     // 7. Build ToolContext
     const context: ToolContext = { userId, userRole };
 
-    // 8. Create streaming response (returns ReadableStream directly)
+    // 8. Create streaming response
     const aiStream = await createStreamResponse(
-      [...history, { role: "user", content: message.trim() }],
+      [...history.map((m) => ({ role: m.role, content: m.content || "" })), { role: "user" as const, content: message.trim() }],
       context
     );
 
-    // 9. Pipe through a wrapper that persists messages on completion
+    // 9. Pipe through a wrapper that persists messages and tool calls on completion
     const encoder = new TextEncoder();
     const fullContent: string[] = [];
+    const toolMessagesToPersist: Array<{ role: string; content: string | null; toolCalls?: string }> = [];
+    let titleUpdated = false;
+
     const wrappedStream = new ReadableStream({
       async start(controller) {
         const reader = aiStream.getReader();
@@ -73,40 +96,78 @@ export async function POST(req: NextRequest) {
             const { done, value } = await reader.read();
             if (done) break;
 
-            // Collect text chunks for persistence
+            // Collect text chunks and tool messages for persistence
             const chunk = decoder.decode(value, { stream: true });
             for (const line of chunk.split("\n")) {
               if (line.startsWith("0:")) {
                 try {
                   const text = JSON.parse(line.slice(2));
                   fullContent.push(text);
-                } catch {}
+                } catch {
+                  // Ignore parse errors on text chunks
+                }
+              } else if (line.startsWith("e:tool-messages:")) {
+                // Capture complete tool call chain for persistence
+                try {
+                  const dataStr = line.slice("e:tool-messages:".length).trim();
+                  const data = JSON.parse(dataStr);
+                  if (data.messages && Array.isArray(data.messages)) {
+                    toolMessagesToPersist.push(
+                      ...data.messages.map(
+                        (m: { role: string; content: string | null; toolCalls?: string }) => ({
+                          role: m.role,
+                          content: m.content ?? null,
+                          toolCalls: m.toolCalls || undefined,
+                        })
+                      )
+                    );
+                  }
+                } catch {
+                  // Ignore parse errors on tool-messages
+                }
               }
             }
 
             controller.enqueue(value);
           }
 
-          // 10. Persist AI response on completion
+          // 10. Persist AI response and tool messages on completion
           const content = fullContent.join("");
           let assistantMessageId: string | undefined;
 
           if (content.trim()) {
-            // Save assistant message and get ID
+            // Save assistant message with toolCalls (if any)
+            const assistantToolCalls = toolMessagesToPersist
+              .filter((m) => m.role === "assistant" && m.toolCalls)
+              .map((m) => m.toolCalls);
+
             assistantMessageId = await ConversationStore.addMessage(
               conversationId,
               "assistant",
-              content
+              content,
+              assistantToolCalls.length > 0
+                ? assistantToolCalls[assistantToolCalls.length - 1]
+                : undefined
             );
 
             // Auto-generate smart title from first user message
-            if (detail && detail.title === "新对话") {
-              const title = ConversationStore.generateSmartTitle(message.trim());
-              await ConversationStore.updateTitle(conversationId, title);
+            if (!titleUpdated) {
+              const detail = await ConversationStore.getDetail(conversationId).catch(() => null);
+              if (detail && detail.title === "新对话") {
+                const title = ConversationStore.generateSmartTitle(message.trim());
+                await ConversationStore.updateTitle(conversationId, title);
+                titleUpdated = true;
+              }
             }
           }
 
-          // 11. Send finish event with IDs for feedback
+          // 11. Persist tool messages (tool results) after the assistant message
+          const toolResultMessages = toolMessagesToPersist.filter((m) => m.role === "tool");
+          if (toolResultMessages.length > 0) {
+            await ConversationStore.addMessages(conversationId, toolResultMessages);
+          }
+
+          // 12. Send finish event with IDs for feedback
           controller.enqueue(
             encoder.encode(
               `d:${JSON.stringify({
@@ -119,7 +180,11 @@ export async function POST(req: NextRequest) {
         } catch (err: any) {
           console.error("[chat/stream] Stream error:", err);
         } finally {
-          try { controller.close(); } catch {}
+          try {
+            controller.close();
+          } catch {
+            // Already closed
+          }
         }
       },
     });

@@ -27,6 +27,8 @@ function getSessionId(): string {
 interface UseChatStreamOptions {
   initialMessages?: StreamMessage[];
   initialConversationId?: string;
+  /** Optional userId from auth context, used as fallback when cookie fails */
+  userId?: string;
 }
 
 interface UseChatStreamReturn {
@@ -39,7 +41,7 @@ interface UseChatStreamReturn {
   sendMessage: (content: string) => Promise<void>;
   stop: () => void;
   clearConversation: () => void;
-  newConversation: () => void;
+  newConversation: () => Promise<void>;
   switchConversation: (id: string) => Promise<void>;
   deleteConversation: (id: string) => Promise<void>;
   fetchConversations: () => Promise<void>;
@@ -63,6 +65,21 @@ export function useChatStream(opts?: UseChatStreamOptions): UseChatStreamReturn 
   const abortRef = useRef<AbortController | null>(null);
   const msgIdCounter = useRef(0);
   const restoredRef = useRef(false);
+  // Use a ref for conversationId so sendMessage always reads the latest value
+  const convIdRef = useRef<string | null>(conversationId);
+  // Use a ref for userId so sendMessage always has the latest auth state
+  // (UserProvider loads async, so opts?.userId starts as null then updates)
+  const userIdRef = useRef<string | undefined>(opts?.userId);
+
+  // Sync conversationId ref with state
+  useEffect(() => {
+    convIdRef.current = conversationId;
+  }, [conversationId]);
+
+  // Sync userId ref when opts?.userId changes (user logs in/out)
+  useEffect(() => {
+    userIdRef.current = opts?.userId;
+  }, [opts?.userId]);
 
   const genId = () => `msg_${++msgIdCounter.current}`;
 
@@ -74,6 +91,7 @@ export function useChatStream(opts?: UseChatStreamOptions): UseChatStreamReturn 
   const clearConversation = useCallback(() => {
     setMessages([]);
     setConversationId(null);
+    convIdRef.current = null;
     localStorage.removeItem(CONV_KEY);
   }, []);
 
@@ -91,12 +109,32 @@ export function useChatStream(opts?: UseChatStreamOptions): UseChatStreamReturn 
     }
   }, []);
 
-  /** Create a new conversation */
-  const newConversation = useCallback(() => {
+  /** Create a new conversation — actually creates one on the server */
+  const newConversation = useCallback(async () => {
     stop();
     setMessages([]);
     setConversationId(null);
+    convIdRef.current = null;
     localStorage.removeItem(CONV_KEY);
+
+    try {
+      const sessionId = getSessionId();
+      const res = await fetch("/api/conversations", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "x-session-id": sessionId },
+        body: JSON.stringify({ sessionId }),
+      });
+      const data = await res.json();
+      if (data.code === 0 && data.data?.id) {
+        const newId = data.data.id;
+        setConversationId(newId);
+        convIdRef.current = newId;
+        localStorage.setItem(CONV_KEY, newId);
+      }
+    } catch {
+      // Server-side creation failed; next message will still create a new one
+    }
+
     fetchConversations();
   }, [stop, fetchConversations]);
 
@@ -115,6 +153,7 @@ export function useChatStream(opts?: UseChatStreamOptions): UseChatStreamReturn 
         }));
         setMessages(history);
         setConversationId(id);
+        convIdRef.current = id;
         localStorage.setItem(CONV_KEY, id);
       }
     } catch {
@@ -168,13 +207,15 @@ export function useChatStream(opts?: UseChatStreamOptions): UseChatStreamReturn 
 
         const response = await fetch("/api/chat/stream", {
           method: "POST",
+          credentials: "include",
           headers: {
             "Content-Type": "application/json",
             "x-session-id": sessionId,
           },
           body: JSON.stringify({
             message: content.trim(),
-            conversationId: conversationId || undefined,
+            conversationId: convIdRef.current || undefined,
+            userId: userIdRef.current,
           }),
           signal: abortRef.current.signal,
         });
@@ -185,9 +226,10 @@ export function useChatStream(opts?: UseChatStreamOptions): UseChatStreamReturn 
 
         // Get conversationId from response headers
         const newConvId =
-          response.headers.get("x-conversation-id") || conversationId;
+          response.headers.get("x-conversation-id") || convIdRef.current;
         if (newConvId) {
           setConversationId(newConvId);
+          convIdRef.current = newConvId;
           localStorage.setItem(CONV_KEY, newConvId);
         }
 
@@ -354,7 +396,7 @@ export function useChatStream(opts?: UseChatStreamOptions): UseChatStreamReturn 
         setIsLoading(false);
       }
     },
-    [isLoading, conversationId, fetchConversations]
+    [isLoading, fetchConversations]
   );
 
   // Restore conversation on mount
@@ -380,6 +422,7 @@ export function useChatStream(opts?: UseChatStreamOptions): UseChatStreamReturn 
               }));
               setMessages(history);
               setConversationId(savedConvId);
+              convIdRef.current = savedConvId;
             } else {
               localStorage.removeItem(CONV_KEY);
             }

@@ -4,6 +4,7 @@ import { useRef, useEffect, useState, useMemo, useCallback } from "react";
 import { useTheme } from "@/components/ui/ThemeProvider";
 import ChatMessage from "./ChatMessage";
 import { useChatStream } from "@/hooks/useChatStream";
+import { useUser } from "@/components/auth/UserProvider";
 import type { StreamMessage, ConversationSummary } from "@/lib/ai/types";
 
 /* ── Types ── */
@@ -262,6 +263,7 @@ function HistoryDropdown({
 
 export default function ChatPanel({ isOpen, onClose }: ChatPanelProps) {
   const { theme } = useTheme();
+  const { user } = useUser();
   const isDark = theme === "dark";
   const [isExpanded, setIsExpanded] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
@@ -281,7 +283,7 @@ export default function ChatPanel({ isOpen, onClose }: ChatPanelProps) {
     newConversation,
     switchConversation,
     deleteConversation,
-  } = useChatStream();
+  } = useChatStream({ userId: user?.id });
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);

@@ -44,9 +44,10 @@ export async function POST(req: NextRequest) {
     // ── Validate history format ──
     const history: ChatMessage[] = Array.isArray(body.history)
       ? body.history.filter(
-          (m: unknown) =>
+          (m: Record<string, unknown>) =>
             m &&
             typeof m === "object" &&
+            typeof m.role === "string" &&
             ["user", "assistant", "system"].includes(m.role) &&
             typeof m.content === "string"
         )

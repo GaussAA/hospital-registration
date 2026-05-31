@@ -2,9 +2,23 @@ import type { TimeSlot, ScheduleType } from "@/types/index";
 
 /* ── Chat Message Types ── */
 
+// Tool call structure (OpenAI/DeepSeek compatible)
+export interface ToolCallData {
+  id: string;
+  type: "function";
+  function: {
+    name: string;
+    arguments: string;
+  };
+}
+
 export interface ChatMessage {
   role: "user" | "assistant" | "system" | "tool";
   content: string | null;
+  /** For assistant messages — array of tool calls (OpenAI format) */
+  tool_calls?: ToolCallData[];
+  /** For tool messages — ID of the tool call this result belongs to */
+  tool_call_id?: string;
 }
 
 export interface ChatRequest {
@@ -127,5 +141,6 @@ export type SSEEventType =
   | { type: "text"; content: string }
   | { type: "tool-call"; toolName: string; args: Record<string, unknown> }
   | { type: "tool-result"; toolName: string; result: string }
+  | { type: "tool-messages"; messages: Array<{ role: string; content: string | null; toolCalls?: string; toolCallId?: string }> }
   | { type: "finish"; finishReason: string; conversationId?: string }
   | { type: "error"; message: string };

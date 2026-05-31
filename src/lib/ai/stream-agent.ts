@@ -95,6 +95,7 @@ export async function createStreamResponse(
   // ── 构建系统提示 ──
   const systemContent = getSystemPrompt({
     name: userName,
+    isAuthenticated: !!context.userId,
     ...(memoryPrompt ? { memory: memoryPrompt } : {}),
   });
 
@@ -208,7 +209,7 @@ async function runAgentLoop(
             for (const tc of (delta.tool_calls as Array<{ index: number; id?: string; type?: string; function?: { name?: string; arguments?: string } }>)) {
               const existing = currentToolCalls.get(tc.index) || { index: tc.index } as ToolCallDelta;
               if (tc.id) existing.id = tc.id;
-              if (tc.type) existing.type = tc.type;
+              if (tc.type) existing.type = tc.type as "function";
               if (tc.function) {
                 if (!existing.function) existing.function = { name: "", arguments: "" };
                 if (tc.function.name) existing.function.name += tc.function.name;
@@ -243,12 +244,15 @@ async function runAgentLoop(
       break;
     }
 
-    const assistantMsg: { role: string; content: string | null; tool_calls?: Array<{ id: string; type: string; function: { name: string; arguments: string } }> } = { role: "assistant", content: assistantContent || null };
-    assistantMsg.tool_calls = toolCalls.map((tc) => ({
-      id: tc.id,
-      type: tc.type,
-      function: { name: tc.function.name, arguments: tc.function.arguments },
-    }));
+    const assistantMsg: ChatMessage = {
+      role: "assistant",
+      content: assistantContent || null,
+      tool_calls: toolCalls.map((tc) => ({
+        id: tc.id,
+        type: "function" as const,
+        function: { name: tc.function.name, arguments: tc.function.arguments },
+      })),
+    };
     messages.push(assistantMsg);
 
     // Execute each tool and add results
@@ -326,14 +330,51 @@ async function runAgentLoop(
       );
 
       messages.push({
-        role: "tool",
+        role: "tool" as const,
         content: result,
         tool_call_id: tc.id,
-      } as unknown as ChatMessage);
+      });
     }
 
     // 保存会话记忆
     SessionMemoryStore.set(sessionId, sessionMem);
+  }
+
+  // Emit complete tool call chain for persistence (single-line SSE event)
+  const toolMessagesForPersistence = messages
+    .filter((m) => {
+      return (
+        (m.role === "assistant" && m.tool_calls && m.tool_calls.length > 0) ||
+        m.role === "tool"
+      );
+    })
+    .slice(-10)
+    .map((m) => {
+      if (m.role === "assistant") {
+        return {
+          role: "assistant",
+          content: m.content,
+          toolCalls: JSON.stringify(m.tool_calls || []),
+        };
+      }
+      if (m.role === "tool") {
+        return {
+          role: "tool",
+          content: m.content,
+          toolCalls: JSON.stringify({
+            tool_call_id: m.tool_call_id || "",
+          }),
+        };
+      }
+      return { role: m.role, content: m.content };
+    });
+
+  if (toolMessagesForPersistence.length > 0) {
+    controller.enqueue(
+      encoder.encode(
+        `e:tool-messages:${JSON.stringify({ messages: toolMessagesForPersistence })}\n`
+      )
+    );
   }
 
   controller.enqueue(encoder.encode("e:finish\nd:{}\n\n"));
