@@ -25,19 +25,31 @@ export function useToast() {
 }
 
 /* ── Styles ── */
-const typeStyles = {
-  success:
-    "bg-[var(--color-success)] text-white",
-  error:
-    "bg-[var(--color-danger)] text-white",
-  info:
-    "bg-[var(--color-primary)] text-white",
-};
-
-const typeIcons = {
-  success: "✓",
-  error: "✕",
-  info: "ℹ",
+const typeConfig = {
+  success: {
+    bg: "bg-gradient-to-r from-green-500 to-emerald-600",
+    icon: (
+      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+      </svg>
+    ),
+  },
+  error: {
+    bg: "bg-gradient-to-r from-red-500 to-rose-600",
+    icon: (
+      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+      </svg>
+    ),
+  },
+  info: {
+    bg: "bg-gradient-to-r from-blue-500 to-indigo-600",
+    icon: (
+      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
+      </svg>
+    ),
+  },
 };
 
 /* ── Provider ── */
@@ -45,14 +57,12 @@ export function ToastProvider({ children }: { children: ReactNode }) {
   const [toasts, setToasts] = useState<ToastItem[]>([]);
 
   const removeToast = useCallback((id: string) => {
-    // Start close animation
     setToasts((prev) =>
       prev.map((t) => (t.id === id ? { ...t, closing: true } : t)),
     );
-    // Remove after animation
     setTimeout(() => {
       setToasts((prev) => prev.filter((t) => t.id !== id));
-    }, 250);
+    }, 200);
   }, []);
 
   const showToast = useCallback(
@@ -69,58 +79,53 @@ export function ToastProvider({ children }: { children: ReactNode }) {
       {children}
 
       {/* ── Toast container ── */}
-      <div className="fixed top-4 right-4 z-[100] flex flex-col gap-2 pointer-events-none">
-        {toasts.map((toast) => (
-          <div
-            key={toast.id}
-            onClick={() => removeToast(toast.id)}
-            className={`
-              pointer-events-auto rounded-lg px-4 py-3 shadow-lg text-sm font-medium
-              flex items-center gap-2.5 cursor-pointer select-none
-              transition-all duration-200
-              ${toast.closing ? "opacity-0 translate-x-8 scale-95" : "opacity-100"}
-              animate-[slideIn_0.25s_ease-out]
-              ${typeStyles[toast.type]}
-            `}
-            role="alert"
-          >
-            {/* Icon */}
-            <span className="shrink-0 w-5 h-5 rounded-full bg-white/20 flex items-center justify-center text-xs font-bold">
-              {typeIcons[toast.type]}
-            </span>
-
-            {/* Message */}
-            <span className="flex-1">{toast.message}</span>
-
-            {/* Close button */}
-            <button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                removeToast(toast.id);
-              }}
-              className="shrink-0 w-5 h-5 rounded-full flex items-center justify-center hover:bg-white/20 transition-colors text-xs"
-              aria-label="关闭通知"
+      <div className="fixed top-4 right-4 z-[100] flex flex-col gap-2.5 pointer-events-none">
+        {toasts.map((toast) => {
+          const config = typeConfig[toast.type];
+          return (
+            <div
+              key={toast.id}
+              onClick={() => removeToast(toast.id)}
+              className={`
+                pointer-events-auto rounded-xl px-4 py-3 text-white text-sm font-medium
+                flex items-center gap-2.5 cursor-pointer select-none
+                shadow-lg shadow-black/10
+                transition-all duration-200
+                ${
+                  toast.closing
+                    ? "animate-toast-out"
+                    : "animate-toast-in"
+                }
+                ${config.bg}
+              `}
+              role="alert"
             >
-              ✕
-            </button>
-          </div>
-        ))}
-      </div>
+              {/* Icon */}
+              <span className="shrink-0 w-6 h-6 rounded-full bg-white/15 flex items-center justify-center">
+                {config.icon}
+              </span>
 
-      {/* ── Keyframes ── */}
-      <style jsx>{`
-        @keyframes slideIn {
-          from {
-            opacity: 0;
-            transform: translateX(100%) scale(0.95);
-          }
-          to {
-            opacity: 1;
-            transform: translateX(0) scale(1);
-          }
-        }
-      `}</style>
+              {/* Message */}
+              <span className="flex-1">{toast.message}</span>
+
+              {/* Close */}
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  removeToast(toast.id);
+                }}
+                className="shrink-0 w-5 h-5 rounded-full flex items-center justify-center hover:bg-white/15 transition-colors text-xs"
+                aria-label="关闭通知"
+              >
+                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+          );
+        })}
+      </div>
     </ToastContext.Provider>
   );
 }

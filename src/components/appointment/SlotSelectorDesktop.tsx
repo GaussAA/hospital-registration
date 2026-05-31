@@ -49,12 +49,12 @@ export default function SlotSelectorDesktop({
   if (schedules.length === 0) return null;
 
   return (
-    <div className="hidden md:block bg-white dark:bg-[#1e293b] rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
+    <div className="hidden md:block bg-[var(--bg-card)] rounded-2xl border border-[var(--border-default)] overflow-hidden shadow-sm card-hover">
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
-            <tr className="bg-gray-50 dark:bg-gray-800/80">
-              <th className="sticky left-0 z-10 bg-gray-50 dark:bg-gray-800/80 px-3 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider min-w-[60px]">
+            <tr className="bg-gradient-to-r from-blue-50/80 to-indigo-50/80 dark:from-blue-950/20 dark:to-indigo-950/20">
+              <th className="sticky left-0 z-10 bg-inherit px-3 py-3.5 text-left text-xs font-medium text-[var(--text-muted)] uppercase tracking-wider min-w-[60px]">
                 时段
               </th>
               {dateRange.map((day) => {
@@ -62,10 +62,10 @@ export default function SlotSelectorDesktop({
                 return (
                   <th
                     key={dateStr}
-                    className="px-3 py-3 text-center font-medium min-w-[100px] text-gray-700 dark:text-gray-200"
+                    className="px-3 py-3.5 text-center font-medium min-w-[100px]"
                   >
-                    <div className="text-sm">{`${day.getMonth() + 1}/${day.getDate()}`}</div>
-                    <div className="text-xs mt-0.5 opacity-70">{weekDayNames[day.getDay()]}</div>
+                    <div className="text-sm text-[var(--text-primary)]">{`${day.getMonth() + 1}/${day.getDate()}`}</div>
+                    <div className="text-xs mt-0.5 text-[var(--text-muted)]">{weekDayNames[day.getDay()]}</div>
                   </th>
                 );
               })}
@@ -73,10 +73,10 @@ export default function SlotSelectorDesktop({
           </thead>
           <tbody>
             {timeSlots.map((slot) => (
-              <tr key={slot} className="border-t border-gray-100 dark:border-gray-700/50">
-                <td className="sticky left-0 z-10 bg-white dark:bg-[#1e293b] px-3 py-3 text-sm font-medium text-gray-600 dark:text-gray-300 whitespace-nowrap">
-                  <div className="flex items-center gap-1.5">
-                    <span className="w-1.5 h-1.5 rounded-full bg-gray-300 dark:bg-gray-500" />
+              <tr key={slot} className="border-t border-[var(--border-light)] hover:bg-[var(--bg-hover)]/50 transition-colors">
+                <td className="sticky left-0 z-10 bg-[var(--bg-card)] px-3 py-3 text-sm font-medium text-[var(--text-secondary)] whitespace-nowrap">
+                  <div className="flex items-center gap-2">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[var(--text-muted)]" />
                     {timeSlotLabels[slot]}
                   </div>
                 </td>
@@ -98,14 +98,14 @@ export default function SlotSelectorDesktop({
                                 disabled={isFull}
                                 onClick={() => onSelect(s.id, s.type as "normal" | "expert" | "special")}
                                 className={`
-                                  relative rounded-lg px-2 py-1.5 text-xs font-medium
-                                  transition-all
+                                  relative rounded-xl px-2 py-2 text-xs font-medium
+                                  transition-all duration-200
                                   ${
                                     isSelected
-                                      ? "bg-blue-600 text-white shadow-md shadow-blue-500/20 ring-2 ring-blue-300 dark:ring-blue-600 scale-105"
+                                      ? "bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-md shadow-blue-500/20 ring-2 ring-blue-300 dark:ring-blue-600 scale-105"
                                       : isFull
-                                        ? "bg-gray-50 dark:bg-gray-800/50 text-gray-300 dark:text-gray-600 cursor-not-allowed line-through"
-                                        : "bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-900/50 hover:shadow-sm cursor-pointer border border-blue-200 dark:border-blue-800/50"
+                                        ? "bg-[var(--bg-muted)] text-[var(--text-muted)] cursor-not-allowed line-through opacity-50"
+                                        : "bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-500/20 hover:shadow-sm border border-blue-200/50 dark:border-blue-800/30 active:scale-[0.97]"
                                   }
                                 `}
                               >
@@ -114,7 +114,7 @@ export default function SlotSelectorDesktop({
                                   isSelected
                                     ? "text-blue-100"
                                     : isFull
-                                      ? "text-gray-300 dark:text-gray-600"
+                                      ? "text-[var(--text-muted)]"
                                       : "text-blue-500 dark:text-blue-400"
                                 }`}>
                                   {isFull ? "已满" : `余${s.remaining}/${s.quota}`}
@@ -124,7 +124,7 @@ export default function SlotSelectorDesktop({
                           })}
                         </div>
                       ) : (
-                        <span className="text-gray-200 dark:text-gray-700 text-xs select-none">—</span>
+                        <span className="text-[var(--border-default)] text-xs select-none">—</span>
                       )}
                     </td>
                   );

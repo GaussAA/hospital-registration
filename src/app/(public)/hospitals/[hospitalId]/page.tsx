@@ -32,7 +32,7 @@ export default async function HospitalDetailPage(props: PageProps) {
   if (!hospital) {
     return (
       <div className="max-w-4xl mx-auto px-4 py-16 text-center">
-        <h1 className="text-2xl font-bold text-gray-900 mb-4">医院不存在</h1>
+        <h1 className="text-2xl font-bold text-[var(--text-primary)] mb-4">医院不存在</h1>
         <Link href="/hospitals" className="text-blue-600 hover:text-blue-700">
           返回医院列表
         </Link>
@@ -46,15 +46,15 @@ export default async function HospitalDetailPage(props: PageProps) {
       <HospitalInfo hospital={hospital} />
 
       {/* Breadcrumb */}
-      <nav className="text-sm text-gray-400">
-        <Link href="/hospitals" className="hover:text-blue-600 transition-colors">医院列表</Link>
+      <nav className="text-sm text-[var(--text-muted)]">
+        <Link href="/hospitals" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">医院列表</Link>
         <span className="mx-2">/</span>
-        <span className="text-gray-600">{hospital.name}</span>
+        <span className="text-[var(--text-secondary)]">{hospital.name}</span>
       </nav>
 
       {/* Departments */}
       <section>
-        <h2 className="text-xl font-bold text-gray-900 mb-4">科室列表</h2>
+        <h2 className="text-xl font-bold text-[var(--text-primary)] mb-4">科室列表</h2>
         <DepartmentList departments={departments} />
       </section>
     </div>

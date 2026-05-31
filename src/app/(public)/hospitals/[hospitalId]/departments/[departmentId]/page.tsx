@@ -38,8 +38,8 @@ export default async function DepartmentDetailPage(props: PageProps) {
   if (!department) {
     return (
       <div className="max-w-4xl mx-auto px-4 py-16 text-center">
-        <h1 className="text-2xl font-bold text-gray-900 mb-4">科室不存在</h1>
-        <Link href={`/hospitals/${hospitalId}`} className="text-blue-600 hover:text-blue-700">
+        <h1 className="text-2xl font-bold text-[var(--text-primary)] mb-4">科室不存在</h1>
+        <Link href={`/hospitals/${hospitalId}`} className="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300">
           返回医院详情
         </Link>
       </div>
@@ -49,21 +49,21 @@ export default async function DepartmentDetailPage(props: PageProps) {
   return (
     <div className="max-w-4xl mx-auto px-4 py-6 space-y-6">
       {/* Breadcrumb */}
-      <nav className="text-sm text-gray-400">
-        <Link href="/hospitals" className="hover:text-blue-600 transition-colors">医院列表</Link>
+      <nav className="text-sm text-[var(--text-muted)]">
+        <Link href="/hospitals" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">医院列表</Link>
         <span className="mx-2">/</span>
-        <Link href={`/hospitals/${hospitalId}`} className="hover:text-blue-600 transition-colors">{department.hospitalName}</Link>
+        <Link href={`/hospitals/${hospitalId}`} className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">{department.hospitalName}</Link>
         <span className="mx-2">/</span>
-        <span className="text-gray-600">{department.name}</span>
+        <span className="text-[var(--text-secondary)]">{department.name}</span>
       </nav>
 
       {/* Department info */}
       <div>
-        <h1 className="text-2xl font-bold text-gray-900 mb-1">{department.name}</h1>
+        <h1 className="text-2xl font-bold text-[var(--text-primary)] mb-1">{department.name}</h1>
         {department.description && (
-          <p className="text-sm text-gray-500">{department.description}</p>
+          <p className="text-sm text-[var(--text-secondary)]">{department.description}</p>
         )}
-        <p className="text-sm text-gray-400 mt-2">{department.doctorCount} 位医生</p>
+        <p className="text-sm text-[var(--text-muted)] mt-2">{department.doctorCount} 位医生</p>
       </div>
 
       {/* Doctor list */}
@@ -74,7 +74,7 @@ export default async function DepartmentDetailPage(props: PageProps) {
           ))}
         </div>
       ) : (
-        <div className="text-center py-12 text-gray-400">
+        <div className="text-center py-12 text-[var(--text-muted)]">
           <p className="text-lg">暂无医生信息</p>
         </div>
       )}

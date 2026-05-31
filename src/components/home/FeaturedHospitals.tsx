@@ -16,10 +16,10 @@ interface Hospital {
 }
 
 const levelBadge: Record<string, string> = {
-  "三级甲等": "bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-300",
-  "三级乙等": "bg-blue-100 dark:bg-blue-900/40 text-blue-800 dark:text-blue-300",
-  "二级甲等": "bg-yellow-100 dark:bg-yellow-900/40 text-yellow-800 dark:text-yellow-300",
-  "二级乙等": "bg-orange-100 dark:bg-orange-900/40 text-orange-800 dark:text-orange-300",
+  "三级甲等": "bg-green-100 dark:bg-green-500/15 text-green-700 dark:text-green-300 border border-green-200 dark:border-green-800/30",
+  "三级乙等": "bg-blue-100 dark:bg-blue-500/15 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800/30",
+  "二级甲等": "bg-yellow-100 dark:bg-yellow-500/15 text-yellow-700 dark:text-yellow-300 border border-yellow-200 dark:border-yellow-800/30",
+  "二级乙等": "bg-orange-100 dark:bg-orange-500/15 text-orange-700 dark:text-orange-300 border border-orange-200 dark:border-orange-800/30",
 };
 
 export default function FeaturedHospitals() {
@@ -35,84 +35,80 @@ export default function FeaturedHospitals() {
           setHospitals(json.data.list);
         }
       })
-      .catch(() => {
-        // 静默失败
-      })
+      .catch(() => {})
       .finally(() => setLoaded(true));
   }, []);
 
   if (!loaded) {
     return (
-      <section className="bg-gray-50 dark:bg-gray-800 py-20">
+      <section className="bg-[var(--bg-muted)]/50 py-24">
         <div className="max-w-7xl mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-3">合作医院</h2>
-          <p className="text-gray-500 dark:text-gray-400 text-sm">为您推荐优质医疗资源</p>
+            <span className="inline-flex items-center gap-2 rounded-full bg-green-50 dark:bg-green-500/10 px-4 py-1.5 text-xs font-medium text-green-600 dark:text-green-400 mb-4">
+              Partners
+            </span>
+            <h2 className="text-3xl font-bold text-[var(--text-primary)] mb-3 tracking-tight">合作医院</h2>
+            <p className="text-[var(--text-secondary)] text-sm">为您推荐优质医疗资源</p>
+          </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
             <CardSkeleton />
             <CardSkeleton />
             <CardSkeleton />
-          </div>
           </div>
         </div>
       </section>
     );
   }
 
-  if (hospitals.length === 0) {
-    return null;
-  }
+  if (hospitals.length === 0) return null;
 
   return (
-    <section className="bg-gray-50 dark:bg-gray-800 py-20">
+    <section className="bg-[var(--bg-muted)]/50 py-24">
       <div className="max-w-7xl mx-auto px-4">
-        {/* 标题 */}
-        <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-3">合作医院</h2>
-          <p className="text-gray-500 dark:text-gray-400 max-w-xl mx-auto">
+        {/* Section header */}
+        <div className="text-center mb-14">
+          <span className="inline-flex items-center gap-2 rounded-full bg-green-50 dark:bg-green-500/10 px-4 py-1.5 text-xs font-medium text-green-600 dark:text-green-400 mb-4">
+            Partners
+          </span>
+          <h2 className="text-3xl font-bold text-[var(--text-primary)] mb-3 tracking-tight">合作医院</h2>
+          <p className="text-[var(--text-secondary)] max-w-xl mx-auto">
             汇聚全市优质医疗资源，为您提供专业、可靠的医疗服务
           </p>
         </div>
 
-        {/* 医院卡片网格 */}
+        {/* Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
-          {hospitals.map((hospital) => (
+          {hospitals.map((hospital, i) => (
             <div
               key={hospital.id}
-              className="group bg-white dark:bg-[#1e293b] rounded-2xl border border-gray-100 dark:border-gray-700/50 overflow-hidden shadow-sm dark:shadow-none hover:shadow-xl transition-all hover:-translate-y-1 cursor-pointer"
+              className="group bg-[var(--bg-card)] rounded-2xl border border-[var(--border-default)] overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1.5 cursor-pointer animate-slide-up"
+              style={{ animationDelay: `${i * 0.06}s` }}
               onClick={() => router.push(`/hospitals/${hospital.id}`)}
             >
-              {/* 医院图片占位 */}
-              <div className="h-40 relative bg-gradient-to-br from-blue-100 dark:from-gray-800 to-indigo-100 dark:to-gray-800 flex items-center justify-center overflow-hidden">
+              {/* Image area */}
+              <div className="h-44 relative bg-gradient-to-br from-blue-100 dark:from-gray-800 to-indigo-100 dark:to-gray-800 flex items-center justify-center overflow-hidden">
                 {hospital.imageUrl ? (
-                  <Image
-                    src={hospital.imageUrl}
-                    alt={hospital.name}
-                    fill
-                    className="object-cover"
-                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                  />
+                  <Image src={hospital.imageUrl} alt={hospital.name} fill className="object-cover group-hover:scale-105 transition-transform duration-500" sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" />
                 ) : (
-                  <Image
-                    src="/images/hospital-placeholder.svg"
-                    alt={hospital.name}
-                    fill
-                    className="object-cover"
-                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                  />
+                  <Image src="/images/hospital-placeholder.svg" alt={hospital.name} fill className="object-cover group-hover:scale-105 transition-transform duration-500" sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" />
                 )}
+                {/* Gradient overlay */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                {/* Level badge on image */}
+                <span className={`absolute top-3 right-3 inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium shadow-sm ${levelBadge[hospital.level] ?? "bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200"}`}>
+                  {hospital.level}
+                </span>
               </div>
 
-              {/* 文字信息 */}
+              {/* Info */}
               <div className="p-5">
-                <div className="flex items-start justify-between mb-2">
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 line-clamp-1">{hospital.name}</h3>
-                  <span className={`shrink-0 ml-2 inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${levelBadge[hospital.level] ?? "bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200"}`}>
-                    {hospital.level}
-                  </span>
-                </div>
-                <p className="text-sm text-gray-500 dark:text-gray-400 mb-1 line-clamp-1">{hospital.address}</p>
-                <p className="text-sm text-gray-400 dark:text-gray-500">
+                <h3 className="text-lg font-semibold text-[var(--text-primary)] mb-1.5 line-clamp-1 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                  {hospital.name}
+                </h3>
+                <p className="text-sm text-[var(--text-secondary)] mb-1 line-clamp-1">
+                  {hospital.address}
+                </p>
+                <p className="text-sm text-[var(--text-muted)]">
                   {hospital.departmentCount} 个科室 · {hospital.doctorCount} 位医生
                 </p>
               </div>
@@ -120,14 +116,14 @@ export default function FeaturedHospitals() {
           ))}
         </div>
 
-        {/* 查看全部 */}
+        {/* View all */}
         <div className="text-center">
           <button
             onClick={() => router.push("/hospitals")}
-            className="inline-flex items-center gap-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#1e293b] px-8 py-3 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-300 dark:hover:border-gray-600 transition-all shadow-sm dark:shadow-none"
+            className="btn-secondary group"
           >
-            查看全部医院
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <span>查看全部医院</span>
+            <svg className="w-4 h-4 transition-transform group-hover:translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
             </svg>
           </button>

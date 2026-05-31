@@ -31,10 +31,10 @@ export default async function RegisterPage(props: PageProps) {
   if (!isAuthenticated) {
     return (
       <div className="mx-auto max-w-4xl px-4 py-16 text-center">
-        <h1 className="mb-4 text-2xl font-bold text-gray-900">
+        <h1 className="mb-4 text-2xl font-bold text-[var(--text-primary)]">
           请先登录
         </h1>
-        <p className="mb-6 text-gray-500">
+        <p className="mb-6 text-[var(--text-secondary)]">
           请先登录后再进行挂号操作
         </p>
         <Link

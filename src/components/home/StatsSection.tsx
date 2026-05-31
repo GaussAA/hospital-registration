@@ -9,6 +9,13 @@ interface Stats {
   todayAppointments: number;
 }
 
+const items = [
+  { label: "入驻医院", icon: "🏥", gradient: "from-blue-500 to-indigo-500" },
+  { label: "专业医生", icon: "👨‍⚕️", gradient: "from-emerald-500 to-teal-500" },
+  { label: "覆盖科室", icon: "🔬", gradient: "from-violet-500 to-purple-500" },
+  { label: "今日挂号", icon: "📋", gradient: "from-amber-500 to-orange-500" },
+];
+
 export default function StatsSection() {
   const [stats, setStats] = useState<Stats>({
     totalHospitals: 0,
@@ -22,42 +29,35 @@ export default function StatsSection() {
     fetch("/api/stats/public")
       .then((res) => res.json())
       .then((json) => {
-        if (json.data) {
-          setStats(json.data);
-        }
+        if (json.data) setStats(json.data);
       })
-      .catch(() => {
-        // 静默失败，保持默认 0
-      })
+      .catch(() => {})
       .finally(() => setLoaded(true));
   }, []);
 
-  const items = [
-    { label: "入驻医院", value: stats.totalHospitals, icon: "🏥" },
-    { label: "专业医生", value: stats.totalDoctors, icon: "👨‍⚕️" },
-    { label: "覆盖科室", value: stats.totalDepartments, icon: "🔬" },
-    { label: "今日挂号", value: stats.todayAppointments, icon: "📋" },
-  ];
-
   return (
-    <section className="relative -mt-10 z-10 max-w-5xl mx-auto px-4">
+    <section className="relative -mt-12 z-10 max-w-5xl mx-auto px-4">
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        {items.map((item) => (
-          <div
-            key={item.label}
-            className="relative group"
-          >
-            <div className="absolute -inset-0.5 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-2xl blur opacity-20 group-hover:opacity-40 transition-opacity" />
-            <div className="relative bg-white dark:bg-[#1e293b] rounded-2xl border border-gray-100 dark:border-gray-700/50 p-6 text-center shadow-lg dark:shadow-none hover:shadow-xl transition-all hover:-translate-y-1">
-              <span className="text-3xl block mb-2">{item.icon}</span>
-              <div className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-1">
+        {items.map((item, i) => (
+          <div key={item.label} className="relative group animate-slide-up" style={{ animationDelay: `${i * 0.08}s` }}>
+            {/* Glow */}
+            <div className={`absolute -inset-0.5 bg-gradient-to-br ${item.gradient} rounded-2xl blur opacity-15 group-hover:opacity-30 transition-opacity duration-300`} />
+            {/* Card */}
+            <div className="relative bg-[var(--bg-card)] rounded-2xl border border-[var(--border-default)] p-6 text-center shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1.5">
+              {/* Icon with background */}
+              <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-[var(--bg-muted)] mb-3 text-xl group-hover:scale-110 transition-transform duration-300">
+                <span>{item.icon}</span>
+              </div>
+              {/* Number */}
+              <div className="text-3xl font-bold text-[var(--text-primary)] mb-1 tracking-tight">
                 {loaded ? (
-                  <AnimatedNumber value={item.value} />
+                  <AnimatedNumber value={item.label === "今日挂号" ? stats.todayAppointments : item.label === "入驻医院" ? stats.totalHospitals : item.label === "专业医生" ? stats.totalDoctors : stats.totalDepartments} />
                 ) : (
-                  <span className="text-gray-300 dark:text-gray-400">---</span>
+                  <span className="text-[var(--text-muted)]">---</span>
                 )}
               </div>
-              <div className="text-sm text-gray-500 dark:text-gray-400">{item.label}</div>
+              {/* Label */}
+              <div className="text-sm text-[var(--text-secondary)]">{item.label}</div>
             </div>
           </div>
         ))}
@@ -67,6 +67,5 @@ export default function StatsSection() {
 }
 
 function AnimatedNumber({ value }: { value: number }) {
-  // 简单计数器动画，只展示数字
   return <span>{value.toLocaleString()}</span>;
 }

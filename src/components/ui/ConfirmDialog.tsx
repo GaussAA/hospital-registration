@@ -112,7 +112,7 @@ export default function ConfirmDialog({
               >
                 {title}
               </h3>
-              <div className="mt-2 text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+              <div className="mt-2 text-sm text-[var(--text-secondary)] leading-relaxed">
                 {message}
               </div>
             </div>

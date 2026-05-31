@@ -3,7 +3,12 @@
 /* ── Class‑based dark mode ── */
 @custom-variant dark (&:where(.dark, .dark *));
 
+/* ───────────────────────────────────────────────
+   DESIGN TOKENS — @theme layer
+   Tailwind v4 custom theme values
+   ─────────────────────────────────────────────── */
 @theme {
+  /* ── Semantic colors (CSS variable references) ── */
   --color-bg-page: var(--bg-page);
   --color-bg-card: var(--bg-card);
   --color-bg-muted: var(--bg-muted);
@@ -15,7 +20,9 @@
   --color-border-light: var(--border-light);
   --color-shadow-sm: var(--shadow-sm);
   --color-shadow-md: var(--shadow-md);
+  --color-shadow-lg: var(--shadow-lg);
 
+  /* ── Brand palette ── */
   --color-primary: #2563eb;
   --color-primary-hover: #1d4ed8;
   --color-primary-light: #eff6ff;
@@ -24,37 +31,82 @@
   --color-danger-hover: #dc2626;
   --color-success: #22c55e;
   --color-warning: #f59e0b;
+  --color-info: #6366f1;
+
+  /* ── Glass effects ── */
+  --glass-bg: rgba(255, 255, 255, 0.6);
+  --glass-bg-strong: rgba(255, 255, 255, 0.8);
+  --glass-border: rgba(255, 255, 255, 0.2);
+  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+
+  /* ── Animation durations ── */
+  --duration-fast: 150ms;
+  --duration-normal: 250ms;
+  --duration-slow: 400ms;
 }
 
+/* ───────────────────────────────────────────────
+   CSS CUSTOM PROPERTIES — Base layer
+   Includes Light & Dark theme variables
+   ─────────────────────────────────────────────── */
 @layer base {
   :root {
-    --bg-page: #f8fafc;
+    /* ── Backgrounds ── */
+    --bg-page: #f0f5ff;
     --bg-card: #ffffff;
     --bg-muted: #f1f5f9;
     --bg-hover: #f8fafc;
+
+    /* ── Text ── */
     --text-primary: #111827;
     --text-secondary: #4b5563;
-    --text-muted: #9ca3af;
-    --border-default: #e5e7eb;
-    --border-light: #f3f4f6;
-    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.03);
-    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.05);
+    --text-muted: #94a3b8;
+
+    /* ── Borders ── */
+    --border-default: #e2e8f0;
+    --border-light: #f1f5f9;
+
+    /* ── Shadows ── */
+    --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.04);
+    --shadow-md: 0 4px 12px -2px rgb(0 0 0 / 0.06);
+    --shadow-lg: 0 12px 32px -6px rgb(0 0 0 / 0.08);
+
+    /* ── Glass (light) ── */
+    --glass-bg: rgba(255, 255, 255, 0.55);
+    --glass-bg-strong: rgba(255, 255, 255, 0.78);
+    --glass-border: rgba(255, 255, 255, 0.25);
+    --glass-shadow: 0 8px 32px rgba(59, 130, 246, 0.08);
   }
 
   .dark {
-    --bg-page: #0f172a;
-    --bg-card: #1e293b;
-    --bg-muted: #1e293b;
-    --bg-hover: #334155;
+    /* ── Backgrounds ── */
+    --bg-page: #0b1121;
+    --bg-card: #151e2f;
+    --bg-muted: #1a2438;
+    --bg-hover: #1e2a40;
+
+    /* ── Text ── */
     --text-primary: #f1f5f9;
     --text-secondary: #cbd5e1;
-    --text-muted: #64748b;
-    --border-default: #334155;
-    --border-light: #1e293b;
-    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.2);
-    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.3);
+    --text-muted: #94a3b8;
+
+    /* ── Borders ── */
+    --border-default: #1e2a40;
+    --border-light: #151e2f;
+
+    /* ── Shadows ── */
+    --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.3);
+    --shadow-md: 0 4px 12px -2px rgb(0 0 0 / 0.4);
+    --shadow-lg: 0 12px 32px -6px rgb(0 0 0 / 0.5);
+
+    /* ── Glass (dark) ── */
+    --glass-bg: rgba(21, 30, 47, 0.65);
+    --glass-bg-strong: rgba(21, 30, 47, 0.82);
+    --glass-border: rgba(148, 163, 184, 0.1);
+    --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
   }
 
+  /* ── Font stack ── */
   html {
     font-family:
       "PingFang SC",
@@ -64,19 +116,39 @@
       -apple-system,
       BlinkMacSystemFont,
       sans-serif;
+    scroll-behavior: smooth;
   }
 
   body {
     background-color: var(--bg-page);
     color: var(--text-primary);
-    transition: background-color 0.2s ease, color 0.2s ease;
+    transition: background-color 0.3s ease, color 0.3s ease;
   }
 
-  /* ── Page enter animation ── */
+  /* Smooth theme transition for all themed elements */
+  .theme-transitioning,
+  .theme-transitioning * {
+    transition: background-color 0.3s ease,
+                color 0.3s ease,
+                border-color 0.3s ease,
+                box-shadow 0.3s ease !important;
+  }
+
+  /* ── Selection style ── */
+  ::selection {
+    background-color: rgba(37, 99, 235, 0.15);
+    color: inherit;
+  }
+
+  /* ───────────────────────────────────────────────
+     PAGE TRANSITIONS
+     ─────────────────────────────────────────────── */
+
+  /* Main content fade-slide-in */
   @keyframes fadeSlideIn {
     from {
       opacity: 0;
-      transform: translateY(8px);
+      transform: translateY(12px);
     }
     to {
       opacity: 1;
@@ -85,58 +157,229 @@
   }
 
   main {
-    animation: fadeSlideIn 0.3s ease-out;
+    animation: fadeSlideIn 0.35s ease-out;
   }
 
-  /* ── Scrollbar styling for dark mode ── */
+  /* ───────────────────────────────────────────────
+     SCROLLBAR (dark mode)
+     ─────────────────────────────────────────────── */
   .dark ::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
+    width: 6px;
+    height: 6px;
   }
   .dark ::-webkit-scrollbar-track {
-    background: #1e293b;
+    background: transparent;
   }
   .dark ::-webkit-scrollbar-thumb {
-    background: #475569;
-    border-radius: 4px;
+    background: #334155;
+    border-radius: 3px;
   }
   .dark ::-webkit-scrollbar-thumb:hover {
-    background: #64748b;
+    background: #475569;
   }
 
-  /* ── Chat animations ── */
+  /* ───────────────────────────────────────────────
+     GLASS UTILITY CLASSES
+     ─────────────────────────────────────────────── */
+  .glass {
+    background: var(--glass-bg);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-shadow);
+  }
+
+  .glass-strong {
+    background: var(--glass-bg-strong);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-shadow);
+  }
+
+  /* ───────────────────────────────────────────────
+     ANIMATIONS
+     ─────────────────────────────────────────────── */
+
+  /* ── Fade In ── */
   @keyframes fadeIn {
-    from {
-      opacity: 0;
-      transform: translateY(8px) scale(0.97);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0) scale(1);
-    }
+    from { opacity: 0; }
+    to   { opacity: 1; }
   }
 
   .animate-fade-in {
     animation: fadeIn 0.25s ease-out;
   }
 
-  @keyframes bounce-subtle {
-    0%, 100% {
+  /* ── Fade + Slide Up ── */
+  @keyframes slideUpFadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+    to {
+      opacity: 1;
       transform: translateY(0);
     }
-    50% {
-      transform: translateY(-4px);
+  }
+
+  .animate-slide-up {
+    animation: slideUpFadeIn 0.35s ease-out;
+  }
+
+  /* ── Scale In ── */
+  @keyframes scaleIn {
+    from {
+      opacity: 0;
+      transform: scale(0.95);
     }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  .animate-scale-in {
+    animation: scaleIn 0.2s ease-out;
+  }
+
+  /* ── Bounce subtle ── */
+  @keyframes bounce-subtle {
+    0%, 100% { transform: translateY(0); }
+    50%      { transform: translateY(-4px); }
   }
 
   .animate-bounce-subtle {
     animation: bounce-subtle 2s ease-in-out infinite;
   }
 
-  /* ── Markdown styling for chat messages ── */
+  /* ── Pulse soft ── */
+  @keyframes pulse-soft {
+    0%, 100% { opacity: 1; }
+    50%      { opacity: 0.6; }
+  }
+
+  .animate-pulse-soft {
+    animation: pulse-soft 2s ease-in-out infinite;
+  }
+
+  /* ── Shimmer skeleton ── */
+  @keyframes shimmer {
+    0%   { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+  }
+
+  .animate-shimmer {
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.15) 25%,
+      rgba(255, 255, 255, 0.3) 50%,
+      rgba(255, 255, 255, 0.15) 75%,
+      transparent 100%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s ease-in-out infinite;
+  }
+
+  /* ── Float (hover-like breathing) ── */
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50%      { transform: translateY(-6px); }
+  }
+
+  .animate-float {
+    animation: float 3s ease-in-out infinite;
+  }
+
+  /* ── Spin slow ── */
+  @keyframes spin-slow {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+  }
+
+  .animate-spin-slow {
+    animation: spin-slow 8s linear infinite;
+  }
+
+  /* ── Toast slide in from right ── */
+  @keyframes toastSlideIn {
+    from {
+      opacity: 0;
+      transform: translateX(100%) scale(0.92);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0) scale(1);
+    }
+  }
+
+  @keyframes toastSlideOut {
+    from {
+      opacity: 1;
+      transform: translateX(0) scale(1);
+    }
+    to {
+      opacity: 0;
+      transform: translateX(40px) scale(0.92);
+    }
+  }
+
+  .animate-toast-in {
+    animation: toastSlideIn 0.3s cubic-bezier(0.21, 1.02, 0.73, 1) forwards;
+  }
+
+  .animate-toast-out {
+    animation: toastSlideOut 0.2s ease-in forwards;
+  }
+
+  /* ── Card hover lift (3D effect) ── */
+  .card-hover {
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+  }
+
+  .card-hover:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+  }
+
+  /* ── Focus ring ── */
+  .focus-ring {
+    @apply outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg-page)];
+  }
+
+  /* ───────────────────────────────────────────────
+     BUTTON BASE (optional utility)
+     ─────────────────────────────────────────────── */
+  .btn-primary {
+    @apply inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-blue-500 to-blue-600
+           px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-blue-500/20
+           hover:from-blue-600 hover:to-blue-700 hover:shadow-blue-500/30
+           active:scale-[0.97] transition-all duration-150
+           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50 focus-visible:ring-offset-2;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center rounded-xl
+           border border-[var(--border-default)] bg-[var(--bg-card)]
+           px-5 py-2.5 text-sm font-semibold text-[var(--text-primary)]
+           hover:bg-[var(--bg-hover)] active:scale-[0.97]
+           transition-all duration-150 shadow-sm;
+  }
+
+  .btn-ghost {
+    @apply inline-flex items-center justify-center rounded-xl
+           px-4 py-2 text-sm font-medium text-[var(--text-secondary)]
+           hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)]
+           active:scale-[0.97] transition-all duration-150;
+  }
+
+  /* ───────────────────────────────────────────────
+     CHAT MESSAGE MARKDOWN STYLES
+     ─────────────────────────────────────────────── */
   .chat-message-content p {
     margin-bottom: 0.5rem;
-    line-height: 1.6;
+    line-height: 1.7;
   }
   .chat-message-content p:last-child {
     margin-bottom: 0;
@@ -145,8 +388,8 @@
     font-weight: 600;
   }
   .chat-message-content code {
-    background: rgba(99,102,241,0.1);
-    padding: 0.1em 0.3em;
+    background: rgba(99, 102, 241, 0.1);
+    padding: 0.1em 0.35em;
     border-radius: 4px;
     font-size: 0.9em;
     font-family: "SF Mono", "Fira Code", monospace;
@@ -158,23 +401,26 @@
     opacity: 0.85;
     font-style: italic;
   }
-  .chat-message-content ul, .chat-message-content ol {
+  .chat-message-content ul,
+  .chat-message-content ol {
     margin: 0.25rem 0 0.5rem 0;
     padding-left: 1.25rem;
   }
   .chat-message-content li {
     margin-bottom: 0.2rem;
-    line-height: 1.5;
+    line-height: 1.6;
   }
   .chat-message-content hr {
     margin: 0.75rem 0;
     border: none;
-    border-top: 1px solid rgba(0,0,0,0.1);
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
   }
   .dark .chat-message-content hr {
-    border-top-color: rgba(255,255,255,0.1);
+    border-top-color: rgba(255, 255, 255, 0.1);
   }
-  .chat-message-content h2, .chat-message-content h3, .chat-message-content h4 {
+  .chat-message-content h2,
+  .chat-message-content h3,
+  .chat-message-content h4 {
     font-weight: 600;
     margin: 0.75rem 0 0.25rem 0;
   }

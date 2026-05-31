@@ -39,8 +39,8 @@ export default async function DoctorDetailPage(props: PageProps) {
   if (!doctor) {
     return (
       <div className="max-w-4xl mx-auto px-4 py-16 text-center">
-        <h1 className="text-2xl font-bold text-gray-900 mb-4">医生不存在</h1>
-        <Link href="/hospitals" className="text-blue-600 hover:text-blue-700">返回首页</Link>
+        <h1 className="text-2xl font-bold text-[var(--text-primary)] mb-4">医生不存在</h1>
+        <Link href="/hospitals" className="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300">返回首页</Link>
       </div>
     );
   }

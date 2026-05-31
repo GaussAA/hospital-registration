@@ -49,28 +49,35 @@ export default function SlotSelectorMobile({
         const daySchedules = schedules.filter((s) => s.date === dateStr);
         if (daySchedules.length === 0) return null;
 
+        const isToday = isSameDay(day, today);
+
         return (
           <div
             key={dateStr}
-            className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#1e293b] overflow-hidden"
+            className="rounded-2xl border border-[var(--border-default)] bg-[var(--bg-card)] overflow-hidden shadow-sm card-hover"
           >
             {/* Date header */}
-            <div className={`px-4 py-2 text-sm font-medium ${
-              isSameDay(day, today)
-                ? "bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300"
-                : "bg-gray-50 dark:bg-gray-800/80 text-gray-700 dark:text-gray-200"
-            }`}>
+            <div
+              className={`px-4 py-2.5 text-sm font-medium flex items-center gap-2 ${
+                isToday
+                  ? "bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/20 dark:to-indigo-950/20 text-blue-700 dark:text-blue-300"
+                  : "bg-[var(--bg-muted)] text-[var(--text-primary)]"
+              }`}
+            >
+              {isToday && (
+                <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
+              )}
               {`${day.getMonth() + 1}月${day.getDate()}日 ${weekDayNames[day.getDay()]}`}
             </div>
 
             {/* Time slot rows */}
-            <div className="divide-y divide-gray-100 dark:divide-gray-700/50">
+            <div className="divide-y divide-[var(--border-light)]">
               {timeSlots.map((slot) => {
                 const slots = daySchedules.filter((s) => s.timeSlot === slot);
                 if (slots.length === 0) return null;
                 return (
-                  <div key={slot} className="flex items-center gap-3 px-4 py-2.5">
-                    <span className="shrink-0 w-10 text-xs font-medium text-gray-500 dark:text-gray-400">
+                  <div key={slot} className="flex items-center gap-3 px-4 py-3">
+                    <span className="shrink-0 w-10 text-xs font-medium text-[var(--text-muted)]">
                       {timeSlotLabels[slot]}
                     </span>
                     <div className="flex flex-wrap gap-1.5">
@@ -83,12 +90,12 @@ export default function SlotSelectorMobile({
                             type="button"
                             disabled={isFull}
                             onClick={() => onSelect(s.id, s.type as "normal" | "expert" | "special")}
-                            className={`rounded-lg px-2.5 py-1.5 text-xs font-medium transition-all ${
+                            className={`rounded-xl px-3 py-1.5 text-xs font-medium transition-all duration-200 ${
                               isSelected
-                                ? "bg-blue-600 text-white shadow-sm"
+                                ? "bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-sm"
                                 : isFull
-                                  ? "bg-gray-50 dark:bg-gray-800 text-gray-300 dark:text-gray-600 cursor-not-allowed line-through"
-                                  : "bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800/50 hover:bg-blue-100 dark:hover:bg-blue-900/50"
+                                  ? "bg-[var(--bg-muted)] text-[var(--text-muted)] cursor-not-allowed line-through opacity-50"
+                                  : "bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-300 border border-blue-200/50 dark:border-blue-800/30 hover:bg-blue-100 dark:hover:bg-blue-500/20 active:scale-[0.97]"
                             }`}
                           >
                             {typeLabels[s.type] ?? s.type}

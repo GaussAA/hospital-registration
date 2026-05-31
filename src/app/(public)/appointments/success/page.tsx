@@ -22,7 +22,7 @@ export default async function AppointmentSuccessPage(
   if (!token) {
     return (
       <div className="mx-auto max-w-2xl px-4 py-16 text-center">
-        <h1 className="mb-4 text-2xl font-bold text-gray-900">
+        <h1 className="mb-4 text-2xl font-bold text-[var(--text-primary)]">
           请先登录
         </h1>
         <Link
@@ -82,7 +82,7 @@ export default async function AppointmentSuccessPage(
         </Link>
         <Link
           href="/"
-          className="flex-1 rounded-lg border border-gray-300 px-4 py-2.5 text-center text-sm font-medium text-gray-600 transition hover:bg-gray-50"
+          className="flex-1 rounded-lg border border-[var(--border-default)] px-4 py-2.5 text-center text-sm font-medium text-[var(--text-secondary)] transition hover:bg-[var(--bg-hover)]"
         >
           返回首页
         </Link>
@@ -94,7 +94,7 @@ export default async function AppointmentSuccessPage(
 function InvalidState() {
   return (
     <div className="mx-auto max-w-2xl px-4 py-16 text-center">
-      <h1 className="mb-4 text-2xl font-bold text-gray-900">
+      <h1 className="mb-4 text-2xl font-bold text-[var(--text-primary)]">
         挂号信息不存在
       </h1>
       <Link

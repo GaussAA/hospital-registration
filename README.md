@@ -1,36 +1,100 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 健康挂号 — 在线预约挂号平台
 
-## Getting Started
+> TS + Next.js 16 + Prisma 7 + SQLite + Tailwind CSS 4 + Bun
 
-First, run the development server:
+在线医院挂号系统，支持患者端浏览医院/科室/医生、预约号源、AI 对话挂号，以及管理员后台管理。
+
+---
+
+## 快速开始
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+# 安装依赖
+bun install
+
+# 生成 Prisma client
+bun run prisma:generate
+
+# 推送数据库 schema
+bun run prisma:push
+
+# 种子数据（创建默认管理员）
+bun run prisma:seed
+
+# 启动开发服务器
+bun run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+访问 [http://localhost:3000](http://localhost:3000)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 环境变量
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```env
+# 必填
+JWT_SECRET=your-jwt-secret
 
-## Learn More
+# AI 助手（可选，不配置则正常使用手动流程）
+AI_API_KEY=sk-your-deepseek-api-key
+AI_BASE_URL=https://api.deepseek.com
+AI_MODEL=deepseek-v4-flash
 
-To learn more about Next.js, take a look at the following resources:
+# 数据库（可选，默认 file:./prisma/dev.db）
+DATABASE_URL=file:./prisma/dev.db
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 命令
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+| 命令                    | 说明               |
+| ----------------------- | ------------------ |
+| `bun run dev`           | 启动开发服务器     |
+| `bun run build`         | 生产构建           |
+| `bun run test`          | 运行测试（Vitest） |
+| `bun run test:coverage` | 测试覆盖率         |
+| `bun run lint`          | ESLint 检查        |
 
-## Deploy on Vercel
+## 测试
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```bash
+# 全量测试
+bun run test        # 121 个测试
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+# 仅 Watch
+bun run test:watch
+
+# 覆盖率
+bun run test:coverage
+```
+
+## 技术栈
+
+- **框架**: Next.js 16 (App Router) + React 19
+- **语言**: TypeScript 6
+- **数据库**: SQLite (LibSQL / Prisma 7)
+- **运行时**: Bun
+- **样式**: Tailwind CSS 4 + CSS 变量主题
+- **验证**: Zod 4
+- **AI 助手**: DeepSeek Function Calling
+
+## 项目结构
+
+```
+src/
+├── app/           # 页面 + API 路由
+├── components/    # UI 组件
+├── lib/           # 业务逻辑
+│   ├── services/  # Service 层
+│   ├── ai/        # AI Agent
+│   ├── auth/      # 认证
+│   └── utils/     # 工具函数
+├── types/         # 类型定义
+└── hooks/         # React Hooks
+```
+
+## 文档
+
+详细文档见 [`docs/`](docs/README.md) 目录：
+
+- [系统架构](docs/architecture/system-design.md)
+- [AI 助手架构](docs/architecture/ai-assistant.md)
+- [重构技术决策](docs/decisions/2026-05-31-refactoring.md)
+- [API 文档](docs/README.md)

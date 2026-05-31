@@ -118,7 +118,7 @@ export default function PatientSelector({
           <Skeleton className="h-12 w-full rounded-lg" />
         </div>
       ) : profiles.length === 0 ? (
-        <div className="py-4 text-center text-sm text-gray-500 dark:text-gray-400">
+        <div className="py-4 text-center text-sm text-[var(--text-secondary)]">
           暂无就诊人，请先添加
         </div>
       ) : (
@@ -138,11 +138,11 @@ export default function PatientSelector({
                 <span className="font-medium text-gray-800 dark:text-gray-100">
                   {profile.name}
                 </span>
-                <span className="text-xs text-gray-400 dark:text-gray-500">
+                <span className="text-xs text-[var(--text-muted)]">
                   {profile.gender === "male" ? "男" : "女"}
                 </span>
               </div>
-              <div className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+              <div className="mt-1 text-sm text-[var(--text-secondary)]">
                 身份证：{maskIdCard(profile.idCard)}　手机：{profile.phone}
               </div>
             </button>

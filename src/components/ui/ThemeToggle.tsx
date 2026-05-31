@@ -7,7 +7,6 @@ export default function ThemeToggle() {
   const { theme, toggleTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
-  // 等待 hydration 完成后才渲染主题相关 UI，消除服务端/客户端不一致
   useEffect(() => {
     startTransition(() => {
       setMounted(true);
@@ -18,18 +17,30 @@ export default function ThemeToggle() {
     <button
       type="button"
       onClick={toggleTheme}
-      className="relative w-9 h-9 rounded-lg flex items-center justify-center text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-      aria-label={mounted ? (theme === "light" ? "切换深色模式" : "切换浅色模式") : "切换深色模式"}
-      title={mounted ? (theme === "light" ? "深色模式" : "浅色模式") : "深色模式"}
+      className="relative w-9 h-9 rounded-xl flex items-center justify-center transition-all duration-200 hover:bg-[var(--bg-hover)] active:scale-95"
+      aria-label={
+        mounted
+          ? theme === "light"
+            ? "切换深色模式"
+            : "切换浅色模式"
+          : "切换深色模式"
+      }
+      title={
+        mounted
+          ? theme === "light"
+            ? "深色模式"
+            : "浅色模式"
+          : "深色模式"
+      }
     >
-      {/* Sun icon (shown in dark mode, indicating switch to light) — 默认 hidden，mounted 后才展示主题对应图标 */}
+      {/* Sun icon - shown in dark mode */}
       <svg
-        className={`w-5 h-5 absolute transition-all duration-300 ${
+        className={`w-5 h-5 absolute transition-all duration-500 ease-out ${
           !mounted
             ? "opacity-0"
             : theme === "dark"
-              ? "opacity-100 rotate-0 scale-100"
-              : "opacity-0 rotate-90 scale-75"
+              ? "opacity-100 rotate-0 scale-100 text-amber-400"
+              : "opacity-0 rotate-90 scale-75 text-[var(--text-muted)]"
         }`}
         fill="none"
         stroke="currentColor"
@@ -43,14 +54,14 @@ export default function ThemeToggle() {
         />
       </svg>
 
-      {/* Moon icon (shown in light mode, indicating switch to dark) — 默认 hidden */}
+      {/* Moon icon - shown in light mode */}
       <svg
-        className={`w-5 h-5 absolute transition-all duration-300 ${
+        className={`w-5 h-5 absolute transition-all duration-500 ease-out ${
           !mounted
             ? "opacity-0"
             : theme === "light"
-              ? "opacity-100 rotate-0 scale-100"
-              : "opacity-0 -rotate-90 scale-75"
+              ? "opacity-100 rotate-0 scale-100 text-[var(--text-secondary)]"
+              : "opacity-0 -rotate-90 scale-75 text-slate-400"
         }`}
         fill="none"
         stroke="currentColor"

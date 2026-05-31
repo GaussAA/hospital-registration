@@ -7,18 +7,9 @@ interface ModalProps {
   onClose: () => void;
   title: string;
   children: ReactNode;
-  /** Optional max width class (default: max-w-lg) */
   maxWidth?: string;
 }
 
-/**
- * Reusable modal dialog with:
- * - Focus trap (auto-focuses first focusable element on open)
- * - ESC key to close
- * - Click backdrop to close
- * - Entry/exit animations
- * - Scroll lock on body
- */
 export default function Modal({
   open,
   onClose,
@@ -29,19 +20,17 @@ export default function Modal({
   const overlayRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
 
-  // Focus trap & first focusable element
+  // Focus trap
   useEffect(() => {
     if (!open) return;
-
     const timer = setTimeout(() => {
       const el = contentRef.current;
       if (!el) return;
       const focusable = el.querySelector<HTMLElement>(
-        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
       );
       focusable?.focus();
     }, 50);
-
     return () => clearTimeout(timer);
   }, [open]);
 
@@ -78,14 +67,14 @@ export default function Modal({
     >
       {/* Backdrop */}
       <div
-        className="absolute inset-0 bg-black/40 backdrop-blur-sm animate-[fadeIn_0.15s_ease-out]"
+        className="absolute inset-0 bg-black/40 backdrop-blur-sm animate-fade-in"
         onClick={onClose}
       />
 
       {/* Content */}
       <div
         ref={contentRef}
-        className={`relative w-full ${maxWidth} max-h-[85vh] overflow-y-auto rounded-2xl bg-[var(--bg-card)] shadow-2xl border border-[var(--border-default)] animate-[scaleIn_0.15s_ease-out]`}
+        className={`relative w-full ${maxWidth} max-h-[85vh] overflow-y-auto rounded-2xl bg-[var(--bg-card)] shadow-2xl border border-[var(--border-default)] animate-scale-in`}
       >
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-[var(--border-default)]">
@@ -110,23 +99,6 @@ export default function Modal({
         {/* Body */}
         <div className="px-6 py-4">{children}</div>
       </div>
-
-      <style jsx>{`
-        @keyframes fadeIn {
-          from { opacity: 0; }
-          to { opacity: 1; }
-        }
-        @keyframes scaleIn {
-          from {
-            opacity: 0;
-            transform: scale(0.95) translateY(8px);
-          }
-          to {
-            opacity: 1;
-            transform: scale(1) translateY(0);
-          }
-        }
-      `}</style>
     </div>
   );
 }

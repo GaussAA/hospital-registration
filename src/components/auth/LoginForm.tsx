@@ -48,7 +48,6 @@ export default function LoginForm() {
   const handleChange = (field: string, value: string) => {
     if (field === "account") setAccount(value);
     if (field === "password") setPassword(value);
-    // Clear error on change if field was touched
     if (touched[field]) {
       const validator = field === "account" ? validateAccount : validatePassword;
       const err = validator(value);
@@ -60,7 +59,6 @@ export default function LoginForm() {
     e.preventDefault();
     setSubmitError("");
 
-    // Validate all fields
     const errors: FieldErrors = {
       account: validateAccount(account),
       password: validatePassword(password),
@@ -99,87 +97,124 @@ export default function LoginForm() {
   }
 
   const inputClass = (hasError: boolean) =>
-    `w-full rounded-lg border px-4 py-2.5 text-sm outline-none transition bg-gray-50 dark:bg-gray-800 ${
+    `w-full rounded-xl border px-4 py-3 text-sm outline-none transition-all duration-200 bg-[var(--bg-muted)] text-[var(--text-primary)] placeholder:text-[var(--text-muted)] ${
       hasError
-        ? "border-red-400 dark:border-red-500 focus:border-red-500 focus:ring-2 focus:ring-red-200 dark:focus:ring-red-800"
-        : "border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-800"
+        ? "border-red-400 dark:border-red-500 focus:border-red-500 focus:ring-2 focus:ring-red-500/20"
+        : "border-transparent focus:border-blue-500/50 focus:ring-2 focus:ring-blue-500/20 focus:bg-[var(--bg-card)]"
     }`;
 
   return (
-    <div className="rounded-xl bg-white dark:bg-[#1e293b] p-8 shadow-lg dark:shadow-none dark:border dark:border-gray-700">
-      <h2 className="mb-6 text-center text-2xl font-semibold text-gray-800 dark:text-gray-100">
-        登录
-      </h2>
+    <div className="glass-strong rounded-2xl p-8 shadow-xl card-hover">
+      {/* Header */}
+      <div className="text-center mb-8">
+        <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-500 to-blue-700 text-white shadow-lg shadow-blue-500/20 mb-4">
+          <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+          </svg>
+        </div>
+        <h2 className="text-2xl font-bold text-[var(--text-primary)]">欢迎回来</h2>
+        <p className="text-sm text-[var(--text-secondary)] mt-1">请登录您的账号</p>
+      </div>
 
       <form onSubmit={handleSubmit} className="space-y-5" noValidate>
+        {/* Account field */}
         <div>
-          <label
-            htmlFor="account"
-            className="mb-1 block text-sm font-medium text-gray-600 dark:text-gray-300"
-          >
+          <label htmlFor="account" className="mb-1.5 block text-sm font-medium text-[var(--text-secondary)]">
             邮箱 / 手机号
           </label>
-          <input
-            id="account"
-            type="text"
-            value={account}
-            onChange={(e) => handleChange("account", e.target.value)}
-            onBlur={() => handleBlur("account")}
-            placeholder="请输入邮箱或手机号"
-            required
-            className={inputClass(!!fieldErrors.account)}
-          />
+          <div className="relative">
+            <svg className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
+            </svg>
+            <input
+              id="account"
+              type="text"
+              value={account}
+              onChange={(e) => handleChange("account", e.target.value)}
+              onBlur={() => handleBlur("account")}
+              placeholder="请输入邮箱或手机号"
+              required
+              className={`${inputClass(!!fieldErrors.account)} pl-10`}
+            />
+          </div>
           {fieldErrors.account && (
-            <p className="mt-1 text-xs text-red-500 dark:text-red-400">
+            <p className="mt-1.5 text-xs text-red-500 dark:text-red-400 flex items-center gap-1">
+              <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+              </svg>
               {fieldErrors.account}
             </p>
           )}
         </div>
 
+        {/* Password field */}
         <div>
-          <label
-            htmlFor="password"
-            className="mb-1 block text-sm font-medium text-gray-600 dark:text-gray-300"
-          >
+          <label htmlFor="password" className="mb-1.5 block text-sm font-medium text-[var(--text-secondary)]">
             密码
           </label>
-          <input
-            id="password"
-            type="password"
-            value={password}
-            onChange={(e) => handleChange("password", e.target.value)}
-            onBlur={() => handleBlur("password")}
-            placeholder="请输入密码"
-            required
-            className={inputClass(!!fieldErrors.password)}
-          />
+          <div className="relative">
+            <svg className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+            </svg>
+            <input
+              id="password"
+              type="password"
+              value={password}
+              onChange={(e) => handleChange("password", e.target.value)}
+              onBlur={() => handleBlur("password")}
+              placeholder="请输入密码"
+              required
+              className={`${inputClass(!!fieldErrors.password)} pl-10`}
+            />
+          </div>
           {fieldErrors.password && (
-            <p className="mt-1 text-xs text-red-500 dark:text-red-400">
+            <p className="mt-1.5 text-xs text-red-500 dark:text-red-400 flex items-center gap-1">
+              <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+              </svg>
               {fieldErrors.password}
             </p>
           )}
         </div>
 
+        {/* Submit error */}
         {submitError && (
-          <div className="rounded-lg bg-red-50 dark:bg-red-900/30 px-4 py-2 text-sm text-red-600 dark:text-red-400">
+          <div className="rounded-xl bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-800/30 px-4 py-2.5 text-sm text-red-600 dark:text-red-400 flex items-center gap-2">
+            <svg className="w-4 h-4 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+            </svg>
             {submitError}
           </div>
         )}
 
+        {/* Submit button */}
         <button
           type="submit"
           disabled={loading}
-          className="w-full rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
+          className="btn-primary w-full group"
         >
-          {loading ? "登录中..." : "登录"}
+          {loading ? (
+            <span className="flex items-center gap-2">
+              <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+              登录中...
+            </span>
+          ) : (
+            <span className="flex items-center justify-center gap-2">
+              登录
+              <svg className="w-4 h-4 transition-transform group-hover:translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+              </svg>
+            </span>
+          )}
         </button>
       </form>
 
-      <p className="mt-6 text-center text-sm text-gray-500 dark:text-gray-400">
+      {/* Register link */}
+      <p className="mt-6 text-center text-sm text-[var(--text-secondary)]">
         还没有账号？{" "}
         <Link
           href="/register"
-          className="font-medium text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
+          className="font-semibold text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 transition-colors"
         >
           立即注册
         </Link>

@@ -3,7 +3,8 @@ import HospitalCard from "@/components/hospital/HospitalCard";
 import Pagination from "@/components/hospital/Pagination";
 import type { HospitalCardData } from "@/components/hospital/HospitalCard";
 import type { PageProps } from "@/types/next";
-import type { ApiResponse, PaginatedData } from "@/types/api";
+import { listHospitals } from "@/lib/services/hospital.service";
+import Image from "next/image";
 
 interface PageSearchParams {
   city?: string;
@@ -16,30 +17,33 @@ interface PageSearchParams {
 export default async function HospitalsPage(props: PageProps) {
   const searchParams = await props.searchParams as PageSearchParams;
 
-  const params = new URLSearchParams();
-  if (searchParams.city) params.set("city", searchParams.city);
-  if (searchParams.level) params.set("level", searchParams.level);
-  if (searchParams.keyword) params.set("keyword", searchParams.keyword);
-  if (searchParams.page) params.set("page", searchParams.page);
-  params.set("pageSize", "12");
+  const queryPage = Math.max(1, parseInt(searchParams.page ?? "1", 10));
+  const queryPageSize = 12;
 
   let hospitals: HospitalCardData[] = [];
   let total = 0;
-  let page = 1;
-  let pageSize = 12;
+  let page = queryPage;
+  let pageSize = queryPageSize;
 
   try {
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3000"}/api/hospitals?${params.toString()}`,
-      { cache: "no-store" }
-    );
-    const json: ApiResponse<PaginatedData<HospitalCardData>> = await res.json();
-    if (json.data) {
-      hospitals = json.data.list;
-      total = json.data.total;
-      page = json.data.page;
-      pageSize = json.data.pageSize;
-    }
+    const result = await listHospitals({
+      city: searchParams.city,
+      level: searchParams.level,
+      keyword: searchParams.keyword,
+      page: queryPage,
+      pageSize: queryPageSize,
+    });
+    hospitals = result.list.map((h) => ({
+      id: h.id,
+      name: h.name,
+      level: h.level,
+      address: h.address,
+      city: h.city,
+      imageUrl: h.imageUrl,
+    }));
+    total = result.total;
+    page = result.page;
+    pageSize = result.pageSize;
   } catch {
     // If API call fails, render empty state
   }
@@ -48,7 +52,7 @@ export default async function HospitalsPage(props: PageProps) {
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-6">
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">医院列表</h1>
+      <h1 className="text-2xl font-bold text-[var(--text-primary)] mb-6">医院列表</h1>
 
       {/* Filter bar */}
       <div className="mb-6">
@@ -68,15 +72,13 @@ export default async function HospitalsPage(props: PageProps) {
           <Pagination
             page={page}
             totalPages={totalPages}
-            pageSize={pageSize}
-            total={total}
           />
         </>
       ) : (
         <div className="text-center py-20">
-          <img src="/images/empty-appointment.svg" alt="无结果" className="mx-auto w-32 h-32 mb-6 opacity-60" />
-          <p className="text-base font-medium text-gray-500 dark:text-gray-400">暂无符合条件的医院</p>
-          <p className="text-sm text-gray-400 dark:text-gray-500 mt-1">请尝试调整筛选条件或搜索关键词</p>
+          <Image src="/images/empty-appointment.svg" alt="无结果" className="mx-auto w-32 h-32 mb-6 opacity-60" width={128} height={128} />
+          <p className="text-base font-medium text-[var(--text-secondary)]">暂无符合条件的医院</p>
+          <p className="text-sm text-[var(--text-muted)] mt-1">请尝试调整筛选条件或搜索关键词</p>
         </div>
       )}
     </div>

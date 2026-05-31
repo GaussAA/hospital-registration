@@ -83,15 +83,29 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
   const setTheme = useCallback((t: Theme) => {
     setThemeState(t);
+    // Add transition class before applying
+    document.documentElement.classList.add("theme-transitioning");
     applyTheme(t);
     localStorage.setItem(STORAGE_KEY, t);
+    // Remove transition class after animation completes
+    requestAnimationFrame(() => {
+      setTimeout(() => {
+        document.documentElement.classList.remove("theme-transitioning");
+      }, 300);
+    });
   }, []);
 
   const toggleTheme = useCallback(() => {
     setThemeState((prev) => {
       const next: Theme = prev === "light" ? "dark" : "light";
+      document.documentElement.classList.add("theme-transitioning");
       applyTheme(next);
       localStorage.setItem(STORAGE_KEY, next);
+      requestAnimationFrame(() => {
+        setTimeout(() => {
+          document.documentElement.classList.remove("theme-transitioning");
+        }, 300);
+      });
       return next;
     });
   }, []);

@@ -48,7 +48,7 @@ export default function ScheduleCalendar({ schedules, selectedSlotId, onSlotSele
     <div className="bg-white dark:bg-[#1e293b] rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
       <div className="p-4 border-b border-gray-100 dark:border-gray-700/50">
         <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">排班日历</h2>
-        <p className="text-sm text-gray-400 dark:text-gray-500 mt-1">未来 7 天出诊信息</p>
+        <p className="text-sm text-[var(--text-muted)] mt-1">未来 7 天出诊信息</p>
       </div>
 
       {/* Desktop table */}
@@ -56,12 +56,12 @@ export default function ScheduleCalendar({ schedules, selectedSlotId, onSlotSele
         <table className="w-full text-sm">
           <thead>
             <tr className="bg-gray-50 dark:bg-gray-800">
-              <th className="px-4 py-3 text-left text-gray-500 dark:text-gray-400 font-medium">时段</th>
+              <th className="px-4 py-3 text-left text-[var(--text-secondary)] font-medium">时段</th>
               {days.map((day) => (
                 <th
                   key={day.toISOString()}
                   className={`px-4 py-3 text-center font-medium ${
-                    isSameDay(day, today) ? "text-blue-600 dark:text-blue-400" : "text-gray-500 dark:text-gray-400"
+                    isSameDay(day, today) ? "text-blue-600 dark:text-blue-400" : "text-[var(--text-secondary)]"
                   }`}
                 >
                   <div>{format(day, "MM/dd", { locale: zhCN })}</div>
@@ -92,18 +92,18 @@ export default function ScheduleCalendar({ schedules, selectedSlotId, onSlotSele
                                   ? "bg-blue-600 text-white shadow-md shadow-blue-500/20 ring-2 ring-blue-300 dark:ring-blue-600 scale-105"
                                   : s.remaining > 0
                                     ? "bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-900/50 cursor-pointer"
-                                    : "bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-500 cursor-not-allowed"
+                                    : "bg-[var(--bg-muted)] text-[var(--text-muted)] cursor-not-allowed"
                               }`}
                             >
                               <div>{typeLabels[s.type] ?? s.type}</div>
-                              <div className={selectedSlotId === s.id ? "text-blue-100" : s.remaining > 0 ? "text-blue-500 dark:text-blue-400" : "text-gray-300 dark:text-gray-500"}>
+                              <div className={selectedSlotId === s.id ? "text-blue-100" : s.remaining > 0 ? "text-blue-500 dark:text-blue-400" : "text-[var(--text-muted)]"}>
                                 剩余 {s.remaining}/{s.quota}
                               </div>
                             </button>
                           ))}
                         </div>
                       ) : (
-                        <span className="text-gray-300 dark:text-gray-500 text-xs">—</span>
+                        <span className="text-[var(--border-default)] text-xs">—</span>
                       )}
                     </td>
                   );
@@ -136,7 +136,7 @@ export default function ScheduleCalendar({ schedules, selectedSlotId, onSlotSele
                           ? "bg-blue-600 text-white shadow-md"
                           : s.remaining > 0
                             ? "bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-900/50 cursor-pointer"
-                            : "bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-500 cursor-not-allowed"
+                            : "bg-[var(--bg-muted)] text-[var(--text-muted)] cursor-not-allowed"
                       }`}
                     >
                       {timeSlotLabels[s.timeSlot]} {typeLabels[s.type] ?? s.type}
@@ -147,7 +147,7 @@ export default function ScheduleCalendar({ schedules, selectedSlotId, onSlotSele
                   ))}
                 </div>
               ) : (
-                <span className="text-xs text-gray-300 dark:text-gray-500">暂无排班</span>
+                <span className="text-xs text-[var(--text-muted)]">暂无排班</span>
               )}
             </div>
           );

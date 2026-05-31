@@ -71,8 +71,8 @@ export default async function AdminDashboardPage() {
                 {card.icon}
               </div>
               <div>
-                <p className="text-sm text-gray-500">{card.title}</p>
-                <p className="text-3xl font-bold text-gray-900">
+                <p className="text-sm text-[var(--text-secondary)]">{card.title}</p>
+                <p className="text-3xl font-bold text-[var(--text-primary)]">
                   {card.value}
                 </p>
               </div>

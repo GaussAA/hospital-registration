@@ -6,13 +6,15 @@ interface SkeletonProps {
 
 /**
  * Skeleton — a shimmer placeholder for loading states.
- * Combine with Tailwind classes to match the dimensions of the real content.
+ * Uses the new animate-shimmer global for a more natural effect.
  */
 export function Skeleton({ className = "" }: SkeletonProps) {
   return (
     <div
-      className={`animate-pulse rounded-lg bg-[var(--bg-muted)] ${className}`}
-    />
+      className={`relative overflow-hidden rounded-xl bg-[var(--bg-muted)] ${className}`}
+    >
+      <div className="absolute inset-0 animate-shimmer" />
+    </div>
   );
 }
 
@@ -21,7 +23,7 @@ export function Skeleton({ className = "" }: SkeletonProps) {
  */
 export function CardSkeleton() {
   return (
-    <div className="rounded-xl border border-[var(--border-default)] bg-[var(--bg-card)] p-5 space-y-4">
+    <div className="rounded-2xl border border-[var(--border-default)] bg-[var(--bg-card)] p-5 space-y-4">
       <div className="flex items-center gap-3">
         <Skeleton className="w-12 h-12 rounded-full" />
         <div className="space-y-2 flex-1">
@@ -41,7 +43,7 @@ export function CardSkeleton() {
  */
 export function TableSkeleton({ rows = 5 }: { rows?: number }) {
   return (
-    <div className="space-y-3">
+    <div className="space-y-3 p-4">
       {/* Header */}
       <div className="flex gap-4 px-4 py-3">
         <Skeleton className="h-4 w-1/4" />
@@ -66,7 +68,7 @@ export function TableSkeleton({ rows = 5 }: { rows?: number }) {
  */
 export function CalendarSkeleton() {
   return (
-    <div className="rounded-xl border border-[var(--border-default)] bg-[var(--bg-card)] overflow-hidden">
+    <div className="rounded-2xl border border-[var(--border-default)] bg-[var(--bg-card)] overflow-hidden">
       <div className="p-4 border-b border-[var(--border-light)]">
         <Skeleton className="h-5 w-28 mb-1" />
         <Skeleton className="h-3 w-36" />

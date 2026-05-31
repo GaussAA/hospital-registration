@@ -32,11 +32,11 @@ export default function DoctorInfo({ doctor }: { doctor: DoctorInfoData }) {
               {doctor.title}
             </span>
           </div>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">
+          <p className="text-sm text-[var(--text-secondary)] mb-1">
             {doctor.hospitalName} · {doctor.departmentName}
           </p>
-          <p className="text-sm text-gray-600 dark:text-gray-300">
-            <span className="font-medium">专长：</span>
+          <p className="text-sm text-[var(--text-secondary)]">
+            <span className="font-medium text-[var(--text-primary)]">专长：</span>
             {doctor.specialty}
           </p>
         </div>
@@ -45,7 +45,7 @@ export default function DoctorInfo({ doctor }: { doctor: DoctorInfoData }) {
       {doctor.introduction && (
         <div className="border-t border-gray-100 dark:border-gray-700/50 pt-4">
           <h2 className="text-base font-semibold text-gray-900 dark:text-gray-100 mb-2">医生简介</h2>
-          <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed whitespace-pre-line">{doctor.introduction}</p>
+          <p className="text-sm text-[var(--text-secondary)] leading-relaxed whitespace-pre-line">{doctor.introduction}</p>
         </div>
       )}
     </div>
