@@ -1,126 +1,65 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { getPrisma } from "@/lib/db";
-import { verifyToken } from "@/lib/utils/jwt";
-import { success, fail } from "@/lib/utils/response";
+import { success } from "@/lib/utils/response";
+import { apiHandler } from "@/lib/utils/api-handler";
 import { NotFoundError } from "@/lib/utils/errors";
 
-async function checkAdmin(request: NextRequest) {
-  const token = request.cookies.get("token")?.value;
-  if (!token) throw new Error("未认证");
-  const payload = verifyToken(token);
-  if (payload.role !== "admin") throw new Error("权限不足");
-  return payload;
-}
+export const GET = apiHandler<{ id: string }>(async (req, { params }) => {
+  const { id } = await params;
 
-export async function GET(
-  request: NextRequest,
-  props: { params: Promise<{ id: string }> }
-) {
-  try {
-    await checkAdmin(request);
-    const { id } = await props.params;
+  const prisma = await getPrisma();
+  const department = await prisma.department.findUnique({
+    where: { id },
+  });
 
-    const prisma = await getPrisma();
-    const department = await prisma.department.findUnique({
-      where: { id },
-    });
-
-    if (!department) {
-      throw new NotFoundError("科室不存在");
-    }
-
-    return NextResponse.json(success(department));
-  } catch (err: unknown) {
-    if (err instanceof NotFoundError) {
-      return NextResponse.json(fail(err.statusCode, err.message), {
-        status: err.statusCode,
-      });
-    }
-    if (err instanceof Error && (err.message === "未认证" || err.message === "权限不足")) {
-      return NextResponse.json(fail(401, err.message), { status: 401 });
-    }
-    return NextResponse.json(fail(500, "服务器错误"), { status: 500 });
+  if (!department) {
+    throw new NotFoundError("科室不存在");
   }
-}
 
-export async function PUT(
-  request: NextRequest,
-  props: { params: Promise<{ id: string }> }
-) {
-  try {
-    await checkAdmin(request);
-    const { id } = await props.params;
+  return NextResponse.json(success(department));
+}, { requireAdmin: true });
 
-    const body = await request.json();
-    const { name, description } = body;
+export const PUT = apiHandler<{ id: string }>(async (req, { params }) => {
+  const { id } = await params;
 
-    const prisma = await getPrisma();
+  const body = await req.json();
+  const { name, description } = body;
 
-    const existing = await prisma.department.findUnique({
-      where: { id },
-    });
-    if (!existing) {
-      throw new NotFoundError("科室不存在");
-    }
+  const prisma = await getPrisma();
 
-    const department = await prisma.department.update({
-      where: { id },
-      data: {
-        ...(name !== undefined && { name }),
-        ...(description !== undefined && { description }),
-      },
-    });
-
-    return NextResponse.json(success(department));
-  } catch (err: unknown) {
-    if (err instanceof NotFoundError) {
-      return NextResponse.json(fail(err.statusCode, err.message), {
-        status: err.statusCode,
-      });
-    }
-    const msg = err instanceof Error ? err.message : "服务器错误";
-    if (msg === "未认证" || msg === "权限不足") {
-      return NextResponse.json(fail(401, msg), { status: 401 });
-    }
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    if ((err as any)?.code === "P2002") {
-      return NextResponse.json(fail(409, "科室名称已存在"), { status: 409 });
-    }
-    return NextResponse.json(fail(500, "服务器错误"), { status: 500 });
+  const existing = await prisma.department.findUnique({
+    where: { id },
+  });
+  if (!existing) {
+    throw new NotFoundError("科室不存在");
   }
-}
 
-export async function DELETE(
-  request: NextRequest,
-  props: { params: Promise<{ id: string }> }
-) {
-  try {
-    await checkAdmin(request);
-    const { id } = await props.params;
+  const department = await prisma.department.update({
+    where: { id },
+    data: {
+      ...(name !== undefined && { name }),
+      ...(description !== undefined && { description }),
+    },
+  });
 
-    const prisma = await getPrisma();
+  return NextResponse.json(success(department));
+}, { requireAdmin: true });
 
-    const existing = await prisma.department.findUnique({
-      where: { id },
-    });
-    if (!existing) {
-      throw new NotFoundError("科室不存在");
-    }
+export const DELETE = apiHandler<{ id: string }>(async (req, { params }) => {
+  const { id } = await params;
 
-    await prisma.department.delete({
-      where: { id },
-    });
+  const prisma = await getPrisma();
 
-    return NextResponse.json(success(null, "删除成功"));
-  } catch (err: unknown) {
-    if (err instanceof NotFoundError) {
-      return NextResponse.json(fail(err.statusCode, err.message), {
-        status: err.statusCode,
-      });
-    }
-    if (err instanceof Error && (err.message === "未认证" || err.message === "权限不足")) {
-      return NextResponse.json(fail(401, err.message), { status: 401 });
-    }
-    return NextResponse.json(fail(500, "服务器错误"), { status: 500 });
+  const existing = await prisma.department.findUnique({
+    where: { id },
+  });
+  if (!existing) {
+    throw new NotFoundError("科室不存在");
   }
-}
+
+  await prisma.department.delete({
+    where: { id },
+  });
+
+  return NextResponse.json(success(null, "删除成功"));
+}, { requireAdmin: true });

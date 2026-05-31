@@ -1,14 +1,13 @@
 "use client";
 
-/* eslint-disable react-hooks/set-state-in-effect -- Standard Next.js data fetching pattern */
-
-import { useState, useEffect, useCallback } from "react";
-import { useToast } from "@/components/ui/Toast";
+import { useState, useEffect } from "react";
 import AdminHeader from "@/components/layout/AdminHeader";
 import DataTable from "@/components/admin/DataTable";
 import type { Column } from "@/components/admin/DataTable";
 import DoctorForm from "@/components/admin/DoctorForm";
 import type { DoctorFormData } from "@/components/admin/DoctorForm";
+import { useAdminCrud } from "@/lib/hooks/useAdminCrud";
+import Modal from "@/components/ui/Modal";
 
 interface HospitalOption {
   id: string;
@@ -31,21 +30,10 @@ interface DoctorRecord {
 }
 
 export default function AdminDoctorsPage() {
-  const { showToast } = useToast();
   const [hospitals, setHospitals] = useState<HospitalOption[]>([]);
   const [departments, setDepartments] = useState<DepartmentOption[]>([]);
   const [selectedHospitalId, setSelectedHospitalId] = useState("");
   const [selectedDepartmentId, setSelectedDepartmentId] = useState("");
-
-  const [doctors, setDoctors] = useState<DoctorRecord[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [page, setPage] = useState(1);
-  const [total, setTotal] = useState(0);
-  const pageSize = 10;
-
-  const [showModal, setShowModal] = useState(false);
-  const [editRecord, setEditRecord] = useState<DoctorRecord | null>(null);
-  const [saving, setSaving] = useState(false);
 
   // Load hospitals
   useEffect(() => {
@@ -83,93 +71,19 @@ export default function AdminDoctorsPage() {
       .catch(console.error);
   }, [selectedHospitalId]);
 
-  const fetchDoctors = useCallback(async () => {
-    if (!selectedDepartmentId) {
-      setDoctors([]);
-      setTotal(0);
-      return;
-    }
-    setLoading(true);
-    try {
-      const res = await fetch(
-        `/api/admin/departments/${selectedDepartmentId}/doctors?page=${page}&pageSize=${pageSize}`
-      );
-      const json = await res.json();
-      if (json.code === 0) {
-        setDoctors(json.data.list);
-        setTotal(json.data.total);
-      }
-    } catch (err) {
-      console.error("获取医生列表失败", err);
-    } finally {
-      setLoading(false);
-    }
-  }, [selectedDepartmentId, page]);
-
-  useEffect(() => {
-    fetchDoctors();
-  }, [fetchDoctors]);
+  const crud = useAdminCrud<DoctorRecord>({
+    baseUrl: selectedDepartmentId
+      ? `/api/admin/departments/${selectedDepartmentId}/doctors`
+      : "",
+    fetchDeps: [selectedDepartmentId],
+    buildFetchUrl: (baseUrl, page, pageSize) =>
+      `${baseUrl}?page=${page}&pageSize=${pageSize}`,
+    buildUpdateUrl: (_, record) => `/api/admin/doctors/${record.id}`,
+    buildDeleteUrl: (_, record) => `/api/admin/doctors/${record.id}`,
+  });
 
   const handleSave = async (data: DoctorFormData) => {
-    setSaving(true);
-    try {
-      const url = editRecord
-        ? `/api/admin/doctors/${editRecord.id}`
-        : `/api/admin/departments/${selectedDepartmentId}/doctors`;
-      const method = editRecord ? "PUT" : "POST";
-
-      const res = await fetch(url, {
-        method,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
-      const json = await res.json();
-      if (json.code === 0) {
-        setShowModal(false);
-        setEditRecord(null);
-        fetchDoctors();
-      } else {
-        showToast(json.message || "操作失败", "error");
-      }
-    } catch (err) {
-      showToast("操作失败", "error");
-      console.error(err);
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  const handleDelete = async (record: DoctorRecord) => {
-    if (!confirm(`确定要删除医生"${record.name}"吗？`)) return;
-    try {
-      const res = await fetch(`/api/admin/doctors/${record.id}`, {
-        method: "DELETE",
-      });
-      const json = await res.json();
-      if (json.code === 0) {
-        fetchDoctors();
-      } else {
-        showToast(json.message || "删除失败", "error");
-      }
-    } catch (err) {
-      showToast("删除失败", "error");
-      console.error(err);
-    }
-  };
-
-  const openCreate = () => {
-    setEditRecord(null);
-    setShowModal(true);
-  };
-
-  const openEdit = (record: DoctorRecord) => {
-    setEditRecord(record);
-    setShowModal(true);
-  };
-
-  const closeModal = () => {
-    setShowModal(false);
-    setEditRecord(null);
+    await crud.save(data as unknown as Record<string, unknown>);
   };
 
   const columns: Column<DoctorRecord>[] = [
@@ -193,7 +107,7 @@ export default function AdminDoctorsPage() {
                 value={selectedHospitalId}
                 onChange={(e) => {
                   setSelectedHospitalId(e.target.value);
-                  setPage(1);
+                  crud.setPage(1);
                 }}
                 className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
@@ -213,7 +127,7 @@ export default function AdminDoctorsPage() {
                 value={selectedDepartmentId}
                 onChange={(e) => {
                   setSelectedDepartmentId(e.target.value);
-                  setPage(1);
+                  crud.setPage(1);
                 }}
                 className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 disabled={!selectedHospitalId}
@@ -229,13 +143,13 @@ export default function AdminDoctorsPage() {
           </div>
         </div>
 
-        {selectedDepartmentId && (
+        {selectedDepartmentId ? (
           <>
             <div className="flex justify-between items-center mb-4">
               <p className="text-sm text-gray-500">医生列表</p>
               <button
                 type="button"
-                onClick={openCreate}
+                onClick={crud.openCreate}
                 className="px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition-colors"
               >
                 + 新增医生
@@ -244,19 +158,17 @@ export default function AdminDoctorsPage() {
 
             <DataTable
               columns={columns}
-              data={doctors}
-              loading={loading}
-              page={page}
-              pageSize={pageSize}
-              total={total}
-              onPageChange={setPage}
-              onEdit={openEdit}
-              onDelete={handleDelete}
+              data={crud.data}
+              loading={crud.loading}
+              page={crud.page}
+              pageSize={10}
+              total={crud.total}
+              onPageChange={crud.setPage}
+              onEdit={crud.openEdit}
+              onDelete={crud.remove}
             />
           </>
-        )}
-
-        {!selectedDepartmentId && (
+        ) : (
           <div className="bg-white rounded-lg shadow p-8 text-center text-gray-400">
             请先选择医院和科室
           </div>
@@ -264,36 +176,25 @@ export default function AdminDoctorsPage() {
       </div>
 
       {/* Modal */}
-      {showModal && selectedDepartmentId && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-          <div className="bg-white rounded-lg shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
-            <div className="px-6 py-4 border-b border-gray-200">
-              <h3 className="text-lg font-semibold text-gray-900">
-                {editRecord ? "编辑医生" : "新增医生"}
-              </h3>
-            </div>
-            <div className="px-6 py-4">
-              <DoctorForm
-                departmentId={selectedDepartmentId}
-                initialData={
-                  editRecord
-                    ? {
-                        name: editRecord.name,
-                        title: editRecord.title,
-                        specialty: editRecord.specialty,
-                        introduction: editRecord.introduction,
-                        departmentId: editRecord.departmentId,
-                      }
-                    : undefined
+      <Modal open={crud.showModal} onClose={crud.closeModal} title={crud.editRecord ? "编辑医生" : "新增医生"}>
+        <DoctorForm
+          departmentId={selectedDepartmentId}
+          initialData={
+            crud.editRecord
+              ? {
+                  name: crud.editRecord.name,
+                  title: crud.editRecord.title,
+                  specialty: crud.editRecord.specialty,
+                  introduction: crud.editRecord.introduction,
+                  departmentId: crud.editRecord.departmentId,
                 }
-                onSave={handleSave}
-                onCancel={closeModal}
-                saving={saving}
-              />
-            </div>
-          </div>
-        </div>
-      )}
+              : undefined
+          }
+          onSave={handleSave}
+          onCancel={crud.closeModal}
+          saving={crud.saving}
+        />
+      </Modal>
     </>
   );
 }

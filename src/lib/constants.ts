@@ -1,0 +1,9 @@
+export const DEFAULT_PAGE_SIZE = 10;
+export const MAX_PAGE_SIZE = 100;
+export const HOSPITAL_LIST_PAGE_SIZE = 12;
+export const SESSION_EXPIRY_DAYS = 7;
+export const SESSION_EXPIRY_SECONDS = SESSION_EXPIRY_DAYS * 24 * 60 * 60;
+export const TOAST_DURATION_MS = 3500;
+export const AUTH_RATE_LIMIT_MAX = 10;
+export const AUTH_RATE_LIMIT_WINDOW_MS = 60_000;
+export const SCHEDULE_DAYS_AHEAD = 7;

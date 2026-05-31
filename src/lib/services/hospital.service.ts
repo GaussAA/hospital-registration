@@ -1,5 +1,6 @@
 import { getPrisma } from "@/lib/db";
 import { NotFoundError } from "@/lib/utils/errors";
+import type { Prisma } from "../../../generated/prisma/client";
 
 export interface HospitalListParams {
   city?: string;
@@ -40,7 +41,7 @@ export async function listHospitals(params: HospitalListParams) {
   const prisma = await getPrisma();
   const { city, level, keyword, page = 1, pageSize = 12 } = params;
 
-  const where: Record<string, unknown> = {};
+  const where: Prisma.HospitalWhereInput = {};
 
   if (city) {
     where.city = city;

@@ -4,38 +4,13 @@ import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
 import ThemeToggle from "@/components/ui/ThemeToggle";
-
-/** Read a cookie by name (client-side only). */
-function getCookie(name: string): string | null {
-  if (typeof document === "undefined") return null;
-  const match = document.cookie
-    .split("; ")
-    .find((row) => row.startsWith(`${name}=`));
-  if (!match) return null;
-  return match.split("=")[1];
-}
-
-/** Parse user_info JSON cookie. */
-function readUserInfo(): { name: string; role: string } | null {
-  const raw = getCookie("user_info");
-  if (!raw) return null;
-  try {
-    return JSON.parse(decodeURIComponent(raw));
-  } catch {
-    return null;
-  }
-}
+import { useUser } from "@/components/auth/UserProvider";
 
 export default function Header() {
   const router = useRouter();
   const pathname = usePathname();
-  const [user, setUser] = useState<{ name: string; role: string } | null>(null);
+  const { user } = useUser();
   const [scrolled, setScrolled] = useState(false);
-
-  // Hydration-safe: read cookie after mount (client-only)
-  useEffect(() => {
-    setUser(readUserInfo());
-  }, []);
 
   // Track scroll position for glass effect
   useEffect(() => {
@@ -190,11 +165,10 @@ export default function Header() {
                 </div>
                 <button
                   onClick={async () => {
-                    await fetch("/api/auth/logout", { method: "POST" });
-                    document.cookie = "token=; path=/; max-age=0";
-                    document.cookie = "user_info=; path=/; max-age=0";
-                    setUser(null);
-                    router.push("/hospitals");
+                    const res = await fetch("/api/auth/logout", { method: "POST" });
+                    if (res.ok) {
+                      window.location.href = "/hospitals";
+                    }
                   }}
                   className={`hidden sm:inline text-xs font-medium transition-colors ${
                     showSolid

@@ -70,7 +70,6 @@ export default async function HospitalsPage(props: PageProps) {
             totalPages={totalPages}
             pageSize={pageSize}
             total={total}
-            searchParams={params.toString()}
           />
         </>
       ) : (

@@ -172,7 +172,8 @@ async function main() {
       name: "王建国",
       title: "主任医师",
       specialty: "心血管内科",
-      introduction: "从事心血管内科临床工作30余年，擅长冠心病、高血压等疾病的诊治。",
+      introduction:
+        "从事心血管内科临床工作30余年，擅长冠心病、高血压等疾病的诊治。",
       departmentId: dept1_1.id,
       hospitalId: hospital1.id,
     },

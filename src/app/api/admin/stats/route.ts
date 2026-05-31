@@ -1,41 +1,24 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { getPrisma } from "@/lib/db";
-import { verifyToken } from "@/lib/utils/jwt";
-import { success, fail } from "@/lib/utils/response";
+import { success } from "@/lib/utils/response";
+import { apiHandler } from "@/lib/utils/api-handler";
 
-async function checkAdmin(request: NextRequest) {
-  const token = request.cookies.get("token")?.value;
-  if (!token) throw new Error("未认证");
-  const payload = verifyToken(token);
-  if (payload.role !== "admin") throw new Error("权限不足");
-  return payload;
-}
+export const GET = apiHandler(async () => {
+  const prisma = await getPrisma();
 
-export async function GET(request: NextRequest) {
-  try {
-    await checkAdmin(request);
+  const now = new Date();
+  const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
 
-    const prisma = await getPrisma();
+  const [todayAppointments, totalHospitals, totalDoctors] =
+    await Promise.all([
+      prisma.registration.count({
+        where: { date: todayStr },
+      }),
+      prisma.hospital.count(),
+      prisma.doctor.count(),
+    ]);
 
-    const now = new Date();
-    const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
-
-    const [todayAppointments, totalHospitals, totalDoctors] =
-      await Promise.all([
-        prisma.registration.count({
-          where: { date: todayStr },
-        }),
-        prisma.hospital.count(),
-        prisma.doctor.count(),
-      ]);
-
-    return NextResponse.json(
-      success({ todayAppointments, totalHospitals, totalDoctors })
-    );
-  } catch (err: unknown) {
-    if (err instanceof Error && (err.message === "未认证" || err.message === "权限不足")) {
-      return NextResponse.json(fail(401, err.message), { status: 401 });
-    }
-    return NextResponse.json(fail(500, "服务器错误"), { status: 500 });
-  }
-}
+  return NextResponse.json(
+    success({ todayAppointments, totalHospitals, totalDoctors })
+  );
+}, { requireAdmin: true });

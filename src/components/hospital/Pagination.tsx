@@ -1,70 +1,69 @@
 "use client";
 
+import { useRouter, useSearchParams } from "next/navigation";
+
 interface PaginationProps {
   page: number;
   totalPages: number;
   pageSize: number;
   total: number;
-  searchParams: string;
 }
 
 export default function Pagination({
   page,
   totalPages,
-  searchParams,
+  pageSize,
+  total,
 }: PaginationProps) {
-  const setPageParam = (queryString: string, newPage: number): string => {
-    const params = new URLSearchParams(queryString);
-    params.set("page", String(newPage));
-    return params.toString();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const goToPage = (p: number) => {
+    if (p < 1 || p > totalPages) return;
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("page", String(p));
+    router.push(`?${params.toString()}`, { scroll: false });
   };
 
   return (
     <div className="flex items-center justify-center gap-2 py-4">
-      <a
-        href={page > 1 ? `?${setPageParam(searchParams, page - 1)}` : "#"}
-        className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-          page <= 1
-            ? "bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-500 cursor-not-allowed pointer-events-none"
-            : "bg-white dark:bg-[#1e293b] text-gray-700 dark:text-gray-200 border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700"
-        }`}
-        onClick={(e) => {
-          if (page <= 1) e.preventDefault();
-        }}
+      <button
+        type="button"
+        disabled={page <= 1}
+        onClick={() => goToPage(page - 1)}
+        className="px-4 py-2 rounded-lg text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-40 bg-white dark:bg-[#1e293b] text-gray-700 dark:text-gray-200 border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 enabled:active:scale-95"
       >
-        上一页
-      </a>
+        ← 上一页
+      </button>
+
       {Array.from({ length: Math.min(totalPages, 10) }, (_, i) => {
         const startPage = Math.max(1, page - 4);
         const p = startPage + i;
         if (p > totalPages) return null;
         return (
-          <a
+          <button
             key={p}
-            href={`?${setPageParam(searchParams, p)}`}
-            className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+            type="button"
+            onClick={() => goToPage(p)}
+            className={`px-3 py-2 rounded-lg text-sm font-medium transition-all ${
               p === page
-                ? "bg-blue-600 text-white"
+                ? "bg-blue-600 text-white shadow-sm scale-105"
                 : "bg-white dark:bg-[#1e293b] text-gray-700 dark:text-gray-200 border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700"
             }`}
           >
             {p}
-          </a>
+          </button>
         );
       })}
-      <a
-        href={page < totalPages ? `?${setPageParam(searchParams, page + 1)}` : "#"}
-        className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-          page >= totalPages
-            ? "bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-500 cursor-not-allowed pointer-events-none"
-            : "bg-white dark:bg-[#1e293b] text-gray-700 dark:text-gray-200 border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700"
-        }`}
-        onClick={(e) => {
-          if (page >= totalPages) e.preventDefault();
-        }}
+
+      <button
+        type="button"
+        disabled={page >= totalPages}
+        onClick={() => goToPage(page + 1)}
+        className="px-4 py-2 rounded-lg text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-40 bg-white dark:bg-[#1e293b] text-gray-700 dark:text-gray-200 border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 enabled:active:scale-95"
       >
-        下一页
-      </a>
+        下一页 →
+      </button>
     </div>
   );
 }

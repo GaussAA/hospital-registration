@@ -3,6 +3,7 @@
 import { useToast } from "@/components/ui/Toast";
 import { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
+import ConfirmDialog from "@/components/ui/ConfirmDialog";
 import type { RegistrationStatus } from "@/types/index";
 import type { ApiResponse, PaginatedData } from "@/types/api";
 
@@ -67,6 +68,7 @@ export default function AppointmentList({ initialData }: AppointmentListProps) {
   );
   const [loading, setLoading] = useState(false);
   const [cancelLoading, setCancelLoading] = useState<string | null>(null);
+  const [cancelTarget, setCancelTarget] = useState<string | null>(null);
   const mountedRef = useRef(true);
 
   useEffect(() => {
@@ -99,13 +101,13 @@ export default function AppointmentList({ initialData }: AppointmentListProps) {
   );
 
   async function handleCancel(id: string) {
-    if (!confirm("确定要取消该挂号吗？")) return;
     setCancelLoading(id);
     try {
       const res = await fetch(`/api/appointments/${id}/cancel`, {
         method: "POST",
       });
       if (res.ok) {
+        showToast("已取消挂号", "success");
         fetchData(statusFilter);
       } else {
         const json = await res.json();
@@ -115,6 +117,7 @@ export default function AppointmentList({ initialData }: AppointmentListProps) {
       showToast("网络错误", "error");
     } finally {
       if (mountedRef.current) setCancelLoading(null);
+      setCancelTarget(null);
     }
   }
 
@@ -221,7 +224,7 @@ export default function AppointmentList({ initialData }: AppointmentListProps) {
                 {isPending && (
                   <button
                     type="button"
-                    onClick={() => handleCancel(item.id)}
+                    onClick={() => setCancelTarget(item.id)}
                     disabled={cancelLoading === item.id}
                     className="rounded-md bg-red-50 dark:bg-red-900/30 px-3 py-1.5 text-xs font-medium text-red-600 dark:text-red-400 transition hover:bg-red-100 dark:hover:bg-red-900/50 disabled:cursor-not-allowed disabled:opacity-50"
                   >
@@ -232,6 +235,18 @@ export default function AppointmentList({ initialData }: AppointmentListProps) {
             </div>
           );
         })}
+
+      {/* Cancel Confirm Dialog */}
+      <ConfirmDialog
+        open={!!cancelTarget}
+        title="确认取消"
+        message="确定要取消该挂号吗？取消后号源将被释放。"
+        variant="warning"
+        confirmLabel="确认取消"
+        onConfirm={() => cancelTarget && handleCancel(cancelTarget)}
+        onCancel={() => setCancelTarget(null)}
+        loading={!!cancelLoading}
+      />
     </div>
   );
 }

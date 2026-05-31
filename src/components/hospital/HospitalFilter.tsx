@@ -1,6 +1,8 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useDebounce } from "@/lib/hooks/useDebounce";
 
 const CITIES = ["北京", "上海", "广州", "深圳", "杭州", "成都", "武汉", "南京", "重庆", "西安"];
 const LEVELS = ["三级甲等", "三级乙等", "二级甲等", "二级乙等", "一级甲等", "一级乙等"];
@@ -13,6 +15,28 @@ export default function HospitalFilter() {
   const currentLevel = searchParams.get("level") ?? "";
   const currentKeyword = searchParams.get("keyword") ?? "";
 
+  const [keywordInput, setKeywordInput] = useState(currentKeyword);
+  const debouncedKeyword = useDebounce(keywordInput, 300);
+
+  // Sync keyword input when URL changes (back/forward navigation)
+  useEffect(() => {
+    setKeywordInput(currentKeyword);
+  }, [currentKeyword]);
+
+  // Auto-search when debounced keyword changes
+  useEffect(() => {
+    if (debouncedKeyword !== currentKeyword) {
+      const params = new URLSearchParams(searchParams.toString());
+      if (debouncedKeyword) {
+        params.set("keyword", debouncedKeyword);
+      } else {
+        params.delete("keyword");
+      }
+      params.set("page", "1");
+      router.push(`/hospitals?${params.toString()}`);
+    }
+  }, [debouncedKeyword]); // eslint-disable-line react-hooks/exhaustive-deps
+
   const updateParams = (key: string, value: string) => {
     const params = new URLSearchParams(searchParams.toString());
     if (value) {
@@ -20,7 +44,7 @@ export default function HospitalFilter() {
     } else {
       params.delete(key);
     }
-    params.set("page", "1");
+    if (key !== "keyword") params.set("page", "1");
     router.push(`/hospitals?${params.toString()}`);
   };
 
@@ -54,16 +78,12 @@ export default function HospitalFilter() {
         ))}
       </select>
 
-      {/* Keyword search */}
+      {/* Keyword search with debounce */}
       <input
         type="text"
-        defaultValue={currentKeyword}
+        value={keywordInput}
+        onChange={(e) => setKeywordInput(e.target.value)}
         placeholder="搜索医院名称..."
-        onKeyDown={(e) => {
-          if (e.key === "Enter") {
-            updateParams("keyword", (e.target as HTMLInputElement).value);
-          }
-        }}
         className="flex-1 min-w-[200px] rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-[#1e293b] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder:text-gray-400 dark:placeholder:text-gray-500"
       />
 

@@ -3,9 +3,11 @@
 import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { useUser } from "@/components/auth/UserProvider";
 
 export default function RegisterForm() {
   const router = useRouter();
+  const { setUser } = useUser();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
@@ -45,11 +47,12 @@ export default function RegisterForm() {
 
       const data = await res.json();
 
-      if (!res.ok) {
+      if (!res.ok || data.code !== 0) {
         setError(data.message || "注册失败");
         return;
       }
 
+      setUser(data.data.user);
       router.push("/hospitals");
     } catch {
       setError("网络错误，请稍后重试");

@@ -1,75 +1,50 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { getPrisma } from "@/lib/db";
-import { verifyToken } from "@/lib/utils/jwt";
-import { success, fail } from "@/lib/utils/response";
+import { success } from "@/lib/utils/response";
+import { apiHandler } from "@/lib/utils/api-handler";
+import { ValidationError } from "@/lib/utils/errors";
+import { paginationSchema } from "@/lib/validations/common.schema";
 
-async function checkAdmin(request: NextRequest) {
-  const token = request.cookies.get("token")?.value;
-  if (!token) throw new Error("未认证");
-  const payload = verifyToken(token);
-  if (payload.role !== "admin") throw new Error("权限不足");
-  return payload;
-}
+export const GET = apiHandler(async (req) => {
+  const { searchParams } = new URL(req.url);
+  const raw: Record<string, string> = {};
+  searchParams.forEach((value, key) => { raw[key] = value; });
+  const query = paginationSchema.parse(raw);
 
-export async function GET(request: NextRequest) {
-  try {
-    await checkAdmin(request);
+  const prisma = await getPrisma();
 
-    const { searchParams } = new URL(request.url);
-    const page = parseInt(searchParams.get("page") || "1");
-    const pageSize = parseInt(searchParams.get("pageSize") || "10");
+  const [list, total] = await Promise.all([
+    prisma.hospital.findMany({
+      skip: (query.page - 1) * query.pageSize,
+      take: query.pageSize,
+      orderBy: { createdAt: "desc" },
+    }),
+    prisma.hospital.count(),
+  ]);
 
-    const prisma = await getPrisma();
+  return NextResponse.json(success({ list, total, page: query.page, pageSize: query.pageSize }));
+}, { requireAdmin: true });
 
-    const [list, total] = await Promise.all([
-      prisma.hospital.findMany({
-        skip: (page - 1) * pageSize,
-        take: pageSize,
-        orderBy: { createdAt: "desc" },
-      }),
-      prisma.hospital.count(),
-    ]);
+export const POST = apiHandler(async (req) => {
+  const body = await req.json();
+  const { name, city, level, phone, address, description } = body;
 
-    return NextResponse.json(success({ list, total, page, pageSize }));
-  } catch (err: unknown) {
-    const error = err instanceof Error ? err : new Error("服务器错误");
-    if (error.message === "未认证" || error.message === "权限不足") {
-      return NextResponse.json(fail(401, error.message), { status: 401 });
-    }
-    return NextResponse.json(fail(500, "服务器错误"), { status: 500 });
+  if (!name || !city || !phone || !address) {
+    throw new ValidationError("缺少必要字段");
   }
-}
 
-export async function POST(request: NextRequest) {
-  try {
-    await checkAdmin(request);
+  const prisma = await getPrisma();
 
-    const body = await request.json();
-    const { name, city, level, phone, address, description } = body;
+  const hospital = await prisma.hospital.create({
+    data: {
+      name,
+      city,
+      level: level || "三甲",
+      phone,
+      address,
+      description: description || "",
+    },
+  });
 
-    if (!name || !city || !phone || !address) {
-      return NextResponse.json(fail(400, "缺少必要字段"), { status: 400 });
-    }
-
-    const prisma = await getPrisma();
-
-    const hospital = await prisma.hospital.create({
-      data: {
-        name,
-        city,
-        level: level || "三甲",
-        phone,
-        address,
-        description: description || "",
-      },
-    });
-
-    return NextResponse.json(success(hospital), { status: 201 });
-  } catch (err: unknown) {
-    const error = err instanceof Error ? err : new Error("服务器错误");
-    if (error.message === "未认证" || error.message === "权限不足") {
-      return NextResponse.json(fail(401, error.message), { status: 401 });
-    }
-    return NextResponse.json(fail(500, "服务器错误"), { status: 500 });
-  }
-}
+  return NextResponse.json(success(hospital), { status: 201 });
+}, { requireAdmin: true });

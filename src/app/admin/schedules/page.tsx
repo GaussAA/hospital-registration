@@ -1,14 +1,13 @@
 "use client";
 
-/* eslint-disable react-hooks/set-state-in-effect -- Standard Next.js data fetching pattern */
-
-import { useState, useEffect, useCallback } from "react";
-import { useToast } from "@/components/ui/Toast";
+import { useState, useEffect } from "react";
 import AdminHeader from "@/components/layout/AdminHeader";
 import DataTable from "@/components/admin/DataTable";
 import type { Column } from "@/components/admin/DataTable";
 import ScheduleForm from "@/components/admin/ScheduleForm";
 import type { ScheduleFormData } from "@/components/admin/ScheduleForm";
+import { useAdminCrud } from "@/lib/hooks/useAdminCrud";
+import Modal from "@/components/ui/Modal";
 
 interface HospitalOption {
   id: string;
@@ -49,7 +48,6 @@ const typeLabels: Record<string, string> = {
 };
 
 export default function AdminSchedulesPage() {
-  const { showToast } = useToast();
   const [hospitals, setHospitals] = useState<HospitalOption[]>([]);
   const [departments, setDepartments] = useState<DepartmentOption[]>([]);
   const [doctors, setDoctors] = useState<DoctorOption[]>([]);
@@ -57,16 +55,6 @@ export default function AdminSchedulesPage() {
   const [selectedHospitalId, setSelectedHospitalId] = useState("");
   const [selectedDepartmentId, setSelectedDepartmentId] = useState("");
   const [selectedDoctorId, setSelectedDoctorId] = useState("");
-
-  const [schedules, setSchedules] = useState<ScheduleRecord[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [page, setPage] = useState(1);
-  const [total, setTotal] = useState(0);
-  const pageSize = 10;
-
-  const [showModal, setShowModal] = useState(false);
-  const [editRecord, setEditRecord] = useState<ScheduleRecord | null>(null);
-  const [saving, setSaving] = useState(false);
 
   // Load hospitals
   useEffect(() => {
@@ -128,93 +116,19 @@ export default function AdminSchedulesPage() {
       .catch(console.error);
   }, [selectedDepartmentId]);
 
-  const fetchSchedules = useCallback(async () => {
-    if (!selectedDoctorId) {
-      setSchedules([]);
-      setTotal(0);
-      return;
-    }
-    setLoading(true);
-    try {
-      const res = await fetch(
-        `/api/admin/doctors/${selectedDoctorId}/schedules?page=${page}&pageSize=${pageSize}`
-      );
-      const json = await res.json();
-      if (json.code === 0) {
-        setSchedules(json.data.list);
-        setTotal(json.data.total);
-      }
-    } catch (err) {
-      console.error("获取排班列表失败", err);
-    } finally {
-      setLoading(false);
-    }
-  }, [selectedDoctorId, page]);
-
-  useEffect(() => {
-    fetchSchedules();
-  }, [fetchSchedules]);
+  const crud = useAdminCrud<ScheduleRecord>({
+    baseUrl: selectedDoctorId
+      ? `/api/admin/doctors/${selectedDoctorId}/schedules`
+      : "",
+    fetchDeps: [selectedDoctorId],
+    buildFetchUrl: (baseUrl, page, pageSize) =>
+      `${baseUrl}?page=${page}&pageSize=${pageSize}`,
+    buildUpdateUrl: (_, record) => `/api/admin/schedules/${record.id}`,
+    buildDeleteUrl: (_, record) => `/api/admin/schedules/${record.id}`,
+  });
 
   const handleSave = async (data: ScheduleFormData) => {
-    setSaving(true);
-    try {
-      const url = editRecord
-        ? `/api/admin/schedules/${editRecord.id}`
-        : `/api/admin/doctors/${selectedDoctorId}/schedules`;
-      const method = editRecord ? "PUT" : "POST";
-
-      const res = await fetch(url, {
-        method,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
-      const json = await res.json();
-      if (json.code === 0) {
-        setShowModal(false);
-        setEditRecord(null);
-        fetchSchedules();
-      } else {
-        showToast(json.message || "操作失败", "error");
-      }
-    } catch (err) {
-      showToast("操作失败", "error");
-      console.error(err);
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  const handleDelete = async (record: ScheduleRecord) => {
-    if (!confirm("确定要删除该排班记录吗？")) return;
-    try {
-      const res = await fetch(`/api/admin/schedules/${record.id}`, {
-        method: "DELETE",
-      });
-      const json = await res.json();
-      if (json.code === 0) {
-        fetchSchedules();
-      } else {
-        showToast(json.message || "删除失败", "error");
-      }
-    } catch (err) {
-      showToast("删除失败", "error");
-      console.error(err);
-    }
-  };
-
-  const openCreate = () => {
-    setEditRecord(null);
-    setShowModal(true);
-  };
-
-  const openEdit = (record: ScheduleRecord) => {
-    setEditRecord(record);
-    setShowModal(true);
-  };
-
-  const closeModal = () => {
-    setShowModal(false);
-    setEditRecord(null);
+    await crud.save(data as unknown as Record<string, unknown>);
   };
 
   const columns: Column<ScheduleRecord>[] = [
@@ -241,11 +155,7 @@ export default function AdminSchedulesPage() {
         </span>
       ),
     },
-    {
-      key: "quota",
-      title: "总号源",
-      render: (value) => <span>{value}</span>,
-    },
+    { key: "quota", title: "总号源", render: (value) => <span>{value}</span> },
     {
       key: "bookedCount",
       title: "已预约",
@@ -288,7 +198,7 @@ export default function AdminSchedulesPage() {
                 value={selectedHospitalId}
                 onChange={(e) => {
                   setSelectedHospitalId(e.target.value);
-                  setPage(1);
+                  crud.setPage(1);
                 }}
                 className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
@@ -308,7 +218,7 @@ export default function AdminSchedulesPage() {
                 value={selectedDepartmentId}
                 onChange={(e) => {
                   setSelectedDepartmentId(e.target.value);
-                  setPage(1);
+                  crud.setPage(1);
                 }}
                 className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 disabled={!selectedHospitalId}
@@ -329,7 +239,7 @@ export default function AdminSchedulesPage() {
                 value={selectedDoctorId}
                 onChange={(e) => {
                   setSelectedDoctorId(e.target.value);
-                  setPage(1);
+                  crud.setPage(1);
                 }}
                 className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 disabled={!selectedDepartmentId}
@@ -345,13 +255,13 @@ export default function AdminSchedulesPage() {
           </div>
         </div>
 
-        {selectedDoctorId && (
+        {selectedDoctorId ? (
           <>
             <div className="flex justify-between items-center mb-4">
               <p className="text-sm text-gray-500">排班列表</p>
               <button
                 type="button"
-                onClick={openCreate}
+                onClick={crud.openCreate}
                 className="px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition-colors"
               >
                 + 新增排班
@@ -360,19 +270,17 @@ export default function AdminSchedulesPage() {
 
             <DataTable
               columns={columns}
-              data={schedules}
-              loading={loading}
-              page={page}
-              pageSize={pageSize}
-              total={total}
-              onPageChange={setPage}
-              onEdit={openEdit}
-              onDelete={handleDelete}
+              data={crud.data}
+              loading={crud.loading}
+              page={crud.page}
+              pageSize={10}
+              total={crud.total}
+              onPageChange={crud.setPage}
+              onEdit={crud.openEdit}
+              onDelete={crud.remove}
             />
           </>
-        )}
-
-        {!selectedDoctorId && (
+        ) : (
           <div className="bg-white rounded-lg shadow p-8 text-center text-gray-400">
             请先选择医院、科室和医生
           </div>
@@ -380,35 +288,24 @@ export default function AdminSchedulesPage() {
       </div>
 
       {/* Modal */}
-      {showModal && selectedDoctorId && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-          <div className="bg-white rounded-lg shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
-            <div className="px-6 py-4 border-b border-gray-200">
-              <h3 className="text-lg font-semibold text-gray-900">
-                {editRecord ? "编辑排班" : "新增排班"}
-              </h3>
-            </div>
-            <div className="px-6 py-4">
-              <ScheduleForm
-                doctorId={selectedDoctorId}
-                initialData={
-                  editRecord
-                    ? {
-                        date: editRecord.date,
-                        timeSlot: editRecord.timeSlot,
-                        quota: editRecord.quota,
-                        type: editRecord.type,
-                      }
-                    : undefined
+      <Modal open={crud.showModal} onClose={crud.closeModal} title={crud.editRecord ? "编辑排班" : "新增排班"}>
+        <ScheduleForm
+          doctorId={selectedDoctorId}
+          initialData={
+            crud.editRecord
+              ? {
+                  date: crud.editRecord.date,
+                  timeSlot: crud.editRecord.timeSlot,
+                  quota: crud.editRecord.quota,
+                  type: crud.editRecord.type,
                 }
-                onSave={handleSave}
-                onCancel={closeModal}
-                saving={saving}
-              />
-            </div>
-          </div>
-        </div>
-      )}
+              : undefined
+          }
+          onSave={handleSave}
+          onCancel={crud.closeModal}
+          saving={crud.saving}
+        />
+      </Modal>
     </>
   );
 }

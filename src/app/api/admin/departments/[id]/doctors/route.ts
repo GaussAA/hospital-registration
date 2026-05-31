@@ -1,111 +1,71 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { getPrisma } from "@/lib/db";
-import { verifyToken } from "@/lib/utils/jwt";
-import { success, fail } from "@/lib/utils/response";
-import { NotFoundError } from "@/lib/utils/errors";
+import { success } from "@/lib/utils/response";
+import { apiHandler } from "@/lib/utils/api-handler";
+import { NotFoundError, ValidationError } from "@/lib/utils/errors";
+import { paginationSchema } from "@/lib/validations/common.schema";
 
-async function checkAdmin(request: NextRequest) {
-  const token = request.cookies.get("token")?.value;
-  if (!token) throw new Error("未认证");
-  const payload = verifyToken(token);
-  if (payload.role !== "admin") throw new Error("权限不足");
-  return payload;
-}
+export const GET = apiHandler<{ id: string }>(async (req, { params }) => {
+  const { id } = await params;
 
-export async function GET(
-  request: NextRequest,
-  props: { params: Promise<{ id: string }> }
-) {
-  try {
-    await checkAdmin(request);
-    const { id } = await props.params;
+  const { searchParams } = new URL(req.url);
+  const raw: Record<string, string> = {};
+  searchParams.forEach((value, key) => { raw[key] = value; });
+  const query = paginationSchema.parse(raw);
 
-    const { searchParams } = new URL(request.url);
-    const page = parseInt(searchParams.get("page") || "1");
-    const pageSize = parseInt(searchParams.get("pageSize") || "10");
+  const prisma = await getPrisma();
 
-    const prisma = await getPrisma();
-
-    const department = await prisma.department.findUnique({
-      where: { id: id },
-      include: { hospital: true },
-    });
-    if (!department) {
-      throw new NotFoundError("科室不存在");
-    }
-
-    const [list, total] = await Promise.all([
-      prisma.doctor.findMany({
-        where: { departmentId: id },
-        skip: (page - 1) * pageSize,
-        take: pageSize,
-        orderBy: { name: "asc" },
-      }),
-      prisma.doctor.count({ where: { departmentId: id } }),
-    ]);
-
-    return NextResponse.json(success({ list, total, page, pageSize }));
-  } catch (err: unknown) {
-    if (err instanceof NotFoundError) {
-      return NextResponse.json(fail(err.statusCode, err.message), {
-        status: err.statusCode,
-      });
-    }
-    const msg = err instanceof Error ? err.message : "服务器错误";
-    if (msg === "未认证" || msg === "权限不足") {
-      return NextResponse.json(fail(401, msg), { status: 401 });
-    }
-    return NextResponse.json(fail(500, "服务器错误"), { status: 500 });
+  const department = await prisma.department.findUnique({
+    where: { id },
+    include: { hospital: true },
+  });
+  if (!department) {
+    throw new NotFoundError("科室不存在");
   }
-}
 
-export async function POST(
-  request: NextRequest,
-  props: { params: Promise<{ id: string }> }
-) {
-  try {
-    await checkAdmin(request);
-    const { id } = await props.params;
+  const [list, total] = await Promise.all([
+    prisma.doctor.findMany({
+      where: { departmentId: id },
+      skip: (query.page - 1) * query.pageSize,
+      take: query.pageSize,
+      orderBy: { name: "asc" },
+    }),
+    prisma.doctor.count({ where: { departmentId: id } }),
+  ]);
 
-    const body = await request.json();
-    const { name, title, specialty, introduction } = body;
+  return NextResponse.json(success({ list, total, page: query.page, pageSize: query.pageSize }));
+}, { requireAdmin: true });
 
-    if (!name || !specialty) {
-      return NextResponse.json(fail(400, "缺少必要字段"), { status: 400 });
-    }
+export const POST = apiHandler<{ id: string }>(async (req, { params }) => {
+  const { id } = await params;
 
-    const prisma = await getPrisma();
+  const body = await req.json();
+  const { name, title, specialty, introduction } = body;
 
-    const department = await prisma.department.findUnique({
-      where: { id: id },
-      include: { hospital: true },
-    });
-    if (!department) {
-      throw new NotFoundError("科室不存在");
-    }
-
-    const doctor = await prisma.doctor.create({
-      data: {
-        name,
-        title: title || "主治医师",
-        specialty,
-        introduction: introduction || "",
-        departmentId: id,
-        hospitalId: department.hospitalId,
-      },
-    });
-
-    return NextResponse.json(success(doctor), { status: 201 });
-  } catch (err: unknown) {
-    if (err instanceof NotFoundError) {
-      return NextResponse.json(fail(err.statusCode, err.message), {
-        status: err.statusCode,
-      });
-    }
-    const msg = err instanceof Error ? err.message : "服务器错误";
-    if (msg === "未认证" || msg === "权限不足") {
-      return NextResponse.json(fail(401, msg), { status: 401 });
-    }
-    return NextResponse.json(fail(500, "服务器错误"), { status: 500 });
+  if (!name || !specialty) {
+    throw new ValidationError("缺少必要字段");
   }
-}
+
+  const prisma = await getPrisma();
+
+  const department = await prisma.department.findUnique({
+    where: { id },
+    include: { hospital: true },
+  });
+  if (!department) {
+    throw new NotFoundError("科室不存在");
+  }
+
+  const doctor = await prisma.doctor.create({
+    data: {
+      name,
+      title: title || "主治医师",
+      specialty,
+      introduction: introduction || "",
+      departmentId: id,
+      hospitalId: department.hospitalId,
+    },
+  });
+
+  return NextResponse.json(success(doctor), { status: 201 });
+}, { requireAdmin: true });

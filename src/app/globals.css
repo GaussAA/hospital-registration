@@ -63,6 +63,22 @@
     transition: background-color 0.2s ease, color 0.2s ease;
   }
 
+  /* ── Page enter animation ── */
+  @keyframes fadeSlideIn {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  main {
+    animation: fadeSlideIn 0.3s ease-out;
+  }
+
   /* ── Scrollbar styling for dark mode ── */
   .dark ::-webkit-scrollbar {
     width: 8px;
