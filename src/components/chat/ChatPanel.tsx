@@ -335,6 +335,32 @@ export default function ChatPanel({ isOpen, onClose }: ChatPanelProps) {
     sendMessage(msg);
   };
 
+  /** Export current conversation as Markdown file via API */
+  const handleExport = useCallback(async () => {
+    if (!conversationId || messages.length === 0) return;
+    try {
+      const res = await fetch(`/api/conversations/${conversationId}/export`);
+      if (!res.ok) throw new Error("导出失败");
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+
+      // Extract filename from Content-Disposition
+      const disposition = res.headers.get("Content-Disposition") || "";
+      const match = disposition.match(/filename\*=UTF-8''([^;]+)/);
+      const fileName = match ? decodeURIComponent(match[1]) : `对话记录_${conversationId.slice(-6)}.md`;
+
+      a.download = fileName;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    } catch {
+      // Silently handle error
+    }
+  }, [conversationId, messages.length]);
+
   const handleImageUpload = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -443,6 +469,21 @@ export default function ChatPanel({ isOpen, onClose }: ChatPanelProps) {
                   <line x1="3" y1="21" x2="10" y2="14" />
                 </svg>
               )}
+            </button>
+            <button
+              onClick={handleExport}
+              disabled={!conversationId || messages.length === 0}
+              className="p-1.5 rounded-md transition-colors disabled:opacity-30"
+              style={{ color: mutedColor }}
+              onMouseOver={(e) => { if (conversationId && messages.length > 0) e.currentTarget.style.background = isDark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.05)"; }}
+              onMouseOut={(e) => (e.currentTarget.style.background = "transparent")}
+              title="导出对话"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                <polyline points="7 10 12 15 17 10" />
+                <line x1="12" y1="15" x2="12" y2="3" />
+              </svg>
             </button>
             <button
               onClick={onClose}

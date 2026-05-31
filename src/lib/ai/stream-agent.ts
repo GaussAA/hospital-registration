@@ -351,9 +351,27 @@ async function runAgentLoop(
     SessionMemoryStore.set(sessionId, sessionMem);
   }
 
-  // Emit only NEW tool call chain for persistence (skip ones already in DB)
+  // Emit only the LAST complete tool round for persistence
+  // (earlier rounds' tool data was already consumed by the LLM in later rounds,
+  // storing them would cause tool_call_id mismatch with the stored assistant message)
   const newMessages = messages.slice(initialMsgCount);
-  const toolMessagesForPersistence = newMessages
+  
+  // Find the last assistant message with tool_calls
+  let lastToolRoundStartIdx = -1;
+  for (let i = newMessages.length - 1; i >= 0; i--) {
+    const m = newMessages[i];
+    if (m.role === "assistant" && m.tool_calls && m.tool_calls.length > 0) {
+      lastToolRoundStartIdx = i;
+      break;
+    }
+  }
+  
+  // Extract only the last complete round: assistant + its tool results
+  const lastRoundMessages = lastToolRoundStartIdx >= 0
+    ? newMessages.slice(lastToolRoundStartIdx)
+    : [];
+  
+  const toolMessagesForPersistence = lastRoundMessages
     .filter((m) => {
       return (
         (m.role === "assistant" && m.tool_calls && m.tool_calls.length > 0) ||
