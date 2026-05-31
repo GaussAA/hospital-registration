@@ -3,7 +3,7 @@ import { getPrisma } from "@/lib/db";
 import { success } from "@/lib/utils/response";
 import { apiHandler } from "@/lib/utils/api-handler";
 import { NotFoundError } from "@/lib/utils/errors";
-import type { Prisma } from "../../../../../../generated/prisma/client";
+import type { Prisma } from "@generated/prisma/client";
 
 export const GET = apiHandler<{ id: string }>(async (req, { params }) => {
   const { id } = await params;

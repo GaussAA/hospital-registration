@@ -8,7 +8,8 @@ export default defineConfig({
       JWT_SECRET: "test-jwt-secret-for-vitest",
     },
     environment: "node",
-    include: ["tests/**/*.test.ts"],
+    include: ["tests/**/*.test.ts", "tests/**/*.test.tsx"],
+    // Component tests use jsdom via @vitest-environment jsdom directive
     coverage: {
       provider: "v8",
       include: ["src/lib/services/**/*.ts"],
@@ -20,6 +21,7 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
+      "@generated": path.resolve(__dirname, "./generated"),
     },
   },
 });

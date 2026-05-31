@@ -1,6 +1,6 @@
 import { getPrisma } from "@/lib/db";
 import { NotFoundError } from "@/lib/utils/errors";
-import type { Prisma } from "../../../generated/prisma/client";
+import type { Prisma } from "@generated/prisma/client";
 import type {
   HospitalDTO,
   HospitalDetailDTO,

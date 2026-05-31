@@ -85,20 +85,20 @@ export default function Modal({
       {/* Content */}
       <div
         ref={contentRef}
-        className={`relative w-full ${maxWidth} max-h-[85vh] overflow-y-auto rounded-2xl bg-white dark:bg-[#1e293b] shadow-2xl border border-gray-200 dark:border-gray-700 animate-[scaleIn_0.15s_ease-out]`}
+        className={`relative w-full ${maxWidth} max-h-[85vh] overflow-y-auto rounded-2xl bg-[var(--bg-card)] shadow-2xl border border-[var(--border-default)] animate-[scaleIn_0.15s_ease-out]`}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-[var(--border-default)]">
           <h3
             id="modal-title"
-            className="text-lg font-semibold text-gray-900 dark:text-gray-100"
+            className="text-lg font-semibold text-[var(--text-primary)]"
           >
             {title}
           </h3>
           <button
             type="button"
             onClick={onClose}
-            className="p-1.5 rounded-lg text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+            className="p-1.5 rounded-lg text-[var(--text-muted)] hover:text-[var(--text-secondary)] hover:bg-[var(--bg-hover)] transition-colors"
             aria-label="关闭"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>

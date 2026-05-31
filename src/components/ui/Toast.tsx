@@ -27,11 +27,11 @@ export function useToast() {
 /* ── Styles ── */
 const typeStyles = {
   success:
-    "bg-green-600 text-white",
+    "bg-[var(--color-success)] text-white",
   error:
-    "bg-red-600 text-white",
+    "bg-[var(--color-danger)] text-white",
   info:
-    "bg-blue-600 text-white",
+    "bg-[var(--color-primary)] text-white",
 };
 
 const typeIcons = {

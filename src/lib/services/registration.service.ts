@@ -1,6 +1,6 @@
 import { getPrisma } from "@/lib/db";
 import { NotFoundError, ConflictError } from "@/lib/utils/errors";
-import type { Prisma } from "../../../generated/prisma/client";
+import type { Prisma } from "@generated/prisma/client";
 import type { RegistrationStatus } from "@/types/index";
 import type { RegistrationDTO } from "@/types/dto";
 

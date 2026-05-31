@@ -11,7 +11,7 @@ interface SkeletonProps {
 export function Skeleton({ className = "" }: SkeletonProps) {
   return (
     <div
-      className={`animate-pulse rounded-lg bg-gray-200 dark:bg-gray-700 ${className}`}
+      className={`animate-pulse rounded-lg bg-[var(--bg-muted)] ${className}`}
     />
   );
 }
@@ -21,7 +21,7 @@ export function Skeleton({ className = "" }: SkeletonProps) {
  */
 export function CardSkeleton() {
   return (
-    <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#1e293b] p-5 space-y-4">
+    <div className="rounded-xl border border-[var(--border-default)] bg-[var(--bg-card)] p-5 space-y-4">
       <div className="flex items-center gap-3">
         <Skeleton className="w-12 h-12 rounded-full" />
         <div className="space-y-2 flex-1">
@@ -50,7 +50,7 @@ export function TableSkeleton({ rows = 5 }: { rows?: number }) {
         <Skeleton className="h-4 w-1/6" />
       </div>
       {Array.from({ length: rows }).map((_, i) => (
-        <div key={i} className="flex gap-4 px-4 py-3 border-t border-gray-100 dark:border-gray-700/50">
+        <div key={i} className="flex gap-4 px-4 py-3 border-t border-[var(--border-light)]">
           <Skeleton className="h-4 w-1/4" />
           <Skeleton className="h-4 w-1/4" />
           <Skeleton className="h-4 w-1/4" />
@@ -66,8 +66,8 @@ export function TableSkeleton({ rows = 5 }: { rows?: number }) {
  */
 export function CalendarSkeleton() {
   return (
-    <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#1e293b] overflow-hidden">
-      <div className="p-4 border-b border-gray-100 dark:border-gray-700/50">
+    <div className="rounded-xl border border-[var(--border-default)] bg-[var(--bg-card)] overflow-hidden">
+      <div className="p-4 border-b border-[var(--border-light)]">
         <Skeleton className="h-5 w-28 mb-1" />
         <Skeleton className="h-3 w-36" />
       </div>
