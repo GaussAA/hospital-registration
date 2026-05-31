@@ -3,25 +3,25 @@
  */
 
 export function fmtHospital(h: { id: string; name: string; level: string; city: string; address: string; phone?: string }): string {
-  return `【${h.name}】(${h.level} | ${h.city}) - ${h.address}${h.phone ? ` 电话:${h.phone}` : ""}`;
+  return `【${h.name}】(${h.level} | ${h.city}) - ${h.address}${h.phone ? ` 电话:${h.phone}` : ""} [ID:${h.id}]`;
 }
 
 export function fmtDepartment(d: { id: string; name: string; description?: string }): string {
-  return `【${d.name}】${d.description ? ` - ${d.description}` : ""}`;
+  return `【${d.name}】${d.description ? ` - ${d.description}` : ""} [ID:${d.id}]`;
 }
 
 export function fmtDoctor(doc: { id: string; name: string; title: string; specialty?: string }): string {
-  return `【${doc.name}】${doc.title} ${doc.specialty ? `(专长: ${doc.specialty})` : ""}`;
+  return `【${doc.name}】${doc.title} ${doc.specialty ? `(专长: ${doc.specialty})` : ""} [ID:${doc.id}]`;
 }
 
 export function fmtSchedule(s: { id: string; date: string; timeSlot: string; quota: number; bookedCount: number; type: string }): string {
   const available = s.quota - s.bookedCount;
-  return `${s.date} ${timeSlotLabels[s.timeSlot] || s.timeSlot} — ${typeLabels[s.type] || s.type} (剩余${available}/${s.quota}号)`;
+  return `${s.date} ${timeSlotLabels[s.timeSlot] || s.timeSlot} — ${typeLabels[s.type] || s.type} (剩余${available}/${s.quota}号) [ID:${s.id}]`;
 }
 
 export function fmtProfile(p: { id: string; name: string; idCard?: string; phone?: string; gender?: string }): string {
   const genderLabel = p.gender === "male" ? "男" : p.gender === "female" ? "女" : "未知";
-  return `【${p.name}】${genderLabel} ${p.idCard ? `身份证:${p.idCard}` : ""} ${p.phone ? `手机:${p.phone}` : ""}`;
+  return `【${p.name}】${genderLabel} ${p.idCard ? `身份证:${p.idCard}` : ""} ${p.phone ? `手机:${p.phone}` : ""} [ID:${p.id}]`;
 }
 
 /* ── Label maps ── */

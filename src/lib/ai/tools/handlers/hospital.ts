@@ -24,8 +24,8 @@ export async function handleSearchHospitals(
   const header = `找到了 ${result.list.length} 家医院：\n\n`;
   return (
     header +
-    result.list.map((h) => `🏥 ${fmtHospital(h)}`).join("\n") +
-    "\n\n请输入医院名称或编号继续查询科室。"
+    result.list.map((h, i) => `【${i + 1}】🏥 ${fmtHospital(h)}`).join("\n") +
+    "\n\n请让用户选择编号或医院名称，确定后使用对应医院的 [ID:xxx] 调用后续工具（如 search_departments）。不要直接传医院名称。"
   );
 }
 

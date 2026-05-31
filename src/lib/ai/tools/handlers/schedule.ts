@@ -36,7 +36,7 @@ export async function handleGetDoctorSchedules(
       )
       .join("\n\n");
 
-    return header + body + "\n\n请输入排班编号（日期+时段）选择号源进行挂号。";
+    return header + body + "\n\n请让用户选择日期+时段，确定后使用对应排班的 [ID:xxx] 作为 scheduleId 参数调用 create_registration 进行挂号。";
   } catch {
     return "未找到该医生。";
   }

@@ -18,7 +18,7 @@ export async function handleGetPatientProfiles(
   return (
     "您的就诊人列表：\n\n" +
     profiles.map((p, i) => `${i + 1}. ${fmtProfile(p)}`).join("\n") +
-    "\n\n请选择就诊人进行挂号。"
+    "\n\n请让用户选择就诊人，确定后使用对应就诊人的 [ID:xxx] 作为 profileId 参数调用 create_registration。"
   );
 }
 
