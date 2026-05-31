@@ -4,6 +4,27 @@ import type { Prisma } from "../../../generated/prisma/client";
 import type { RegistrationStatus } from "@/types/index";
 import type { RegistrationDTO } from "@/types/dto";
 
+// Registration with full include shape returned by create/cancel/get operations
+type RegistrationWithIncludes = Prisma.RegistrationGetPayload<{
+  include: {
+    doctor: {
+      include: {
+        department: true;
+        hospital: true;
+      };
+    };
+    profile: true;
+  };
+}>;
+
+// Paginated registration list result
+interface RegistrationListResult {
+  list: RegistrationWithIncludes[];
+  total: number;
+  page: number;
+  pageSize: number;
+}
+
 /**
  * Create a new registration (appointment) within a transaction.
  * Handles optimistic locking on bookedCount to prevent overselling.
@@ -12,8 +33,8 @@ export async function createRegistration(
   patientId: string,
   scheduleId: string,
   profileId: string,
-  type: "normal" | "expert" | "special"
-) {
+  type: "normal" | "expert" | "special",
+): Promise<RegistrationWithIncludes> {
   const prisma = await getPrisma();
 
   return prisma.$transaction(async (tx) => {
@@ -83,8 +104,8 @@ export async function listRegistrations(
   patientId: string,
   status?: RegistrationStatus,
   page: number = 1,
-  pageSize: number = 10
-) {
+  pageSize: number = 10,
+): Promise<RegistrationListResult> {
   const prisma = await getPrisma();
 
   const where: Prisma.RegistrationWhereInput = { patientId };
@@ -117,7 +138,9 @@ export async function listRegistrations(
 /**
  * Get a single registration by ID, including doctor and profile info.
  */
-export async function getRegistrationById(id: string) {
+export async function getRegistrationById(
+  id: string,
+): Promise<RegistrationWithIncludes> {
   const prisma = await getPrisma();
 
   const registration = await prisma.registration.findUnique({
@@ -142,7 +165,10 @@ export async function getRegistrationById(id: string) {
  * Cancel a registration (only if status is "pending").
  * Uses a transaction to decrement bookedCount and update status.
  */
-export async function cancelRegistration(id: string, patientId: string) {
+export async function cancelRegistration(
+  id: string,
+  patientId: string,
+): Promise<RegistrationWithIncludes> {
   const prisma = await getPrisma();
 
   return prisma.$transaction(async (tx) => {

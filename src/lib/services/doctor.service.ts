@@ -15,7 +15,9 @@ export interface DoctorDetail {
   hospitalName: string;
 }
 
-export async function listDoctorsByDepartment(departmentId: string) {
+export async function listDoctorsByDepartment(
+  departmentId: string,
+): Promise<DoctorDTO[]> {
   const prisma = await getPrisma();
 
   // Verify department exists

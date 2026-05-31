@@ -3,19 +3,11 @@ import { getPrisma } from "@/lib/db";
 import { success } from "@/lib/utils/response";
 import { apiHandler } from "@/lib/utils/api-handler";
 import { NotFoundError } from "@/lib/utils/errors";
+import { getHospitalById } from "@/lib/services/hospital.service";
 
 export const GET = apiHandler<{ hospitalId: string }>(async (req, { params }) => {
   const { hospitalId } = await params;
-
-  const prisma = await getPrisma();
-  const hospital = await prisma.hospital.findUnique({
-    where: { id: hospitalId },
-  });
-
-  if (!hospital) {
-    throw new NotFoundError("医院不存在");
-  }
-
+  const hospital = await getHospitalById(hospitalId);
   return NextResponse.json(success(hospital));
 }, { requireAdmin: true });
 

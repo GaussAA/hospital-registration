@@ -7,7 +7,9 @@ import type {
   HospitalListParams,
 } from "@/types/dto";
 
-export async function listHospitals(params: HospitalListParams) {
+export async function listHospitals(
+  params: HospitalListParams,
+): Promise<{ list: HospitalDTO[]; total: number; page: number; pageSize: number }> {
   const prisma = await getPrisma();
   const { city, level, keyword, page = 1, pageSize = 12 } = params;
 

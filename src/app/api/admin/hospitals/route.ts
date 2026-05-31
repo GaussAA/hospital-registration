@@ -3,26 +3,15 @@ import { getPrisma } from "@/lib/db";
 import { success } from "@/lib/utils/response";
 import { apiHandler } from "@/lib/utils/api-handler";
 import { ValidationError } from "@/lib/utils/errors";
-import { paginationSchema } from "@/lib/validations/common.schema";
+import { listHospitals } from "@/lib/services/hospital.service";
 
 export const GET = apiHandler(async (req) => {
   const { searchParams } = new URL(req.url);
-  const raw: Record<string, string> = {};
-  searchParams.forEach((value, key) => { raw[key] = value; });
-  const query = paginationSchema.parse(raw);
+  const page = parseInt(searchParams.get("page") || "1");
+  const pageSize = parseInt(searchParams.get("pageSize") || "12");
 
-  const prisma = await getPrisma();
-
-  const [list, total] = await Promise.all([
-    prisma.hospital.findMany({
-      skip: (query.page - 1) * query.pageSize,
-      take: query.pageSize,
-      orderBy: { createdAt: "desc" },
-    }),
-    prisma.hospital.count(),
-  ]);
-
-  return NextResponse.json(success({ list, total, page: query.page, pageSize: query.pageSize }));
+  const result = await listHospitals({ page, pageSize });
+  return NextResponse.json(success(result));
 }, { requireAdmin: true });
 
 export const POST = apiHandler(async (req) => {

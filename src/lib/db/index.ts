@@ -1,18 +1,19 @@
 import { PrismaClient } from "../../../generated/prisma/client";
 import { PrismaLibSql } from "@prisma/adapter-libsql";
+import { env } from "@/lib/env";
 
-const globalForPrisma = globalThis as unknown as {
-  prisma: PrismaClient | undefined;
-};
-
+let prisma: PrismaClient | null = null;
 let initPromise: Promise<PrismaClient> | null = null;
 
 async function initPrisma(): Promise<PrismaClient> {
-  const adapter = new PrismaLibSql({ url: "file:./prisma/dev.db" });
-  const client = new PrismaClient({
-    adapter,
-  });
-  return client;
+  try {
+    const adapter = new PrismaLibSql({ url: env.DATABASE_URL });
+    const client = new PrismaClient({ adapter });
+    return client;
+  } catch (error) {
+    console.error("[DB] Failed to initialize Prisma:", error);
+    throw error;
+  }
 }
 
 /**
@@ -20,12 +21,10 @@ async function initPrisma(): Promise<PrismaClient> {
  * Must be called within an async context (e.g., API route handlers).
  */
 export async function getPrisma(): Promise<PrismaClient> {
-  if (globalForPrisma.prisma) {
-    return globalForPrisma.prisma;
-  }
+  if (prisma) return prisma;
   if (!initPromise) {
     initPromise = initPrisma().then((client) => {
-      globalForPrisma.prisma = client;
+      prisma = client;
       return client;
     });
   }
