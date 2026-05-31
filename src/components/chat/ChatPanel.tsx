@@ -285,9 +285,9 @@ export default function ChatPanel({ isOpen, onClose }: ChatPanelProps) {
 
         {/* ── Input Area — Two-layer Notion-style ── */}
         <div className="px-3 pb-3 pt-1.5 flex-shrink-0">
-          {/* Layer 1: Text input with controls */}
+          {/* Layer 1: Text input area — full width, auto-expanding (max 5 rows) */}
           <div
-            className="flex items-end rounded-t-xl px-3 py-2.5 transition-colors"
+            className="rounded-t-xl px-3 py-2.5 transition-colors"
             style={{
               background: inputBg,
               border: `1px solid ${borderColor}`,
@@ -296,24 +296,72 @@ export default function ChatPanel({ isOpen, onClose }: ChatPanelProps) {
               borderBottomRightRadius: 0,
             }}
           >
-            {/* Text area — full width, no extra accessories inside */}
             <textarea
               ref={inputRef}
               value={input}
-              onChange={(e) => setInput(e.target.value)}
+              onChange={(e) => {
+                setInput(e.target.value);
+                // Auto-resize height
+                const el = e.target;
+                el.style.height = "auto";
+                const lineHeight = 23; // text-sm + leading-relaxed ~23px
+                const maxHeight = lineHeight * 5; // max 5 rows
+                el.style.height = `${Math.min(el.scrollHeight, maxHeight)}px`;
+              }}
               onKeyDown={handleKeyDown}
               placeholder="输入您的需求..."
-              rows={1}
-              className="flex-1 bg-transparent resize-none outline-none text-sm leading-relaxed max-h-24"
-              style={{ color: textColor }}
+              className="w-full bg-transparent resize-none outline-none text-sm leading-relaxed"
+              style={{
+                color: textColor,
+                minHeight: "23px",
+                maxHeight: "115px", // 5 rows × 23px
+              }}
             />
+          </div>
 
-            {/* Send / Stop button */}
-            <div className="flex-shrink-0 ml-2">
+          {/* Layer 2: Status bar + Send button */}
+          <div
+            className="flex items-center rounded-b-xl px-3 py-1.5 transition-colors"
+            style={{
+              background: inputBg,
+              border: `1px solid ${borderColor}`,
+              borderTop: `1px solid ${isDark ? "rgba(255,255,255,0.04)" : "rgba(0,0,0,0.04)"}`,
+              borderTopLeftRadius: 0,
+              borderTopRightRadius: 0,
+            }}
+          >
+            {/* Left: Auto label + status */}
+            <div className="flex items-center gap-1.5">
+              <div
+                className="px-2 py-0.5 rounded text-[11px] font-medium select-none"
+                style={{
+                  background: isDark ? "rgba(99,102,241,0.15)" : "rgba(99,102,241,0.08)",
+                  color: isDark ? "#a5b4fc" : "#6366f1",
+                }}
+              >
+                Auto
+              </div>
+              {isLoading && (
+                <span className="text-[11px] select-none" style={{ color: mutedColor }}>
+                  正在回复...
+                </span>
+              )}
+            </div>
+
+            {/* Center: keyboard shortcut hint */}
+            <div
+              className="flex-1 text-center text-[10px] select-none"
+              style={{ color: isDark ? "rgba(148,163,184,0.4)" : "rgba(100,116,139,0.4)" }}
+            >
+              Enter 发送 · Shift+Enter 换行
+            </div>
+
+            {/* Right: Send / Stop button */}
+            <div className="flex items-center gap-1 flex-shrink-0">
               {isLoading ? (
                 <button
                   onClick={stop}
-                  className="p-2 rounded-lg transition-all duration-200"
+                  className="p-1.5 rounded-lg transition-all duration-200"
                   style={{ background: "rgba(239,68,68,0.15)", color: "#ef4444" }}
                   title="停止生成"
                 >
@@ -325,7 +373,7 @@ export default function ChatPanel({ isOpen, onClose }: ChatPanelProps) {
                 <button
                   onClick={handleSend}
                   disabled={!input.trim()}
-                  className="p-2 rounded-lg transition-all duration-200 disabled:opacity-30"
+                  className="p-1.5 rounded-lg transition-all duration-200 disabled:opacity-30"
                   style={{
                     background: input.trim()
                       ? "linear-gradient(135deg, #6366f1, #8b5cf6)"
@@ -340,40 +388,6 @@ export default function ChatPanel({ isOpen, onClose }: ChatPanelProps) {
                   </svg>
                 </button>
               )}
-            </div>
-          </div>
-
-          {/* Layer 2: Action buttons row */}
-          <div
-            className="flex items-center justify-between px-3 py-1.5 rounded-b-xl transition-colors"
-            style={{
-              background: inputBg,
-              border: `1px solid ${borderColor}`,
-              borderTop: `1px solid ${isDark ? "rgba(255,255,255,0.04)" : "rgba(0,0,0,0.04)"}`,
-              borderTopLeftRadius: 0,
-              borderTopRightRadius: 0,
-            }}
-          >
-            <div className="flex items-center gap-1">
-              {/* Auto label */}
-              <div
-                className="px-2 py-0.5 rounded text-[11px] font-medium select-none"
-                style={{
-                  background: isDark ? "rgba(99,102,241,0.15)" : "rgba(99,102,241,0.08)",
-                  color: isDark ? "#a5b4fc" : "#6366f1",
-                }}
-              >
-                Auto
-              </div>
-              <span className="text-[11px] select-none" style={{ color: mutedColor }}>
-                {isLoading ? "正在回复..." : "就绪"}
-              </span>
-            </div>
-
-            <div className="flex items-center gap-1">
-              <span className="text-[10px] select-none" style={{ color: isDark ? "rgba(148,163,184,0.4)" : "rgba(100,116,139,0.4)" }}>
-                Enter 发送 · Shift+Enter 换行
-              </span>
             </div>
           </div>
         </div>
