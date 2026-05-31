@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import ConfirmDialog from "@/components/ui/ConfirmDialog";
+import { TableSkeleton } from "@/components/ui/Skeleton";
 
 export type ColumnValue = string | number | boolean | null | undefined;
 
@@ -76,10 +77,7 @@ export default function DataTable<T extends Record<string, any>>({
   if (loading) {
     return (
       <div className="bg-white dark:bg-[#1e293b] rounded-lg shadow dark:shadow-none dark:border dark:border-gray-700 overflow-hidden">
-        <div className="p-8 text-center text-gray-500 dark:text-gray-400">
-          <div className="inline-block w-6 h-6 border-2 border-blue-600 border-t-transparent rounded-full animate-spin mb-2" />
-          <p>加载中...</p>
-        </div>
+        <TableSkeleton rows={5} />
       </div>
     );
   }

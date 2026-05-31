@@ -4,6 +4,7 @@ import { useToast } from "@/components/ui/Toast";
 import { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
 import ConfirmDialog from "@/components/ui/ConfirmDialog";
+import { CardSkeleton } from "@/components/ui/Skeleton";
 import type { RegistrationStatus } from "@/types/index";
 import type { ApiResponse, PaginatedData } from "@/types/api";
 
@@ -156,7 +157,11 @@ export default function AppointmentList({ initialData }: AppointmentListProps) {
 
       {/* Loading indicator */}
       {loading && (
-        <div className="py-8 text-center text-sm text-gray-500 dark:text-gray-400">加载中...</div>
+        <div className="space-y-3">
+          <CardSkeleton />
+          <CardSkeleton />
+          <CardSkeleton />
+        </div>
       )}
 
       {/* Empty state */}

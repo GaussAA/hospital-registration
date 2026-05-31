@@ -73,9 +73,10 @@ export default async function HospitalsPage(props: PageProps) {
           />
         </>
       ) : (
-        <div className="text-center py-16 text-gray-400">
-          <p className="text-lg">暂无符合条件的医院</p>
-          <p className="text-sm mt-1">请尝试调整筛选条件</p>
+        <div className="text-center py-20">
+          <img src="/images/empty-appointment.svg" alt="无结果" className="mx-auto w-32 h-32 mb-6 opacity-60" />
+          <p className="text-base font-medium text-gray-500 dark:text-gray-400">暂无符合条件的医院</p>
+          <p className="text-sm text-gray-400 dark:text-gray-500 mt-1">请尝试调整筛选条件或搜索关键词</p>
         </div>
       )}
     </div>

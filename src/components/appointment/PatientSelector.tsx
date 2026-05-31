@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import PatientForm from "./PatientForm";
+import { Skeleton } from "@/components/ui/Skeleton";
 
 export interface PatientProfile {
   id: string;
@@ -111,7 +112,11 @@ export default function PatientSelector({
       )}
 
       {loading ? (
-        <div className="py-4 text-center text-sm text-gray-500 dark:text-gray-400">加载中...</div>
+        <div className="space-y-3">
+          <Skeleton className="h-16 w-full rounded-lg" />
+          <Skeleton className="h-16 w-full rounded-lg" />
+          <Skeleton className="h-12 w-full rounded-lg" />
+        </div>
       ) : profiles.length === 0 ? (
         <div className="py-4 text-center text-sm text-gray-500 dark:text-gray-400">
           暂无就诊人，请先添加

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import { CardSkeleton } from "@/components/ui/Skeleton";
 
 interface Hospital {
   id: string;
@@ -46,7 +47,12 @@ export default function FeaturedHospitals() {
         <div className="max-w-7xl mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-3">合作医院</h2>
-            <p className="text-gray-500 dark:text-gray-400">加载中...</p>
+          <p className="text-gray-500 dark:text-gray-400 text-sm">为您推荐优质医疗资源</p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
+            <CardSkeleton />
+            <CardSkeleton />
+            <CardSkeleton />
+          </div>
           </div>
         </div>
       </section>
