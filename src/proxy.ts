@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { verifyToken } from "@/lib/utils/jwt";
+import { requireAuth, requireAdmin } from "@/lib/auth/middleware";
 import { checkRateLimit, getRateLimitKey } from "@/lib/utils/rate-limit";
 import {
   AUTH_RATE_LIMIT_MAX,
@@ -32,63 +32,27 @@ export function proxy(request: NextRequest) {
     }
   }
 
-  const token = request.cookies.get("token")?.value;
-
   // ── Admin page routes ───────────────────────────────────────────────
   if (pathname.startsWith("/admin") && !pathname.startsWith("/api/admin")) {
-    if (!token) {
+    const { user, error } = requireAuth(request);
+    if (error || !user) {
       return NextResponse.redirect(new URL("/login", request.url));
     }
-    try {
-      const payload = verifyToken(token);
-      if (payload.role !== "admin") {
-        return NextResponse.redirect(new URL("/login", request.url));
-      }
-    } catch {
+    if (user.role !== "admin") {
       return NextResponse.redirect(new URL("/login", request.url));
     }
   }
 
   // ── Admin API routes ────────────────────────────────────────────────
   if (pathname.startsWith("/api/admin")) {
-    if (!token) {
-      return NextResponse.json(
-        { code: 40100, data: null, message: "未认证" },
-        { status: 401 },
-      );
-    }
-    try {
-      const payload = verifyToken(token);
-      if (payload.role !== "admin") {
-        return NextResponse.json(
-          { code: 40101, data: null, message: "权限不足" },
-          { status: 403 },
-        );
-      }
-    } catch {
-      return NextResponse.json(
-        { code: 40100, data: null, message: "Token 无效" },
-        { status: 401 },
-      );
-    }
+    const { error } = requireAdmin(request);
+    if (error) return error;
   }
 
   // ── Appointment API routes ──────────────────────────────────────────
   if (pathname.startsWith("/api/appointments")) {
-    if (!token) {
-      return NextResponse.json(
-        { code: 40100, data: null, message: "未认证" },
-        { status: 401 },
-      );
-    }
-    try {
-      verifyToken(token);
-    } catch {
-      return NextResponse.json(
-        { code: 40100, data: null, message: "Token 无效" },
-        { status: 401 },
-      );
-    }
+    const { error } = requireAuth(request);
+    if (error) return error;
   }
 
   return NextResponse.next();

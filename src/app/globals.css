@@ -15,6 +15,15 @@
   --color-border-light: var(--border-light);
   --color-shadow-sm: var(--shadow-sm);
   --color-shadow-md: var(--shadow-md);
+
+  --color-primary: #2563eb;
+  --color-primary-hover: #1d4ed8;
+  --color-primary-light: #eff6ff;
+  --color-primary-dark: #1e40af;
+  --color-danger: #ef4444;
+  --color-danger-hover: #dc2626;
+  --color-success: #22c55e;
+  --color-warning: #f59e0b;
 }
 
 @layer base {

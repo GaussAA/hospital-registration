@@ -10,3 +10,6 @@ export interface PaginatedData<T> {
   page: number;
   pageSize: number;
 }
+
+/** Generic paginated API response wrapper */
+export type PaginatedResponse<T> = ApiResponse<PaginatedData<T>>;

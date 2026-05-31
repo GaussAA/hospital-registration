@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { AppError } from "./errors";
 import { fail } from "./response";
-import { verifyToken } from "./jwt";
+import { requireAuth, requireAdmin } from "@/lib/auth/middleware";
 import type { JwtPayload } from "./jwt";
 
 /* ── Types ── */
@@ -61,31 +61,14 @@ export function apiHandler<T = unknown>(
       // ── Auth check ──────────────────────────────────────────────
       let user: JwtPayload | undefined;
 
-      if (config?.requireAdmin || config?.requireAuth) {
-        const token = req.cookies.get("token")?.value;
-
-        if (!token) {
-          return NextResponse.json(
-            fail(40100, "未认证"),
-            { status: 401 },
-          );
-        }
-
-        try {
-          user = verifyToken(token);
-        } catch {
-          return NextResponse.json(
-            fail(40100, "Token 无效或已过期"),
-            { status: 401 },
-          );
-        }
-
-        if (config?.requireAdmin && user.role !== "admin") {
-          return NextResponse.json(
-            fail(40101, "权限不足"),
-            { status: 403 },
-          );
-        }
+      if (config?.requireAdmin) {
+        const result = requireAdmin(req);
+        if (result.error) return result.error;
+        user = result.user;
+      } else if (config?.requireAuth) {
+        const result = requireAuth(req);
+        if (result.error) return result.error;
+        user = result.user;
       }
 
       // ── Execute handler ─────────────────────────────────────────

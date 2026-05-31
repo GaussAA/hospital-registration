@@ -1,16 +1,6 @@
 import { getPrisma } from "@/lib/db";
 import { NotFoundError } from "@/lib/utils/errors";
-
-export interface DoctorListItem {
-  id: string;
-  name: string;
-  title: string;
-  specialty: string;
-  introduction: string;
-  avatarUrl: string;
-  departmentId: string;
-  hospitalId: string;
-}
+import type { DoctorDTO } from "@/types/dto";
 
 export interface DoctorDetail {
   id: string;
@@ -39,7 +29,7 @@ export async function listDoctorsByDepartment(departmentId: string) {
     orderBy: { name: "asc" },
   });
 
-  const list: DoctorListItem[] = doctors.map((d) => ({
+  const list: DoctorDTO[] = doctors.map((d) => ({
     id: d.id,
     name: d.name,
     title: d.title,

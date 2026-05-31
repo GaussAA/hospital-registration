@@ -1,0 +1,17 @@
+import { z } from "zod";
+
+const envSchema = z.object({
+  JWT_SECRET: z.string().min(1, "JWT_SECRET is required"),
+  AI_API_KEY: z.string().optional(),
+  AI_BASE_URL: z.string().url().optional().default("https://api.deepseek.com"),
+  AI_MODEL: z.string().optional().default("deepseek-v4-flash"),
+  DATABASE_URL: z.string().optional().default("file:./prisma/dev.db"),
+});
+
+const parsed = envSchema.safeParse(process.env);
+if (!parsed.success) {
+  console.error("❌ Invalid environment variables:", parsed.error.flatten().fieldErrors);
+  process.exit(1);
+}
+
+export const env = parsed.data;

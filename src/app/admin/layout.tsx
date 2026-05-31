@@ -1,6 +1,5 @@
-import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { verifyToken } from "@/lib/utils/jwt";
+import { requireAuthServer } from "@/lib/auth/middleware";
 import AdminSidebar from "@/components/layout/AdminSidebar";
 import AdminToastWrapper from "@/components/ui/AdminToastWrapper";
 
@@ -9,19 +8,13 @@ export default async function AdminLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const cookieStore = await cookies();
-  const token = cookieStore.get("token")?.value;
+  const { user, error } = await requireAuthServer();
 
-  if (!token) {
+  if (error || !user) {
     redirect("/login?redirect=/admin");
   }
 
-  try {
-    const payload = verifyToken(token);
-    if (payload.role !== "admin") {
-      redirect("/login?redirect=/admin");
-    }
-  } catch {
+  if (user.role !== "admin") {
     redirect("/login?redirect=/admin");
   }
 

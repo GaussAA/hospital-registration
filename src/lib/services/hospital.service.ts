@@ -1,41 +1,11 @@
 import { getPrisma } from "@/lib/db";
 import { NotFoundError } from "@/lib/utils/errors";
 import type { Prisma } from "../../../generated/prisma/client";
-
-export interface HospitalListParams {
-  city?: string;
-  level?: string;
-  keyword?: string;
-  page?: number;
-  pageSize?: number;
-}
-
-export interface HospitalListItem {
-  id: string;
-  name: string;
-  address: string;
-  city: string;
-  level: string;
-  phone: string;
-  description: string;
-  imageUrl: string;
-  departmentCount: number;
-  doctorCount: number;
-}
-
-export interface HospitalDetail {
-  id: string;
-  name: string;
-  address: string;
-  city: string;
-  level: string;
-  phone: string;
-  description: string;
-  imageUrl: string;
-  departmentCount: number;
-  doctorCount: number;
-  createdAt: Date;
-}
+import type {
+  HospitalDTO,
+  HospitalDetailDTO,
+  HospitalListParams,
+} from "@/types/dto";
 
 export async function listHospitals(params: HospitalListParams) {
   const prisma = await getPrisma();
@@ -71,7 +41,7 @@ export async function listHospitals(params: HospitalListParams) {
     prisma.hospital.count({ where }),
   ]);
 
-  const list: HospitalListItem[] = hospitals.map((h) => ({
+  const list: HospitalDTO[] = hospitals.map((h) => ({
     id: h.id,
     name: h.name,
     address: h.address,
@@ -87,7 +57,7 @@ export async function listHospitals(params: HospitalListParams) {
   return { list, total, page, pageSize };
 }
 
-export async function getHospitalById(id: string): Promise<HospitalDetail> {
+export async function getHospitalById(id: string): Promise<HospitalDetailDTO> {
   const prisma = await getPrisma();
 
   const hospital = await prisma.hospital.findUnique({

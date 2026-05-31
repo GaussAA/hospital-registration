@@ -1,5 +1,6 @@
 import { getPrisma } from "@/lib/db";
 import { NotFoundError } from "@/lib/utils/errors";
+import type { DepartmentDTO } from "@/types/dto";
 
 export interface DepartmentListItem {
   id: string;

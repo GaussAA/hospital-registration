@@ -7,3 +7,12 @@ export const TOAST_DURATION_MS = 3500;
 export const AUTH_RATE_LIMIT_MAX = 10;
 export const AUTH_RATE_LIMIT_WINDOW_MS = 60_000;
 export const SCHEDULE_DAYS_AHEAD = 7;
+
+// Schedule window
+export const SCHEDULE_DAYS_WINDOW = 7;
+
+// AI Config
+export const AI_MAX_TOOL_ROUNDS = 8;
+
+// Chat
+export const CHAT_HISTORY_LIMIT = 20;
