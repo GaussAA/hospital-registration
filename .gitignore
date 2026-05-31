@@ -48,4 +48,5 @@ next-env.d.ts
 .workbuddy/
 
 # other
+docs/
 .omc/

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { ThemeProvider } from "@/components/ui/ThemeProvider";
 import { UserProvider } from "@/components/auth/UserProvider";
+import { ChatBubble } from "@/components/chat";
 
 export const metadata: Metadata = {
   title: "健康挂号 - 在线预约挂号平台",
@@ -39,6 +40,7 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col font-sans transition-colors duration-200">
         <ThemeProvider>
           <UserProvider>{children}</UserProvider>
+          <ChatBubble />
         </ThemeProvider>
       </body>
     </html>

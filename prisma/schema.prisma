@@ -129,3 +129,34 @@ model Registration {
   @@index([date])
   @@index([patientId, date, timeSlot])
 }
+
+/// 会话表
+model Conversation {
+  id        String   @id @default(cuid())
+  sessionId String
+  userId    String?
+  title     String   @default("新对话")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  messages Message[]
+
+  @@index([sessionId])
+  @@index([userId])
+  @@index([updatedAt])
+}
+
+/// 消息表
+model Message {
+  id             String   @id @default(cuid())
+  conversationId String
+  role           String
+  content        String?
+  toolCalls      String?
+  createdAt      DateTime @default(now())
+
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  @@index([conversationId])
+  @@index([conversationId, createdAt])
+}

@@ -1,0 +1,258 @@
+import { describe, it, expect, vi, beforeEach } from "vitest";
+
+// ── Hoisted mock factories (necessary because vi.mock is hoisted to top of file) ──
+const {
+  mockAddMessage,
+  mockGetOrCreate,
+  mockGetDetail,
+  mockAddMessages,
+  mockUpdateTitle,
+  mockVerifyToken,
+} = vi.hoisted(() => ({
+  mockAddMessage: vi.fn(),
+  mockGetOrCreate: vi.fn(),
+  mockGetDetail: vi.fn(),
+  mockAddMessages: vi.fn(),
+  mockUpdateTitle: vi.fn(),
+  mockVerifyToken: vi.fn(),
+}));
+
+vi.mock("@/lib/ai/conversation-store", () => ({
+  ConversationStore: {
+    addMessage: mockAddMessage,
+    getOrCreate: mockGetOrCreate,
+    getDetail: mockGetDetail,
+    addMessages: mockAddMessages,
+    updateTitle: mockUpdateTitle,
+  },
+}));
+
+vi.mock("@/lib/utils/jwt", () => ({
+  verifyToken: mockVerifyToken,
+}));
+
+import { POST } from "@/app/api/chat/stream/route";
+
+/**
+ * Helper: create a minimal Request-like object matching what the handler expects.
+ */
+function createMockRequest({
+  body = {},
+  headers = {},
+  cookieToken,
+}: {
+  body?: Record<string, unknown>;
+  headers?: Record<string, string>;
+  cookieToken?: string;
+}): Request {
+  const req = new Request("http://localhost:3000/api/chat/stream", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      ...headers,
+    },
+    body: JSON.stringify(body),
+  });
+
+  // Mock cookies.get for JWT token
+  const cookiesGet = vi.fn(() =>
+    cookieToken ? { value: cookieToken } : undefined
+  );
+
+  Object.defineProperty(req, "cookies", {
+    value: { get: cookiesGet },
+    writable: true,
+  });
+
+  return req as any;
+}
+
+describe("POST /api/chat/stream", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  describe("validation", () => {
+    it("should return 400 when message is missing", async () => {
+      const req = createMockRequest({ body: {} });
+      const res = await POST(req as any);
+
+      expect(res.status).toBe(400);
+      const json = await res.json();
+      expect(json.error).toContain("消息不能为空");
+    });
+
+    it("should return 400 when message is empty string", async () => {
+      const req = createMockRequest({ body: { message: "" } });
+      const res = await POST(req as any);
+
+      expect(res.status).toBe(400);
+      const json = await res.json();
+      expect(json.error).toContain("消息不能为空");
+    });
+
+    it("should return 400 when message is only whitespace", async () => {
+      const req = createMockRequest({ body: { message: "   " } });
+      const res = await POST(req as any);
+
+      expect(res.status).toBe(400);
+      const json = await res.json();
+      expect(json.error).toContain("消息不能为空");
+    });
+
+    it("should return 400 when message is not a string", async () => {
+      const req = createMockRequest({ body: { message: 123 } });
+      const res = await POST(req as any);
+
+      expect(res.status).toBe(400);
+    });
+  });
+
+  describe("response format", () => {
+    beforeEach(() => {
+      mockGetOrCreate.mockResolvedValue("conv-42");
+      mockAddMessage.mockResolvedValue("msg-1");
+      mockGetDetail.mockResolvedValue({
+        id: "conv-42",
+        title: "新对话",
+        messages: [],
+      });
+    });
+
+    it("should return SSE Content-Type header", async () => {
+      const req = createMockRequest({
+        body: { message: "你好" },
+        headers: { "x-session-id": "test-session" },
+      });
+
+      const res = await POST(req as any);
+
+      expect(res.headers.get("Content-Type")).toBe("text/event-stream");
+      expect(res.headers.get("Cache-Control")).toBe("no-cache");
+      expect(res.headers.get("Connection")).toBe("keep-alive");
+    });
+
+    it("should include x-conversation-id header", async () => {
+      const req = createMockRequest({
+        body: { message: "你好" },
+        headers: { "x-session-id": "test-session" },
+      });
+
+      const res = await POST(req as any);
+
+      expect(res.headers.get("x-conversation-id")).toBe("conv-42");
+    });
+
+    it("should use existing conversationId when provided", async () => {
+      mockGetDetail.mockResolvedValue({
+        id: "existing-conv",
+        title: "已有对话",
+        messages: [
+          {
+            role: "user",
+            content: "之前的问题",
+            id: "m1",
+            toolCalls: null,
+            createdAt: "2024-01-01T00:00:00.000Z",
+          },
+        ],
+      });
+
+      const req = createMockRequest({
+        body: { message: "新问题", conversationId: "existing-conv" },
+        headers: { "x-session-id": "test-session" },
+      });
+
+      const res = await POST(req as any);
+
+      // When existingConvId is provided, getOrCreate should NOT be called
+      expect(mockGetOrCreate).not.toHaveBeenCalled();
+      // Message should still be saved to the existing conversation
+      expect(mockAddMessage).toHaveBeenCalledWith(
+        "existing-conv",
+        "user",
+        "新问题"
+      );
+      expect(res.headers.get("x-conversation-id")).toBe("existing-conv");
+    });
+  });
+
+  describe("stream output", () => {
+    beforeEach(() => {
+      mockGetOrCreate.mockResolvedValue("conv-42");
+      mockAddMessage.mockResolvedValue("msg-1");
+      mockGetDetail.mockResolvedValue({
+        id: "conv-42",
+        title: "新对话",
+        messages: [],
+      });
+    });
+
+    it("should produce valid SSE chunks", async () => {
+      const req = createMockRequest({
+        body: { message: "你好" },
+        headers: { "x-session-id": "test-session" },
+      });
+
+      const res = await POST(req as any);
+      const reader = res.body!.getReader();
+      const decoder = new TextDecoder();
+      let allText = "";
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        allText += decoder.decode(value);
+      }
+
+      // Should contain AI SDK format text chunks
+      expect(allText).toContain("0:");
+      // Should contain finish event
+      expect(allText).toContain("e:finish");
+      // Should contain conversationId in the data line
+      expect(allText).toContain("conv-42");
+    });
+
+    it("should persist assistant message after stream completes", async () => {
+      const req = createMockRequest({
+        body: { message: "你好" },
+        headers: { "x-session-id": "test-session" },
+      });
+
+      const res = await POST(req as any);
+      const reader = res.body!.getReader();
+      const decoder = new TextDecoder();
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        decoder.decode(value);
+      }
+
+      // After stream completion, addMessages should have been called
+      expect(mockAddMessages).toHaveBeenCalledTimes(1);
+      const addMessagesCall = mockAddMessages.mock.calls[0];
+      expect(addMessagesCall[0]).toBe("conv-42");
+      expect(addMessagesCall[1][0].role).toBe("assistant");
+      expect(addMessagesCall[1][0].content).toBeTruthy();
+    });
+  });
+
+  describe("error handling", () => {
+    it("should return 500 when an unexpected error occurs", async () => {
+      // Force an error by making addMessage throw
+      mockAddMessage.mockRejectedValue(new Error("数据库连接失败"));
+
+      const req = createMockRequest({
+        body: { message: "你好" },
+        headers: { "x-session-id": "test-session" },
+      });
+
+      const res = await POST(req as any);
+
+      expect(res.status).toBe(500);
+      const json = await res.json();
+      expect(json.error).toContain("数据库连接失败");
+    });
+  });
+});
