@@ -196,15 +196,15 @@ export default function ChatPanel({ isOpen, onClose }: ChatPanelProps) {
 
         {/* ── Messages Area ── */}
         <div
-          className="flex-1 overflow-y-auto scroll-smooth"
+          className="flex-1 overflow-y-auto scroll-smooth relative"
           style={{
             scrollbarWidth: "thin",
             scrollbarColor: isDark ? "rgba(255,255,255,0.1) transparent" : "rgba(0,0,0,0.1) transparent",
           }}
         >
           {allMessages.length === 1 && allMessages[0].id === "welcome" && !isLoading ? (
-            /* ── Welcome State (Notion-style) ── */
-            <div className="flex flex-col items-center justify-center h-full min-h-[400px] px-6 pt-12 pb-4">
+            /* ── Welcome State ── */
+            <div className="flex flex-col items-center justify-center h-full min-h-[400px] px-6 pt-12 pb-20">
               {/* Mascot */}
               <div className="w-16 h-16 rounded-full flex items-center justify-center text-3xl mb-4"
                 style={{
@@ -260,7 +260,7 @@ export default function ChatPanel({ isOpen, onClose }: ChatPanelProps) {
             </div>
           ) : (
             /* ── Chat History ── */
-            <div className="px-4 py-4 space-y-1">
+            <div className="px-4 py-4 pb-20 space-y-1">
               {allMessages.map((msg, i) => {
                 const isLastMsg = i === allMessages.length - 1;
                 const isAssistantLoading = isLastMsg && isLoading && msg.role === "assistant";
@@ -281,113 +281,107 @@ export default function ChatPanel({ isOpen, onClose }: ChatPanelProps) {
               <div ref={messagesEndRef} />
             </div>
           )}
-        </div>
 
-        {/* ── Input Area — Two-layer Notion-style ── */}
-        <div className="px-3 pb-3 pt-1.5 flex-shrink-0">
-          {/* Layer 1: Text input area — full width, auto-expanding (max 5 rows) */}
-          <div
-            className="rounded-t-xl px-3 py-2.5 transition-colors"
-            style={{
-              background: inputBg,
-              border: `1px solid ${borderColor}`,
-              borderBottom: "none",
-              borderBottomLeftRadius: 0,
-              borderBottomRightRadius: 0,
-            }}
-          >
-            <textarea
-              ref={inputRef}
-              value={input}
-              onChange={(e) => {
-                setInput(e.target.value);
-                // Auto-resize height
-                const el = e.target;
-                el.style.height = "auto";
-                const lineHeight = 23; // text-sm + leading-relaxed ~23px
-                const maxHeight = lineHeight * 5; // max 5 rows
-                el.style.height = `${Math.min(el.scrollHeight, maxHeight)}px`;
-              }}
-              onKeyDown={handleKeyDown}
-              placeholder="输入您的需求..."
-              className="w-full bg-transparent resize-none outline-none text-sm leading-relaxed"
-              style={{
-                color: textColor,
-                minHeight: "23px",
-                maxHeight: "115px", // 5 rows × 23px
-              }}
-            />
-          </div>
-
-          {/* Layer 2: Status bar + Send button */}
-          <div
-            className="flex items-center rounded-b-xl px-3 py-1.5 transition-colors"
-            style={{
-              background: inputBg,
-              border: `1px solid ${borderColor}`,
-              borderTop: `1px solid ${isDark ? "rgba(255,255,255,0.04)" : "rgba(0,0,0,0.04)"}`,
-              borderTopLeftRadius: 0,
-              borderTopRightRadius: 0,
-            }}
-          >
-            {/* Left: Auto label + status */}
-            <div className="flex items-center gap-1.5">
-              <div
-                className="px-2 py-0.5 rounded text-[11px] font-medium select-none"
-                style={{
-                  background: isDark ? "rgba(99,102,241,0.15)" : "rgba(99,102,241,0.08)",
-                  color: isDark ? "#a5b4fc" : "#6366f1",
-                }}
-              >
-                Auto
-              </div>
-              {isLoading && (
-                <span className="text-[11px] select-none" style={{ color: mutedColor }}>
-                  正在回复...
-                </span>
-              )}
-            </div>
-
-            {/* Center: keyboard shortcut hint */}
+          {/* ── Floating Input Area — suspended over content ── */}
+          <div className="sticky bottom-0 left-0 right-0 px-3 pb-3 pt-0 pointer-events-none">
             <div
-              className="flex-1 text-center text-[10px] select-none"
-              style={{ color: isDark ? "rgba(148,163,184,0.4)" : "rgba(100,116,139,0.4)" }}
+              className="pointer-events-auto rounded-2xl shadow-lg shadow-black/10 dark:shadow-black/30 backdrop-blur-xl transition-all duration-300"
+              style={{
+                background: isDark
+                  ? "rgba(23,23,30,0.92)"
+                  : "rgba(255,255,255,0.92)",
+                border: `1px solid ${borderColor}`,
+              }}
             >
-              Enter 发送 · Shift+Enter 换行
-            </div>
-
-            {/* Right: Send / Stop button */}
-            <div className="flex items-center gap-1 flex-shrink-0">
-              {isLoading ? (
-                <button
-                  onClick={stop}
-                  className="p-1.5 rounded-lg transition-all duration-200"
-                  style={{ background: "rgba(239,68,68,0.15)", color: "#ef4444" }}
-                  title="停止生成"
-                >
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-                    <rect x="6" y="6" width="12" height="12" rx="2" />
-                  </svg>
-                </button>
-              ) : (
-                <button
-                  onClick={handleSend}
-                  disabled={!input.trim()}
-                  className="p-1.5 rounded-lg transition-all duration-200 disabled:opacity-30"
-                  style={{
-                    background: input.trim()
-                      ? "linear-gradient(135deg, #6366f1, #8b5cf6)"
-                      : "transparent",
-                    color: input.trim() ? "#fff" : mutedColor,
+              {/* Text area */}
+              <div className="px-4 pt-3 pb-1">
+                <textarea
+                  ref={inputRef}
+                  value={input}
+                  onChange={(e) => {
+                    setInput(e.target.value);
+                    const el = e.target;
+                    el.style.height = "auto";
+                    const lineHeight = 23;
+                    const maxHeight = lineHeight * 4;
+                    el.style.height = `${Math.min(el.scrollHeight, maxHeight)}px`;
                   }}
-                  title="发送"
+                  onKeyDown={handleKeyDown}
+                  placeholder="输入您的需求..."
+                  className="w-full bg-transparent resize-none outline-none text-sm leading-relaxed"
+                  style={{
+                    color: textColor,
+                    minHeight: "23px",
+                    maxHeight: "92px",
+                  }}
+                />
+              </div>
+
+              {/* Bottom bar */}
+              <div className="flex items-center px-4 pb-2.5 pt-0.5">
+                {/* Left: Auto label */}
+                <div className="flex items-center gap-1.5">
+                  <div
+                    className="px-1.5 py-0.5 rounded text-[10px] font-semibold select-none"
+                    style={{
+                      background: isDark ? "rgba(99,102,241,0.2)" : "rgba(99,102,241,0.1)",
+                      color: isDark ? "#a5b4fc" : "#6366f1",
+                    }}
+                  >
+                    Auto
+                  </div>
+                  {isLoading && (
+                    <span className="text-[10px] select-none flex items-center gap-1" style={{ color: mutedColor }}>
+                      <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-pulse" />
+                      回复中
+                    </span>
+                  )}
+                </div>
+
+                {/* Center: hint */}
+                <div
+                  className="flex-1 text-center text-[9px] select-none"
+                  style={{ color: isDark ? "rgba(148,163,184,0.3)" : "rgba(100,116,139,0.3)" }}
                 >
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                    <line x1="22" y1="2" x2="11" y2="13" />
-                    <polyline points="22 2 15 22 11 13 2 9 22 2" />
-                  </svg>
-                </button>
-              )}
+                  Enter 发送 · Shift+Enter 换行
+                </div>
+
+                {/* Right: Send / Stop */}
+                <div className="flex items-center gap-1 flex-shrink-0">
+                  {isLoading ? (
+                    <button
+                      onClick={stop}
+                      className="p-1.5 rounded-xl transition-all duration-200 flex items-center gap-1"
+                      style={{ background: "rgba(239,68,68,0.12)", color: "#ef4444" }}
+                      title="停止生成"
+                    >
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                        <rect x="6" y="6" width="12" height="12" rx="2" />
+                      </svg>
+                      <span className="text-[10px] font-medium">停止</span>
+                    </button>
+                  ) : (
+                    <button
+                      onClick={handleSend}
+                      disabled={!input.trim()}
+                      className="p-2 rounded-xl transition-all duration-200 disabled:opacity-30 hover:scale-105 active:scale-95"
+                      style={{
+                        background: input.trim()
+                          ? "linear-gradient(135deg, #6366f1, #8b5cf6)"
+                          : "transparent",
+                        color: input.trim() ? "#fff" : mutedColor,
+                        boxShadow: input.trim() ? "0 2px 8px rgba(99,102,241,0.3)" : "none",
+                      }}
+                      title="发送"
+                    >
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                        <line x1="22" y1="2" x2="11" y2="13" />
+                        <polyline points="22 2 15 22 11 13 2 9 22 2" />
+                      </svg>
+                    </button>
+                  )}
+                </div>
+              </div>
             </div>
           </div>
         </div>

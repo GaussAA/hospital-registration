@@ -2,7 +2,6 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import Image from "next/image";
 
 export default function HeroSection() {
   const router = useRouter();
@@ -19,17 +18,19 @@ export default function HeroSection() {
 
   return (
     <section className="relative overflow-hidden min-h-[85vh] flex items-center">
-      {/* ── Background image ── */}
+      {/* ── Background video ── */}
       <div className="absolute inset-0">
-        <Image
-          src="/images/hero-medical.jpg"
-          alt=""
-          fill
-          className="object-cover scale-105 animate-spin-slow"
-          priority
-          sizes="100vw"
+        <video
+          autoPlay
+          muted
+          loop
+          playsInline
+          poster="/images/hero-medical.jpg"
+          className="absolute inset-0 w-full h-full object-cover"
           aria-hidden="true"
-        />
+        >
+          <source src="/videos/hero-background.mp4" type="video/mp4" />
+        </video>
         {/* Multi-layer gradients */}
         <div className="absolute inset-0 bg-gradient-to-r from-slate-900/95 via-slate-900/75 to-slate-900/90" />
         <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-transparent to-slate-900/40" />

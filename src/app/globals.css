@@ -292,16 +292,6 @@
     animation: float 3s ease-in-out infinite;
   }
 
-  /* ── Spin slow ── */
-  @keyframes spin-slow {
-    from { transform: rotate(0deg); }
-    to   { transform: rotate(360deg); }
-  }
-
-  .animate-spin-slow {
-    animation: spin-slow 8s linear infinite;
-  }
-
   /* ── Toast slide in from right ── */
   @keyframes toastSlideIn {
     from {
