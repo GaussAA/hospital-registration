@@ -50,6 +50,11 @@ import { POST as POST_CANCEL } from "@/app/api/appointments/[id]/cancel/route";
 import { GET as GET_APPOINTMENT_BY_ID } from "@/app/api/appointments/[id]/route";
 
 // ── Helpers ─────────────────────────────────────────────────────────
+interface RequestWithMockCookies extends Request {
+  cookies: { get: (name: string) => { value: string } | undefined };
+  nextUrl: URL;
+}
+
 function createRequest(
   url: string,
   opts: {
@@ -58,7 +63,7 @@ function createRequest(
     cookieToken?: string;
     headers?: Record<string, string>;
   } = {},
-): Request {
+): RequestWithMockCookies {
   const { method = "GET", body, cookieToken, headers = {} } = opts;
   const req = new Request(url, {
     method,
@@ -84,7 +89,7 @@ function createRequest(
     writable: true,
   });
 
-  return req;
+  return req as RequestWithMockCookies;
 }
 
 /** Create a route context with the given params */
@@ -143,7 +148,7 @@ describe("GET /api/appointments", () => {
     const req = createRequest("http://localhost:3000/api/appointments", {
       cookieToken: "valid-token",
     });
-    const res = await GET_APPOINTMENTS(req as any, routeContext());
+    const res = await GET_APPOINTMENTS(req, routeContext());
     const json = await res.json();
 
     expect(res.status).toBe(200);
@@ -154,7 +159,7 @@ describe("GET /api/appointments", () => {
 
   it("should return 401 without auth token", async () => {
     const req = createRequest("http://localhost:3000/api/appointments");
-    const res = await GET_APPOINTMENTS(req as any, routeContext());
+    const res = await GET_APPOINTMENTS(req, routeContext());
     const json = await res.json();
 
     expect(res.status).toBe(401);
@@ -173,7 +178,7 @@ describe("GET /api/appointments", () => {
       "http://localhost:3000/api/appointments?status=pending",
       { cookieToken: "valid-token" },
     );
-    const res = await GET_APPOINTMENTS(req as any, routeContext());
+    const res = await GET_APPOINTMENTS(req, routeContext());
     await res.json();
 
     expect(mockListRegistrations).toHaveBeenCalledWith(
@@ -196,7 +201,7 @@ describe("GET /api/appointments", () => {
       "http://localhost:3000/api/appointments?page=2&pageSize=5",
       { cookieToken: "valid-token" },
     );
-    const res = await GET_APPOINTMENTS(req as any, routeContext());
+    const res = await GET_APPOINTMENTS(req, routeContext());
     await res.json();
 
     expect(mockListRegistrations).toHaveBeenCalledWith(
@@ -229,7 +234,7 @@ describe("POST /api/appointments", () => {
         cookieToken: "valid-token",
       },
     );
-    const res = await POST_APPOINTMENTS(req as any, routeContext());
+    const res = await POST_APPOINTMENTS(req, routeContext());
     const json = await res.json();
 
     expect(res.status).toBe(201);
@@ -245,7 +250,7 @@ describe("POST /api/appointments", () => {
         body: { scheduleId: "schedule-1", profileId: "profile-1", type: "normal" },
       },
     );
-    const res = await POST_APPOINTMENTS(req as any, routeContext());
+    const res = await POST_APPOINTMENTS(req, routeContext());
 
     expect(res.status).toBe(401);
   });
@@ -259,7 +264,7 @@ describe("POST /api/appointments", () => {
         cookieToken: "valid-token",
       },
     );
-    const res = await POST_APPOINTMENTS(req as any, routeContext());
+    const res = await POST_APPOINTMENTS(req, routeContext());
     const json = await res.json();
 
     expect(res.status).toBe(400);
@@ -279,7 +284,7 @@ describe("POST /api/appointments", () => {
         cookieToken: "valid-token",
       },
     );
-    const res = await POST_APPOINTMENTS(req as any, routeContext());
+    const res = await POST_APPOINTMENTS(req, routeContext());
 
     expect(res.status).toBe(400);
   });
@@ -298,7 +303,7 @@ describe("GET /api/appointments/[id]", () => {
       "http://localhost:3000/api/appointments/reg-1",
       { cookieToken: "valid-token" },
     );
-    const res = await GET_APPOINTMENT_BY_ID(req as any, routeContext({ id: "reg-1" }));
+    const res = await GET_APPOINTMENT_BY_ID(req, routeContext({ id: "reg-1" }));
     const json = await res.json();
 
     expect(res.status).toBe(200);
@@ -307,7 +312,7 @@ describe("GET /api/appointments/[id]", () => {
 
   it("should return 401 without auth", async () => {
     const req = createRequest("http://localhost:3000/api/appointments/reg-1");
-    const res = await GET_APPOINTMENT_BY_ID(req as any, routeContext({ id: "reg-1" }));
+    const res = await GET_APPOINTMENT_BY_ID(req, routeContext({ id: "reg-1" }));
 
     expect(res.status).toBe(401);
   });
@@ -320,7 +325,7 @@ describe("GET /api/appointments/[id]", () => {
       "http://localhost:3000/api/appointments/reg-1",
       { cookieToken: "valid-token" },
     );
-    const res = await GET_APPOINTMENT_BY_ID(req as any, routeContext({ id: "reg-1" }));
+    const res = await GET_APPOINTMENT_BY_ID(req, routeContext({ id: "reg-1" }));
 
     expect(res.status).toBe(404);
   });
@@ -342,7 +347,7 @@ describe("POST /api/appointments/[id]/cancel", () => {
       "http://localhost:3000/api/appointments/reg-1/cancel",
       { method: "POST", cookieToken: "valid-token" },
     );
-    const res = await POST_CANCEL(req as any, routeContext({ id: "reg-1" }));
+    const res = await POST_CANCEL(req, routeContext({ id: "reg-1" }));
     const json = await res.json();
 
     expect(res.status).toBe(200);
@@ -355,7 +360,7 @@ describe("POST /api/appointments/[id]/cancel", () => {
       "http://localhost:3000/api/appointments/reg-1/cancel",
       { method: "POST" },
     );
-    const res = await POST_CANCEL(req as any, routeContext({ id: "reg-1" }));
+    const res = await POST_CANCEL(req, routeContext({ id: "reg-1" }));
 
     expect(res.status).toBe(401);
   });
@@ -377,7 +382,7 @@ describe("GET /api/hospitals", () => {
     });
 
     const req = createRequest("http://localhost:3000/api/hospitals");
-    const res = await GET_HOSPITALS(req as any, routeContext());
+    const res = await GET_HOSPITALS(req, routeContext());
     const json = await res.json();
 
     expect(res.status).toBe(200);
@@ -396,7 +401,7 @@ describe("GET /api/hospitals", () => {
     const req = createRequest(
       "http://localhost:3000/api/hospitals?city=北京&level=三级甲等&keyword=人民",
     );
-    await GET_HOSPITALS(req as any, routeContext());
+    await GET_HOSPITALS(req, routeContext());
 
     expect(mockListHospitals).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -411,7 +416,7 @@ describe("GET /api/hospitals", () => {
     const req = createRequest(
       "http://localhost:3000/api/hospitals?pageSize=999",
     );
-    const res = await GET_HOSPITALS(req as any, routeContext());
+    const res = await GET_HOSPITALS(req, routeContext());
     const json = await res.json();
 
     expect(res.status).toBe(400);
@@ -440,7 +445,7 @@ describe("GET /api/hospitals/[id]", () => {
     });
 
     const req = createRequest("http://localhost:3000/api/hospitals/hospital-1");
-    const res = await GET_HOSPITAL_BY_ID(req as any, routeContext({ hospitalId: "hospital-1" }));
+    const res = await GET_HOSPITAL_BY_ID(req, routeContext({ hospitalId: "hospital-1" }));
     const json = await res.json();
 
     expect(res.status).toBe(200);

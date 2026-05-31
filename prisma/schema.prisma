@@ -130,6 +130,31 @@ model Registration {
   @@index([patientId, date, timeSlot])
 }
 
+/// 消息反馈表
+model MessageFeedback {
+  id        String   @id @default(cuid())
+  messageId String
+  userId    String
+  rating    String   // "helpful" | "not_helpful"
+  createdAt DateTime @default(now())
+
+  @@unique([messageId, userId])
+  @@index([messageId])
+  @@index([userId])
+}
+
+/// 用户记忆表（偏好、历史摘要）
+model UserMemory {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  preferences String  @default("{}")
+  summary   String   @default("[]")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+}
+
 /// 会话表
 model Conversation {
   id        String   @id @default(cuid())

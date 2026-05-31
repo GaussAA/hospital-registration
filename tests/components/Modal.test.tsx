@@ -53,7 +53,6 @@ describe("Modal", () => {
     );
 
     // The backdrop is the first child of the overlay with bg-black/40 class
-    const backdrop = container.querySelector(".bg-black\\/40");
     // Since the class has / which is a CSS escape, let's try another approach
     // The backdrop has onClick={onClose}
     const overlayChildren = container.firstElementChild?.children;

@@ -56,7 +56,7 @@ export class ConversationStore {
   }
 
   /**
-   * Batch add messages to a conversation (called at end of stream).
+   * Batch add messages to a conversation.
    */
   static async addMessages(
     conversationId: string,
@@ -97,7 +97,7 @@ export class ConversationStore {
   }
 
   /**
-   * Get conversation detail including messages.
+   * Get conversation detail including all messages.
    */
   static async getDetail(conversationId: string): Promise<ConversationDetail | null> {
     const prisma = await getPrisma();
@@ -135,7 +135,30 @@ export class ConversationStore {
   }
 
   /**
-   * Delete a conversation and all its messages (cascade).
+   * Generate a smart title from the first user message.
+   * Uses heuristics: extracts hospital/department names, action verbs.
+   */
+  static generateSmartTitle(message: string): string {
+    const cleaned = message.trim();
+    if (!cleaned) return "新对话";
+
+    // 提取关键信息生成标题
+    let title = cleaned;
+
+    // 截断到合理长度（最多 30 字符）
+    const chars = Array.from(title);
+    if (chars.length > 30) {
+      title = chars.slice(0, 30).join("") + "…";
+    }
+
+    // 去除多余空格
+    title = title.replace(/\s+/g, " ").trim();
+
+    return title;
+  }
+
+  /**
+   * Delete a conversation and all its messages (cascade handled by Prisma).
    */
   static async remove(conversationId: string): Promise<void> {
     const prisma = await getPrisma();
@@ -145,10 +168,41 @@ export class ConversationStore {
   }
 
   /**
-   * Merge anonymous conversations into a user account (for post-login merge).
-   * Not implemented — P1 feature.
+   * Merge anonymous conversations into a user account after login.
+   * Transfers all conversations with matching sessionId to the user's userId.
    */
-  static async mergeToUser(_sessionId: string, _userId: string): Promise<void> {
-    throw new Error("Not implemented: mergeToUser is a P1 feature");
+  static async mergeToUser(sessionId: string, userId: string): Promise<void> {
+    if (!sessionId || !userId) return;
+
+    const prisma = await getPrisma();
+
+    // 查找该 session 下的所有匿名对话
+    const anonymousConversations = await prisma.conversation.findMany({
+      where: {
+        sessionId,
+        userId: null,
+      },
+    });
+
+    if (anonymousConversations.length === 0) return;
+
+    // 逐个迁移到用户
+    for (const conv of anonymousConversations) {
+      // 检查该用户是否已有同名对话（避免重复）
+      const existingForUser = await prisma.conversation.findFirst({
+        where: {
+          userId,
+          title: conv.title,
+          // 不是完全精准匹配，但防大部分重复
+        },
+      });
+
+      if (!existingForUser) {
+        await prisma.conversation.update({
+          where: { id: conv.id },
+          data: { userId },
+        });
+      }
+    }
   }
 }

@@ -1,7 +1,15 @@
 "use client";
 
 import { useState, useRef, useCallback, useEffect } from "react";
-import type { StreamMessage } from "@/lib/ai/types";
+import type { StreamMessage, ConversationSummary } from "@/lib/ai/types";
+
+/* ── Internal types ── */
+
+interface ApiMessage {
+  id: string;
+  role: string;
+  content: string;
+}
 
 const SESSION_KEY = "hospital-chat-session-id";
 const CONV_KEY = "hospital-chat-last-conv-id";
@@ -27,14 +35,20 @@ interface UseChatStreamReturn {
   setInput: (val: string) => void;
   isLoading: boolean;
   conversationId: string | null;
+  conversations: ConversationSummary[];
   sendMessage: (content: string) => Promise<void>;
   stop: () => void;
   clearConversation: () => void;
+  newConversation: () => void;
+  switchConversation: (id: string) => Promise<void>;
+  deleteConversation: (id: string) => Promise<void>;
+  fetchConversations: () => Promise<void>;
 }
 
 /**
  * Custom Hook for SSE-based chat streaming.
- * Connects to /api/chat/stream and manages message state with typing indicators.
+ * Connects to /api/chat/stream and manages messages with typing indicators,
+ * tool call visualization, and conversation management.
  */
 export function useChatStream(opts?: UseChatStreamOptions): UseChatStreamReturn {
   const [messages, setMessages] = useState<StreamMessage[]>(
@@ -45,9 +59,10 @@ export function useChatStream(opts?: UseChatStreamOptions): UseChatStreamReturn 
   const [conversationId, setConversationId] = useState<string | null>(
     opts?.initialConversationId || null
   );
+  const [conversations, setConversations] = useState<ConversationSummary[]>([]);
   const abortRef = useRef<AbortController | null>(null);
   const msgIdCounter = useRef(0);
-  const restoredRef = useRef(false); // Prevent double-restore in StrictMode
+  const restoredRef = useRef(false);
 
   const genId = () => `msg_${++msgIdCounter.current}`;
 
@@ -61,6 +76,68 @@ export function useChatStream(opts?: UseChatStreamOptions): UseChatStreamReturn 
     setConversationId(null);
     localStorage.removeItem(CONV_KEY);
   }, []);
+
+  /** Fetch conversation list for the current session */
+  const fetchConversations = useCallback(async () => {
+    try {
+      const sessionId = getSessionId();
+      const res = await fetch(`/api/conversations?sessionId=${sessionId}`);
+      const data = await res.json();
+      if (data.code === 0 && Array.isArray(data.data)) {
+        setConversations(data.data);
+      }
+    } catch {
+      // Silently fail — not critical
+    }
+  }, []);
+
+  /** Create a new conversation */
+  const newConversation = useCallback(() => {
+    stop();
+    setMessages([]);
+    setConversationId(null);
+    localStorage.removeItem(CONV_KEY);
+    fetchConversations();
+  }, [stop, fetchConversations]);
+
+  /** Switch to an existing conversation */
+  const switchConversation = useCallback(async (id: string) => {
+    stop();
+    try {
+      const res = await fetch(`/api/conversations/${id}`);
+      const data = await res.json();
+      if (data.code === 0 && data.data) {
+        const history: StreamMessage[] = (data.data.messages || []).map((m: ApiMessage) => ({
+          id: m.id,
+          role: m.role as "user" | "assistant",
+          content: m.content || "",
+          isTyping: false,
+        }));
+        setMessages(history);
+        setConversationId(id);
+        localStorage.setItem(CONV_KEY, id);
+      }
+    } catch {
+      // Failed to switch
+    }
+  }, [stop]);
+
+  /** Delete a conversation */
+  const deleteConversation = useCallback(async (id: string) => {
+    try {
+      const res = await fetch(`/api/conversations/${id}`, { method: "DELETE" });
+      const data = await res.json();
+      if (data.code === 0) {
+        // If the deleted conversation was active, clear it
+        if (conversationId === id) {
+          clearConversation();
+        }
+        fetchConversations();
+      }
+    } catch {
+      // Failed to delete
+    }
+  }, [conversationId, clearConversation, fetchConversations]);
 
   const sendMessage = useCallback(
     async (content: string) => {
@@ -134,16 +211,11 @@ export function useChatStream(opts?: UseChatStreamOptions): UseChatStreamReturn 
               // Text chunk
               const text = line.slice(2);
               try {
-                // In ai SDK format, the text after "0:" is JSON-encoded
                 const decoded = JSON.parse(text);
                 setMessages((prev) => {
                   const updated = [...prev];
                   const last = updated[updated.length - 1];
-                  if (
-                    last &&
-                    last.role === "assistant" &&
-                    last.id === assistantId
-                  ) {
+                  if (last && last.role === "assistant" && last.id === assistantId) {
                     updated[updated.length - 1] = {
                       ...last,
                       content: last.content + decoded,
@@ -153,15 +225,10 @@ export function useChatStream(opts?: UseChatStreamOptions): UseChatStreamReturn 
                   return updated;
                 });
               } catch {
-                // Not JSON, treat as plain text
                 setMessages((prev) => {
                   const updated = [...prev];
                   const last = updated[updated.length - 1];
-                  if (
-                    last &&
-                    last.role === "assistant" &&
-                    last.id === assistantId
-                  ) {
+                  if (last && last.role === "assistant" && last.id === assistantId) {
                     updated[updated.length - 1] = {
                       ...last,
                       content: last.content + text,
@@ -171,8 +238,40 @@ export function useChatStream(opts?: UseChatStreamOptions): UseChatStreamReturn 
                   return updated;
                 });
               }
+            } else if (line.startsWith("e:tool-call")) {
+              // Tool call started — show executing state
+              try {
+                const dataPart = line.replace("e:tool-call\nd:", "").trim();
+                const toolData = JSON.parse(dataPart);
+                setMessages((prev) => {
+                  const updated = [...prev];
+                  const last = updated[updated.length - 1];
+                  if (last && last.id === assistantId) {
+                    updated[updated.length - 1] = {
+                      ...last,
+                      isExecutingTool: true,
+                      executingToolName: toolData.toolName,
+                    };
+                  }
+                  return updated;
+                });
+              } catch {}
+            } else if (line.startsWith("e:tool-result")) {
+              // Tool result received — clear executing state
+              setMessages((prev) => {
+                const updated = [...prev];
+                const last = updated[updated.length - 1];
+                if (last && last.id === assistantId) {
+                  updated[updated.length - 1] = {
+                    ...last,
+                    isExecutingTool: false,
+                    executingToolName: undefined,
+                  };
+                }
+                return updated;
+              });
             } else if (line.startsWith("e:finish")) {
-              // Finish event — end typing
+              // Finish event
               setMessages((prev) => {
                 const updated = [...prev];
                 const last = updated[updated.length - 1];
@@ -180,12 +279,33 @@ export function useChatStream(opts?: UseChatStreamOptions): UseChatStreamReturn 
                   updated[updated.length - 1] = {
                     ...last,
                     isTyping: false,
+                    isExecutingTool: false,
                   };
                 }
                 return updated;
               });
+              // Refresh conversation list
+              fetchConversations();
+            } else if (line.startsWith("d:")) {
+              // Data event — extract assistantMessageId for feedback
+              try {
+                const dataStr = line.slice(2).trim();
+                const data = JSON.parse(dataStr);
+                if (data.assistantMessageId) {
+                  setMessages((prev) => {
+                    const updated = [...prev];
+                    const last = updated[updated.length - 1];
+                    if (last && last.id === assistantId) {
+                      updated[updated.length - 1] = {
+                        ...last,
+                        messageId: data.assistantMessageId,
+                      };
+                    }
+                    return updated;
+                  });
+                }
+              } catch {}
             } else if (line.startsWith("e:error")) {
-              // Error event
               setMessages((prev) => {
                 const updated = [...prev];
                 const last = updated[updated.length - 1];
@@ -202,8 +322,8 @@ export function useChatStream(opts?: UseChatStreamOptions): UseChatStreamReturn 
             }
           }
         }
-      } catch (err: any) {
-        if (err.name === "AbortError") {
+      } catch (err: unknown) {
+        if (err instanceof Error && err.name === "AbortError") {
           setMessages((prev) => {
             const updated = [...prev];
             const last = updated[updated.length - 1];
@@ -223,7 +343,7 @@ export function useChatStream(opts?: UseChatStreamOptions): UseChatStreamReturn 
             if (last && last.id === assistantId) {
               updated[updated.length - 1] = {
                 ...last,
-                content: `网络错误：${err.message}`,
+                content: `网络错误：${err instanceof Error ? err.message : String(err)}`,
                 isTyping: false,
               };
             }
@@ -234,13 +354,16 @@ export function useChatStream(opts?: UseChatStreamOptions): UseChatStreamReturn 
         setIsLoading(false);
       }
     },
-    [isLoading, conversationId]
+    [isLoading, conversationId, fetchConversations]
   );
 
-  // Restore conversation on mount (guarded against StrictMode double-mount)
+  // Restore conversation on mount
   useEffect(() => {
     if (restoredRef.current) return;
     restoredRef.current = true;
+
+    // Fetch conversation list
+    fetchConversations();
 
     if (!opts?.initialMessages && !opts?.initialConversationId) {
       const savedConvId = localStorage.getItem(CONV_KEY);
@@ -249,9 +372,7 @@ export function useChatStream(opts?: UseChatStreamOptions): UseChatStreamReturn 
           .then((r) => r.json())
           .then((data) => {
             if (data.code === 0 && data.data) {
-              const history: StreamMessage[] = (
-                data.data.messages || []
-              ).map((m: any) => ({
+              const history: StreamMessage[] = (data.data.messages || []).map((m: ApiMessage) => ({
                 id: m.id,
                 role: m.role as "user" | "assistant",
                 content: m.content || "",
@@ -260,17 +381,15 @@ export function useChatStream(opts?: UseChatStreamOptions): UseChatStreamReturn 
               setMessages(history);
               setConversationId(savedConvId);
             } else {
-              // Conversation not found, clean up
               localStorage.removeItem(CONV_KEY);
             }
           })
           .catch(() => {
-            // Restore failed, clean up
             localStorage.removeItem(CONV_KEY);
           });
       }
     }
-  }, []);
+  }, [fetchConversations, opts?.initialConversationId, opts?.initialMessages]);
 
   return {
     messages,
@@ -278,8 +397,13 @@ export function useChatStream(opts?: UseChatStreamOptions): UseChatStreamReturn 
     setInput,
     isLoading,
     conversationId,
+    conversations,
     sendMessage,
     stop,
     clearConversation,
+    newConversation,
+    switchConversation,
+    deleteConversation,
+    fetchConversations,
   };
 }

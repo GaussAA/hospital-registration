@@ -1,11 +1,9 @@
-import type { ToolContext } from "../../types";
 import { listDoctorsByDepartment, getDoctorById } from "@/lib/services/doctor.service";
 import { fmtDoctor } from "../formatters";
 import { searchDoctorsSchema, getDoctorDetailSchema } from "../validators";
 
 export async function handleSearchDoctors(
   args: Record<string, unknown>,
-  _context: ToolContext,
 ): Promise<string> {
   const parsed = searchDoctorsSchema.safeParse(args);
   if (!parsed.success) {
@@ -31,7 +29,6 @@ export async function handleSearchDoctors(
 
 export async function handleGetDoctorDetail(
   args: Record<string, unknown>,
-  _context: ToolContext,
 ): Promise<string> {
   const parsed = getDoctorDetailSchema.safeParse(args);
   if (!parsed.success) {

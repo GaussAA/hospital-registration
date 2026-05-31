@@ -1,7 +1,7 @@
 import type { ToolContext } from "../../types";
 import { getPatientProfilesByUser, createPatientProfile } from "@/lib/services/patient-profile.service";
 import { fmtProfile } from "../formatters";
-import { getPatientProfilesSchema, createPatientProfileSchema } from "../validators";
+import { createPatientProfileSchema } from "../validators";
 
 export async function handleGetPatientProfiles(
   _args: Record<string, unknown>,

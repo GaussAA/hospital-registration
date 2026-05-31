@@ -1,5 +1,4 @@
 import type { ToolDefinition, ToolParam, FunctionCallTool } from "../types";
-import type { ToolContext } from "../types";
 
 import { handleSearchHospitals, handleGetHospitalDetail } from "./handlers/hospital";
 import { handleSearchDepartments, handleRecommendDepartment } from "./handlers/department";

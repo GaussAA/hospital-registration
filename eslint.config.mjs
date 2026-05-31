@@ -13,6 +13,28 @@ const eslintConfig = defineConfig([
     "build/**",
     "next-env.d.ts",
   ]),
+  {
+    // eslint-plugin-react 与 ESLint 10 不兼容，禁用所有 react 规则防止崩溃
+    rules: {
+      "react/display-name": "off",
+      "react/no-direct-mutation-state": "off",
+      "react/jsx-no-target-blank": "off",
+      "react/jsx-no-comment-textnodes": "off",
+      "react/jsx-no-duplicate-props": "off",
+      "react/no-children-prop": "off",
+      "react/no-danger-with-children": "off",
+      "react/no-deprecated": "off",
+      "react/no-find-dom-node": "off",
+      "react/no-is-mounted": "off",
+      "react/no-render-return-value": "off",
+      "react/no-string-refs": "off",
+      "react/no-unescaped-entities": "off",
+      "react/no-unknown-property": "off",
+      "react/prop-types": "off",
+      "react/react-in-jsx-scope": "off",
+      "react/require-render-return": "off",
+    },
+  },
 ]);
 
 export default eslintConfig;

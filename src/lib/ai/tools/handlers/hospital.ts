@@ -1,4 +1,3 @@
-import type { ToolContext } from "../../types";
 import { listHospitals, getHospitalById } from "@/lib/services/hospital.service";
 import { listDepartmentsByHospital } from "@/lib/services/department.service";
 import { fmtHospital, fmtDepartment } from "../formatters";
@@ -6,7 +5,6 @@ import { searchHospitalsSchema, getHospitalDetailSchema } from "../validators";
 
 export async function handleSearchHospitals(
   args: Record<string, unknown>,
-  _context: ToolContext,
 ): Promise<string> {
   const parsed = searchHospitalsSchema.safeParse(args);
   if (!parsed.success) {
@@ -33,7 +31,6 @@ export async function handleSearchHospitals(
 
 export async function handleGetHospitalDetail(
   args: Record<string, unknown>,
-  _context: ToolContext,
 ): Promise<string> {
   const parsed = getHospitalDetailSchema.safeParse(args);
   if (!parsed.success) {

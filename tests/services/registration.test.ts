@@ -91,7 +91,7 @@ describe("createRegistration", () => {
 
   it("should create a registration successfully", async () => {
     // Transaction callback receives a tx object (same as mockPrisma)
-    mockPrisma.$transaction.mockImplementation(async (cb: Function) => {
+    mockPrisma.$transaction.mockImplementation(async (cb: (...args: unknown[]) => unknown) => {
       return cb(mockPrisma);
     });
     mockPrisma.schedule.findUnique.mockResolvedValue(mockSchedule);
@@ -119,7 +119,7 @@ describe("createRegistration", () => {
 
   it("should throw ConflictError when schedule is full", async () => {
     const fullSchedule = { ...mockSchedule, bookedCount: 20, quota: 20 };
-    mockPrisma.$transaction.mockImplementation(async (cb: Function) => {
+    mockPrisma.$transaction.mockImplementation(async (cb: (...args: unknown[]) => unknown) => {
       return cb(mockPrisma);
     });
     mockPrisma.schedule.findUnique.mockResolvedValue(fullSchedule);
@@ -130,7 +130,7 @@ describe("createRegistration", () => {
   });
 
   it("should throw NotFoundError when schedule does not exist", async () => {
-    mockPrisma.$transaction.mockImplementation(async (cb: Function) => {
+    mockPrisma.$transaction.mockImplementation(async (cb: (...args: unknown[]) => unknown) => {
       return cb(mockPrisma);
     });
     mockPrisma.schedule.findUnique.mockResolvedValue(null);
@@ -141,7 +141,7 @@ describe("createRegistration", () => {
   });
 
   it("should throw ConflictError when duplicate booking on same date+slot", async () => {
-    mockPrisma.$transaction.mockImplementation(async (cb: Function) => {
+    mockPrisma.$transaction.mockImplementation(async (cb: (...args: unknown[]) => unknown) => {
       return cb(mockPrisma);
     });
     mockPrisma.schedule.findUnique.mockResolvedValue(mockSchedule);
@@ -153,7 +153,7 @@ describe("createRegistration", () => {
   });
 
   it("should throw ConflictError when optimistic lock fails (race condition)", async () => {
-    mockPrisma.$transaction.mockImplementation(async (cb: Function) => {
+    mockPrisma.$transaction.mockImplementation(async (cb: (...args: unknown[]) => unknown) => {
       return cb(mockPrisma);
     });
     mockPrisma.schedule.findUnique.mockResolvedValue(mockSchedule);
@@ -269,7 +269,7 @@ describe("cancelRegistration", () => {
 
   it("should cancel a pending registration successfully", async () => {
     const existingRegistration = makeRegistration();
-    mockPrisma.$transaction.mockImplementation(async (cb: Function) => {
+    mockPrisma.$transaction.mockImplementation(async (cb: (...args: unknown[]) => unknown) => {
       return cb(mockPrisma);
     });
     mockPrisma.registration.findUnique
@@ -291,7 +291,7 @@ describe("cancelRegistration", () => {
   });
 
   it("should throw NotFoundError when registration does not exist", async () => {
-    mockPrisma.$transaction.mockImplementation(async (cb: Function) => {
+    mockPrisma.$transaction.mockImplementation(async (cb: (...args: unknown[]) => unknown) => {
       return cb(mockPrisma);
     });
     mockPrisma.registration.findUnique.mockResolvedValue(null);
@@ -301,7 +301,7 @@ describe("cancelRegistration", () => {
 
   it("should throw NotFoundError when patientId does not match (unauthorized cancel)", async () => {
     const otherPatientReg = makeRegistration({ patientId: "patient-2" });
-    mockPrisma.$transaction.mockImplementation(async (cb: Function) => {
+    mockPrisma.$transaction.mockImplementation(async (cb: (...args: unknown[]) => unknown) => {
       return cb(mockPrisma);
     });
     mockPrisma.registration.findUnique.mockResolvedValue(otherPatientReg);
@@ -311,7 +311,7 @@ describe("cancelRegistration", () => {
 
   it("should throw ConflictError when registration is already cancelled", async () => {
     const cancelledReg = makeRegistration({ status: "cancelled" });
-    mockPrisma.$transaction.mockImplementation(async (cb: Function) => {
+    mockPrisma.$transaction.mockImplementation(async (cb: (...args: unknown[]) => unknown) => {
       return cb(mockPrisma);
     });
     mockPrisma.registration.findUnique.mockResolvedValue(cancelledReg);
@@ -321,7 +321,7 @@ describe("cancelRegistration", () => {
 
   it("should throw ConflictError when registration is already done (completed)", async () => {
     const doneReg = makeRegistration({ status: "done" });
-    mockPrisma.$transaction.mockImplementation(async (cb: Function) => {
+    mockPrisma.$transaction.mockImplementation(async (cb: (...args: unknown[]) => unknown) => {
       return cb(mockPrisma);
     });
     mockPrisma.registration.findUnique.mockResolvedValue(doneReg);

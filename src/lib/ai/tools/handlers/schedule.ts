@@ -1,4 +1,3 @@
-import type { ToolContext } from "../../types";
 import { getDoctorById } from "@/lib/services/doctor.service";
 import { listSchedulesByDoctor } from "@/lib/services/schedule.service";
 import { fmtDoctor, fmtSchedule } from "../formatters";
@@ -6,7 +5,6 @@ import { getDoctorSchedulesSchema } from "../validators";
 
 export async function handleGetDoctorSchedules(
   args: Record<string, unknown>,
-  _context: ToolContext,
 ): Promise<string> {
   const parsed = getDoctorSchedulesSchema.safeParse(args);
   if (!parsed.success) {

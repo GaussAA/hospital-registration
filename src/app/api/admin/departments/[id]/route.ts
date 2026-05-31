@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { getPrisma } from "@/lib/db";
 import { success } from "@/lib/utils/response";
 import { apiHandler } from "@/lib/utils/api-handler";
-import { NotFoundError, ValidationError } from "@/lib/utils/errors";
+import { NotFoundError } from "@/lib/utils/errors";
 import { getDepartmentById } from "@/lib/services/department.service";
 
 export const GET = apiHandler<{ id: string }>(async (req, { params }) => {

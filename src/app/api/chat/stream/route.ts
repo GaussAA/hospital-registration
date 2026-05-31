@@ -39,8 +39,8 @@ export async function POST(req: NextRequest) {
     // 4. Get or create conversation
     const conversationId = existingConvId || (await ConversationStore.getOrCreate(sessionId, userId));
 
-    // 5. Save user message immediately
-    await ConversationStore.addMessage(conversationId, "user", message.trim());
+    // 5. Save user message immediately, capture its ID for feedback
+    const userMessageId = await ConversationStore.addMessage(conversationId, "user", message.trim());
 
     // 6. Load recent history (last 30 messages)
     const detail = await ConversationStore.getDetail(conversationId);
@@ -75,7 +75,6 @@ export async function POST(req: NextRequest) {
 
             // Collect text chunks for persistence
             const chunk = decoder.decode(value, { stream: true });
-            // Parse out 0: prefixed text chunks
             for (const line of chunk.split("\n")) {
               if (line.startsWith("0:")) {
                 try {
@@ -88,34 +87,39 @@ export async function POST(req: NextRequest) {
             controller.enqueue(value);
           }
 
-          // Send finish event with conversationId
+          // 10. Persist AI response on completion
+          const content = fullContent.join("");
+          let assistantMessageId: string | undefined;
+
+          if (content.trim()) {
+            // Save assistant message and get ID
+            assistantMessageId = await ConversationStore.addMessage(
+              conversationId,
+              "assistant",
+              content
+            );
+
+            // Auto-generate smart title from first user message
+            if (detail && detail.title === "新对话") {
+              const title = ConversationStore.generateSmartTitle(message.trim());
+              await ConversationStore.updateTitle(conversationId, title);
+            }
+          }
+
+          // 11. Send finish event with IDs for feedback
           controller.enqueue(
-            encoder.encode(`d:${JSON.stringify({ conversationId })}\n\n`)
+            encoder.encode(
+              `d:${JSON.stringify({
+                conversationId,
+                userMessageId,
+                assistantMessageId: assistantMessageId || null,
+              })}\n\n`
+            )
           );
         } catch (err: any) {
           console.error("[chat/stream] Stream error:", err);
         } finally {
-          controller.close();
-
-          // Persist AI response
-          const content = fullContent.join("");
-          if (content.trim()) {
-            await ConversationStore.addMessages(conversationId, [
-              { role: "assistant", content },
-            ]);
-
-            // Auto-generate title from first user message (Unicode-safe)
-            if (detail && detail.title === "新对话") {
-              const chars = Array.from(message.trim());
-              const title = chars.length > 20
-                ? chars.slice(0, 20).join("") + "..."
-                : chars.join("");
-              await ConversationStore.updateTitle(
-                conversationId,
-                title
-              );
-            }
-          }
+          try { controller.close(); } catch {}
         }
       },
     });

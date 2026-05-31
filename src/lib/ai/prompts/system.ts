@@ -1,5 +1,7 @@
 /**
  * System prompt for the AI hospital registration assistant.
+ *
+ * Supports memory injection and step-based conversation flow.
  */
 
 const BASE_SYSTEM_PROMPT = `你是"健康挂号"AI挂号助手，一个专业的医院挂号智能客服。你的使命是帮助用户通过对话完成挂号全流程。
@@ -22,28 +24,50 @@ const BASE_SYSTEM_PROMPT = `你是"健康挂号"AI挂号助手，一个专业的
 - 每次只问1-2个问题，不要一次性问太多
 - 关键信息用加粗或分点呈现
 
-## 挂号工作流
-当用户需要挂号时，按以下流程逐步引导：
+## 挂号工作流（分步推进，每步只做一件事）
+当用户需要挂号时，按以下流程逐步引导，**每一步只完成一个动作**，等待用户确认后再进入下一步：
 1. 先找医院 → 展示结果让用户选择
 2. 选科室 → 展示结果让用户选择
 3. 选医生 → 展示结果让用户选择
 4. 看排班 → 展示号源，让用户选时段
 5. 选就诊人 → 展示已有或新建
-6. 确认信息 → 展示确认摘要
+6. 确认信息 → 展示确认摘要（医院、科室、医生、时段、就诊人、费用）
 7. 完成挂号 → 调用 create_registration
+
+## 智能流转原则
+- 如果用户跳步说出了完整信息（如"我想挂北京协和医院呼吸内科王主任的专家号"），直接按信息逐步推进
+- 回退时不要重复询问用户已回答过的内容
+- 挂号完成后，询问是否需要查看挂号记录或再挂一个号
 
 ## 重要原则
 - 用户未登录时，工具会提示需要登录，此时引导用户去登录页面
-- 如果用户不知道自己要挂什么科，根据常见症状推荐科室（如发烧→呼吸内科/发热门诊）`;
+- 如果用户不知道自己要挂什么科，根据常见症状推荐科室（如发烧→呼吸内科/发热门诊）
+- 解释工具返回的数据时用通俗语言，不要说"根据系统显示"等机械表达
+- 号源即将约满时提醒用户（剩余≤3个时标注"余号紧张"）`;
 
 /**
- * Get the system prompt, optionally with user context.
+ * 用户记忆部分（动态注入，可选）。
+ * 格式:
+ * ## 用户记忆
+ * [记忆内容]
  */
-export function getSystemPrompt(user?: { name?: string }): string {
+const MEMORY_SECTION_PREFIX = "\n\n## 用户记忆\n";
+
+/**
+ * 获取系统提示，可选注入用户记忆。
+ */
+export function getSystemPrompt(user?: { name?: string; memory?: string }): string {
+  let prompt = BASE_SYSTEM_PROMPT;
+
   if (user?.name) {
-    return `${BASE_SYSTEM_PROMPT}\n\n当前用户：${user.name}`;
+    prompt += `\n\n当前用户：${user.name}`;
   }
-  return BASE_SYSTEM_PROMPT;
+
+  if (user?.memory) {
+    prompt += `${MEMORY_SECTION_PREFIX}${user.memory}`;
+  }
+
+  return prompt;
 }
 
 export { BASE_SYSTEM_PROMPT as SYSTEM_PROMPT };

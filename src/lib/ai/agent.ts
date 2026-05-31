@@ -38,7 +38,6 @@ export async function processMessage(
   message: string,
   history: ChatMessage[],
   context: ToolContext,
-  _state?: ConversationState
 ): Promise<AgentResult> {
   // Clean the input
   const cleaned = message.trim();
@@ -54,11 +53,12 @@ export async function processMessage(
   try {
     const result = await runAgentLoop(cleaned, history, context);
     return { reply: result };
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("[AI Agent Error]", error);
 
     // Fallback to a simpler response
-    if (error.message?.includes("401") || error.message?.includes("API key")) {
+    const err = error as { message?: string };
+    if (err.message?.includes("401") || err.message?.includes("API key")) {
       return {
         reply: "AI 服务 API 密钥无效或已过期，请管理员检查配置。您可以先使用手动流程完成挂号。",
       };
@@ -94,7 +94,7 @@ async function runAgentLoop(
     { role: "user", content: message },
   ];
 
-  let maxRounds = 8;
+  const maxRounds = 8;
 
   for (let round = 0; round < maxRounds; round++) {
     const response = await completion({

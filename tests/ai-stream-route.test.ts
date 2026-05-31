@@ -33,6 +33,10 @@ vi.mock("@/lib/utils/jwt", () => ({
 
 import { POST } from "@/app/api/chat/stream/route";
 
+interface RequestWithMockCookies extends Request {
+  cookies: { get: (name: string) => { value: string } | undefined };
+}
+
 /**
  * Helper: create a minimal Request-like object matching what the handler expects.
  */
@@ -44,7 +48,7 @@ function createMockRequest({
   body?: Record<string, unknown>;
   headers?: Record<string, string>;
   cookieToken?: string;
-}): Request {
+}): RequestWithMockCookies {
   const req = new Request("http://localhost:3000/api/chat/stream", {
     method: "POST",
     headers: {
@@ -64,7 +68,7 @@ function createMockRequest({
     writable: true,
   });
 
-  return req as any;
+  return req as RequestWithMockCookies;
 }
 
 describe("POST /api/chat/stream", () => {
@@ -75,7 +79,7 @@ describe("POST /api/chat/stream", () => {
   describe("validation", () => {
     it("should return 400 when message is missing", async () => {
       const req = createMockRequest({ body: {} });
-      const res = await POST(req as any);
+      const res = await POST(req);
 
       expect(res.status).toBe(400);
       const json = await res.json();
@@ -84,7 +88,7 @@ describe("POST /api/chat/stream", () => {
 
     it("should return 400 when message is empty string", async () => {
       const req = createMockRequest({ body: { message: "" } });
-      const res = await POST(req as any);
+      const res = await POST(req);
 
       expect(res.status).toBe(400);
       const json = await res.json();
@@ -93,7 +97,7 @@ describe("POST /api/chat/stream", () => {
 
     it("should return 400 when message is only whitespace", async () => {
       const req = createMockRequest({ body: { message: "   " } });
-      const res = await POST(req as any);
+      const res = await POST(req);
 
       expect(res.status).toBe(400);
       const json = await res.json();
@@ -102,7 +106,7 @@ describe("POST /api/chat/stream", () => {
 
     it("should return 400 when message is not a string", async () => {
       const req = createMockRequest({ body: { message: 123 } });
-      const res = await POST(req as any);
+      const res = await POST(req);
 
       expect(res.status).toBe(400);
     });
@@ -125,7 +129,7 @@ describe("POST /api/chat/stream", () => {
         headers: { "x-session-id": "test-session" },
       });
 
-      const res = await POST(req as any);
+      const res = await POST(req);
 
       expect(res.headers.get("Content-Type")).toBe("text/event-stream");
       expect(res.headers.get("Cache-Control")).toBe("no-cache");
@@ -138,7 +142,7 @@ describe("POST /api/chat/stream", () => {
         headers: { "x-session-id": "test-session" },
       });
 
-      const res = await POST(req as any);
+      const res = await POST(req);
 
       expect(res.headers.get("x-conversation-id")).toBe("conv-42");
     });
@@ -163,7 +167,7 @@ describe("POST /api/chat/stream", () => {
         headers: { "x-session-id": "test-session" },
       });
 
-      const res = await POST(req as any);
+      const res = await POST(req);
 
       // When existingConvId is provided, getOrCreate should NOT be called
       expect(mockGetOrCreate).not.toHaveBeenCalled();
@@ -194,7 +198,7 @@ describe("POST /api/chat/stream", () => {
         headers: { "x-session-id": "test-session" },
       });
 
-      const res = await POST(req as any);
+      const res = await POST(req);
       const reader = res.body!.getReader();
       const decoder = new TextDecoder();
       let allText = "";
@@ -219,7 +223,7 @@ describe("POST /api/chat/stream", () => {
         headers: { "x-session-id": "test-session" },
       });
 
-      const res = await POST(req as any);
+      const res = await POST(req);
       const reader = res.body!.getReader();
       const decoder = new TextDecoder();
 
@@ -248,7 +252,7 @@ describe("POST /api/chat/stream", () => {
         headers: { "x-session-id": "test-session" },
       });
 
-      const res = await POST(req as any);
+      const res = await POST(req);
 
       expect(res.status).toBe(500);
       const json = await res.json();

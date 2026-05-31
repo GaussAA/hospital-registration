@@ -1,6 +1,5 @@
 import { getPrisma } from "@/lib/db";
 import { format, addDays } from "date-fns";
-import type { ScheduleSlotDTO } from "@/types/dto";
 
 export interface ScheduleSlotData {
   id: string;

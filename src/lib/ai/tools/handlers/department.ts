@@ -1,4 +1,3 @@
-import type { ToolContext } from "../../types";
 import { listDepartmentsByHospital } from "@/lib/services/department.service";
 import { fmtDepartment } from "../formatters";
 import { searchDepartmentsSchema, recommendDepartmentSchema } from "../validators";
@@ -41,7 +40,6 @@ const symptomMap: Record<string, string[]> = {
 
 export async function handleSearchDepartments(
   args: Record<string, unknown>,
-  _context: ToolContext,
 ): Promise<string> {
   const parsed = searchDepartmentsSchema.safeParse(args);
   if (!parsed.success) {
@@ -67,7 +65,6 @@ export async function handleSearchDepartments(
 
 export async function handleRecommendDepartment(
   args: Record<string, unknown>,
-  _context: ToolContext,
 ): Promise<string> {
   const parsed = recommendDepartmentSchema.safeParse(args);
   if (!parsed.success) {

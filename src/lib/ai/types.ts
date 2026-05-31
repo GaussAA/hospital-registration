@@ -1,4 +1,4 @@
-import type { TimeSlot, ScheduleType, RegistrationStatus, Gender } from "@/types/index";
+import type { TimeSlot, ScheduleType } from "@/types/index";
 
 /* ── Chat Message Types ── */
 
@@ -84,6 +84,8 @@ export function createInitialState(): ConversationState {
 // ── 流式消息（含 UI 状态） ──
 export interface StreamMessage {
   id: string;
+  /** 数据库中的消息 ID，用于反馈提交 */
+  messageId?: string;
   role: "user" | "assistant" | "tool";
   content: string;
   toolCalls?: ToolCallInfo[];

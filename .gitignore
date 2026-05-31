@@ -47,6 +47,7 @@ generated/prisma/
 # agents
 .agents/
 .workbuddy/
+.codebuddy/
 
 # other
 docs/
