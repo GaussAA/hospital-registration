@@ -1,7 +1,7 @@
 "use client";
 
 import { useTheme } from "./ThemeProvider";
-import { useEffect, useState } from "react";
+import { useEffect, useState, startTransition } from "react";
 
 export default function ThemeToggle() {
   const { theme, toggleTheme } = useTheme();
@@ -9,7 +9,9 @@ export default function ThemeToggle() {
 
   // 等待 hydration 完成后才渲染主题相关 UI，消除服务端/客户端不一致
   useEffect(() => {
-    setMounted(true);
+    startTransition(() => {
+      setMounted(true);
+    });
   }, []);
 
   return (

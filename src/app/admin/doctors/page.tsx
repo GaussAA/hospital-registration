@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, startTransition } from "react";
 import AdminHeader from "@/components/layout/AdminHeader";
 import DataTable from "@/components/admin/DataTable";
 import type { Column } from "@/components/admin/DataTable";
@@ -48,28 +48,36 @@ export default function AdminDoctorsPage() {
   }, []);
 
   // Load departments when hospital changes
-  useEffect(() => {
+  const loadDepartments = useCallback(async () => {
     if (!selectedHospitalId) {
       setDepartments([]);
       setSelectedDepartmentId("");
       return;
     }
-    fetch(
-      `/api/admin/hospitals/${selectedHospitalId}/departments?page=1&pageSize=999`
-    )
-      .then((res) => res.json())
-      .then((json) => {
-        if (json.code === 0) {
-          setDepartments(json.data.list);
-          if (json.data.list.length > 0) {
-            setSelectedDepartmentId(json.data.list[0].id);
-          } else {
-            setSelectedDepartmentId("");
-          }
+    try {
+      const res = await fetch(
+        `/api/admin/hospitals/${selectedHospitalId}/departments?page=1&pageSize=999`
+      );
+      const json = await res.json();
+      if (json.code === 0) {
+        setDepartments(json.data.list);
+        if (json.data.list.length > 0) {
+          setSelectedDepartmentId(json.data.list[0].id);
+        } else {
+          setSelectedDepartmentId("");
         }
-      })
-      .catch(console.error);
+      }
+    } catch (err) {
+      console.error(err);
+    }
   }, [selectedHospitalId]);
+
+  // Called by the effect — the effect only triggers the async callback.
+  useEffect(() => {
+    startTransition(() => {
+      loadDepartments();
+    });
+  }, [loadDepartments]);
 
   const crud = useAdminCrud<DoctorRecord>({
     baseUrl: selectedDepartmentId

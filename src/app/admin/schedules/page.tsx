@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, startTransition } from "react";
 import AdminHeader from "@/components/layout/AdminHeader";
 import DataTable from "@/components/admin/DataTable";
 import type { Column } from "@/components/admin/DataTable";
@@ -69,7 +69,7 @@ export default function AdminSchedulesPage() {
   }, []);
 
   // Load departments when hospital changes
-  useEffect(() => {
+  const loadDepartments = useCallback(async () => {
     if (!selectedHospitalId) {
       setDepartments([]);
       setSelectedDepartmentId("");
@@ -77,44 +77,54 @@ export default function AdminSchedulesPage() {
       setSelectedDoctorId("");
       return;
     }
-    fetch(
-      `/api/admin/hospitals/${selectedHospitalId}/departments?page=1&pageSize=999`
-    )
-      .then((res) => res.json())
-      .then((json) => {
-        if (json.code === 0) {
-          setDepartments(json.data.list);
-          setSelectedDepartmentId("");
-          setDoctors([]);
-          setSelectedDoctorId("");
-        }
-      })
-      .catch(console.error);
+    try {
+      const res = await fetch(
+        `/api/admin/hospitals/${selectedHospitalId}/departments?page=1&pageSize=999`
+      );
+      const json = await res.json();
+      if (json.code === 0) {
+        setDepartments(json.data.list);
+        setSelectedDepartmentId("");
+        setDoctors([]);
+        setSelectedDoctorId("");
+      }
+    } catch {}
   }, [selectedHospitalId]);
 
-  // Load doctors when department changes
   useEffect(() => {
+    startTransition(() => {
+      loadDepartments();
+    });
+  }, [loadDepartments]);
+
+  // Load doctors when department changes
+  const loadDoctors = useCallback(async () => {
     if (!selectedDepartmentId) {
       setDoctors([]);
       setSelectedDoctorId("");
       return;
     }
-    fetch(
-      `/api/admin/departments/${selectedDepartmentId}/doctors?page=1&pageSize=999`
-    )
-      .then((res) => res.json())
-      .then((json) => {
-        if (json.code === 0) {
-          setDoctors(json.data.list);
-          if (json.data.list.length > 0) {
-            setSelectedDoctorId(json.data.list[0].id);
-          } else {
-            setSelectedDoctorId("");
-          }
+    try {
+      const res = await fetch(
+        `/api/admin/departments/${selectedDepartmentId}/doctors?page=1&pageSize=999`
+      );
+      const json = await res.json();
+      if (json.code === 0) {
+        setDoctors(json.data.list);
+        if (json.data.list.length > 0) {
+          setSelectedDoctorId(json.data.list[0].id);
+        } else {
+          setSelectedDoctorId("");
         }
-      })
-      .catch(console.error);
+      }
+    } catch {}
   }, [selectedDepartmentId]);
+
+  useEffect(() => {
+    startTransition(() => {
+      loadDoctors();
+    });
+  }, [loadDoctors]);
 
   const crud = useAdminCrud<ScheduleRecord>({
     baseUrl: selectedDoctorId

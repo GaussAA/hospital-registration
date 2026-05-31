@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, startTransition } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useDebounce } from "@/lib/hooks/useDebounce";
 
@@ -20,7 +20,9 @@ export default function HospitalFilter() {
 
   // Sync keyword input when URL changes (back/forward navigation)
   useEffect(() => {
-    setKeywordInput(currentKeyword);
+    startTransition(() => {
+      setKeywordInput(currentKeyword);
+    });
   }, [currentKeyword]);
 
   // Auto-search when debounced keyword changes

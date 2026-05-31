@@ -2,7 +2,10 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { verifyToken } from "@/lib/utils/jwt";
 import { checkRateLimit, getRateLimitKey } from "@/lib/utils/rate-limit";
-import { AUTH_RATE_LIMIT_MAX, AUTH_RATE_LIMIT_WINDOW_MS } from "@/lib/constants";
+import {
+  AUTH_RATE_LIMIT_MAX,
+  AUTH_RATE_LIMIT_WINDOW_MS,
+} from "@/lib/constants";
 
 /**
  * Next.js 16 proxy / middleware.

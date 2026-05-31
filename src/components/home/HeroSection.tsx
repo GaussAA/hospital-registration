@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import Image from "next/image";
 
 export default function HeroSection() {
   const router = useRouter();
@@ -20,10 +21,13 @@ export default function HeroSection() {
     <section className="relative overflow-hidden">
       {/* ── 背景图片（底层） ── */}
       <div className="absolute inset-0">
-        <img
+        <Image
           src="/images/hero-medical.jpg"
           alt=""
-          className="w-full h-full object-cover"
+          fill
+          className="object-cover"
+          priority
+          sizes="100vw"
           aria-hidden="true"
         />
         {/* 多重渐变叠加：暗化 + 氛围光 */}

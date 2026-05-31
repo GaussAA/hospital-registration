@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 interface Hospital {
   id: string;
@@ -76,18 +77,22 @@ export default function FeaturedHospitals() {
               onClick={() => router.push(`/hospitals/${hospital.id}`)}
             >
               {/* 医院图片占位 */}
-              <div className="h-40 bg-gradient-to-br from-blue-100 dark:from-gray-800 to-indigo-100 dark:to-gray-800 flex items-center justify-center overflow-hidden">
+              <div className="h-40 relative bg-gradient-to-br from-blue-100 dark:from-gray-800 to-indigo-100 dark:to-gray-800 flex items-center justify-center overflow-hidden">
                 {hospital.imageUrl ? (
-                  <img
+                  <Image
                     src={hospital.imageUrl}
                     alt={hospital.name}
-                    className="w-full h-full object-cover"
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                   />
                 ) : (
-                  <img
+                  <Image
                     src="/images/hospital-placeholder.svg"
                     alt={hospital.name}
-                    className="w-full h-full object-cover"
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                   />
                 )}
               </div>

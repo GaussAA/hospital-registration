@@ -1,16 +1,9 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, startTransition } from "react";
 import { useToast } from "@/components/ui/Toast";
 
 /* ── Types ── */
-
-interface CrudState<T> {
-  data: T[];
-  loading: boolean;
-  page: number;
-  total: number;
-}
 
 interface UseAdminCrudOptions {
   /** API base URL for list/create/update/delete */
@@ -119,11 +112,13 @@ export function useAdminCrud<T extends { id: string }>(
     } finally {
       if (mountedRef.current) setLoading(false);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [baseUrl, page, pageSize, ...fetchDeps]);
+// eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [baseUrl, page, pageSize, fetchDeps]);
 
   useEffect(() => {
-    refresh();
+    startTransition(() => {
+      refresh();
+    });
   }, [refresh]);
 
   /* ── Save (create/update) ── */
@@ -165,7 +160,6 @@ export function useAdminCrud<T extends { id: string }>(
         if (mountedRef.current) setSaving(false);
       }
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     [baseUrl, editRecord, buildCreateUrl, buildUpdateUrl, refresh, showToast],
   );
 
@@ -189,7 +183,6 @@ export function useAdminCrud<T extends { id: string }>(
         console.error(err);
       }
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     [baseUrl, buildDeleteUrl, refresh, showToast],
   );
 

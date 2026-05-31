@@ -12,8 +12,6 @@ interface PaginationProps {
 export default function Pagination({
   page,
   totalPages,
-  pageSize,
-  total,
 }: PaginationProps) {
   const router = useRouter();
   const searchParams = useSearchParams();

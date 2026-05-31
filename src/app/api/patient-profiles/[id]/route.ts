@@ -22,6 +22,14 @@ export const GET = apiHandler<{ id: string }>(async (_req, { params, user }) => 
     return NextResponse.json(fail(403, "无权访问该就诊人信息"), { status: 403 });
   }
 
-  const { userId: _u, ...safeProfile } = profile;
-  return NextResponse.json(success({ profile: safeProfile }));
+  // Build safe response without userId
+  return NextResponse.json(success({
+    profile: {
+      id: profile.id,
+      name: profile.name,
+      idCard: profile.idCard,
+      phone: profile.phone,
+      gender: profile.gender,
+    },
+  }));
 }, { requireAuth: true });

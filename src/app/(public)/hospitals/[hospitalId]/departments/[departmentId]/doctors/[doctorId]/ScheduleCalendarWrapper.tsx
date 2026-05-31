@@ -28,8 +28,6 @@ interface ScheduleCalendarWrapperProps {
 export default function ScheduleCalendarWrapper({
   schedules,
   doctorId,
-  hospitalId,
-  departmentId,
   doctorName,
   doctorTitle,
   departmentName,

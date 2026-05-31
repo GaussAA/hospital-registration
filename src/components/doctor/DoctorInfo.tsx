@@ -18,9 +18,9 @@ export default function DoctorInfo({ doctor }: { doctor: DoctorInfoData }) {
         {/* Avatar */}
         <div className="shrink-0 w-20 h-20 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center overflow-hidden">
           {doctor.avatarUrl ? (
-            <Image src={doctor.avatarUrl} alt={doctor.name} width={80} height={80} className="object-cover" unoptimized />
+            <Image src={doctor.avatarUrl} alt={doctor.name} width={80} height={80} className="object-cover" />
           ) : (
-            <img src="/images/doctor-avatar.svg" alt={doctor.name} width={80} height={80} className="object-cover" />
+            <Image src="/images/doctor-avatar.svg" alt={doctor.name} width={80} height={80} className="object-cover" />
           )}
         </div>
 

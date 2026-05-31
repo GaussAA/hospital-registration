@@ -24,15 +24,18 @@ export default function HospitalInfo({ hospital }: { hospital: HospitalInfoData 
             alt={hospital.name}
             fill
             className="object-cover opacity-80"
-            unoptimized
+            priority
+            sizes="(max-width: 768px) 100vw, 768px"
           />
         </div>
       ) : (
-        <div className="h-48 bg-gradient-to-r from-blue-500 to-blue-700 dark:from-blue-800 dark:to-blue-900 flex items-center justify-center overflow-hidden">
-          <img
+        <div className="h-48 relative bg-gradient-to-r from-blue-500 to-blue-700 dark:from-blue-800 dark:to-blue-900 flex items-center justify-center overflow-hidden">
+          <Image
             src="/images/hospital-placeholder.svg"
             alt={hospital.name}
-            className="w-full h-full object-cover opacity-80"
+            fill
+            className="object-cover opacity-80"
+            sizes="(max-width: 768px) 100vw, 768px"
           />
         </div>
       )}

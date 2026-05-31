@@ -8,7 +8,6 @@
 import { describe, it, before, after } from "node:test";
 import assert from "node:assert";
 import { spawn } from "node:child_process";
-import { existsSync, unlinkSync } from "node:fs";
 import { resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -36,11 +35,6 @@ function extractTokenCookie(setCookieHeader) {
     if (match) return match[1];
   }
   return null;
-}
-
-/** Build fetch options with cookie header */
-function authedHeaders(token) {
-  return { headers: { cookie: `token=${token}` } };
 }
 
 /** Small delay helper */
@@ -142,8 +136,6 @@ async function waitForServer(maxRetries = 30) {
 describe("🏥 医院在线挂号系统 API 集成测试", () => {
   // Shared state
   let token = null;
-  let testUserId = null;
-  let hospitals = [];
   let departments = [];
   let doctors = [];
   let schedules = [];
@@ -212,8 +204,6 @@ describe("🏥 医院在线挂号系统 API 集成测试", () => {
     assert.strictEqual(body.data.user.name, "测试用户");
     assert.strictEqual(body.data.user.role, "patient");
 
-    testUserId = body.data.user.id;
-
     // Check that the token cookie is set
     const setCookie = res.headers.get("set-cookie");
     assert.ok(setCookie, "应返回 set-cookie 头");
@@ -267,7 +257,6 @@ describe("🏥 医院在线挂号系统 API 集成测试", () => {
     const names = body.data.list.map((h) => h.name);
     assert.ok(names.includes("杭州市第一人民医院"), "医院列表应包含「杭州市第一人民医院」");
 
-    hospitals = body.data.list;
   });
 
   // ── Test 4: 医院详情测试 ────────────────────────────────────────────
@@ -556,7 +545,6 @@ describe("🏥 医院在线挂号系统 API 集成测试", () => {
 
   it("1️⃣7️⃣  GET /api/hospitals/non-existent — 不存在的医院应返回 404", async () => {
     const res = await fetch(`${BASE_URL}/api/hospitals/non-existent`);
-    const body = await parseResponse(res);
 
     assert.strictEqual(res.status, 404, `期望 404，得到 ${res.status}`);
   });
@@ -567,7 +555,6 @@ describe("🏥 医院在线挂号系统 API 集成测试", () => {
     const res = await fetch(
       `${BASE_URL}/api/hospitals/departments/non-existent-id/doctors`
     );
-    const body = await parseResponse(res);
 
     assert.strictEqual(res.status, 404, `期望 404，得到 ${res.status}`);
   });

@@ -6,6 +6,7 @@ import {
   useEffect,
   useState,
   useCallback,
+  startTransition,
   type ReactNode,
 } from "react";
 
@@ -58,9 +59,11 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   // Bootstrap on mount
   useEffect(() => {
     const initial = getInitialTheme();
-    setThemeState(initial);
+    startTransition(() => {
+      setThemeState(initial);
+      setMounted(true);
+    });
     applyTheme(initial);
-    setMounted(true);
   }, []);
 
   // Listen for system preference changes (only when no stored preference)

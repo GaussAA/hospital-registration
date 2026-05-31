@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { getPrisma } from "@/lib/db";
 import { apiHandler } from "@/lib/utils/api-handler";
 import { success, fail } from "@/lib/utils/response";

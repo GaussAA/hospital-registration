@@ -26,12 +26,12 @@
 
 ## 执行路线
 
-| 阶段 | 内容 | 预估 |
-|------|------|------|
-| Phase 1 | 安全加固（JWT/CSRF/限流/ConfirmDialog） | 1-2天 |
+| 阶段    | 内容                                        | 预估  |
+| ------- | ------------------------------------------- | ----- |
+| Phase 1 | 安全加固（JWT/CSRF/限流/ConfirmDialog）     | 1-2天 |
 | Phase 2 | 架构优化（apiHandler/useAdminCrud/Zod覆盖） | 2-3天 |
-| Phase 3 | 性能与类型安全（Prisma/any/常量/骨架屏） | 2-3天 |
-| Phase 4 | 测试基建（Vitest/Service测试/CI） | 3-4天 |
-| Phase 5 | UX 打磨（持续） | — |
+| Phase 3 | 性能与类型安全（Prisma/any/常量/骨架屏）    | 2-3天 |
+| Phase 4 | 测试基建（Vitest/Service测试/CI）           | 3-4天 |
+| Phase 5 | UX 打磨（持续）                             | —     |
 
 详细优化方案见 `docs/optimization-plan.md`

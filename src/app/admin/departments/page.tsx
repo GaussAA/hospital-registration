@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { useToast } from "@/components/ui/Toast";
 import AdminHeader from "@/components/layout/AdminHeader";
 import DataTable from "@/components/admin/DataTable";

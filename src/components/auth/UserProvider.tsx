@@ -6,6 +6,7 @@ import {
   useState,
   useEffect,
   useCallback,
+  startTransition,
   type ReactNode,
 } from "react";
 
@@ -62,7 +63,9 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
   // Fetch user on mount (page refresh / navigation)
   useEffect(() => {
-    refreshUser();
+    startTransition(() => {
+      refreshUser();
+    });
   }, [refreshUser]);
 
   return (
