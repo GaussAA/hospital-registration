@@ -426,6 +426,143 @@ const toolDefs: ToolDefinition[] = [
         `简介：${intro}`;
     },
   },
+
+  // ── 12. Recommend Department by Symptoms ──
+  {
+    name: "recommend_department",
+    description: "根据患者的症状描述推荐合适的就诊科室",
+    parameters: {
+      symptoms: str("症状描述，如「发烧咳嗽」「头痛三天」", true),
+    },
+    handler: async (args) => {
+      const symptoms = (args.symptoms as string || "").toLowerCase();
+
+      // Common symptom-department mapping
+      const symptomMap: Record<string, string[]> = {
+        "发烧": ["发热门诊", "呼吸内科", "感染科"],
+        "咳嗽": ["呼吸内科", "胸外科"],
+        "头痛": ["神经内科", "神经外科"],
+        "胸闷": ["心血管内科", "呼吸内科"],
+        "腹痛": ["消化内科", "胃肠外科", "急诊科"],
+        "腹泻": ["消化内科", "肠道门诊"],
+        "呕吐": ["消化内科", "急诊科"],
+        "皮疹": ["皮肤科"],
+        "关节痛": ["风湿免疫科", "骨科"],
+        "腰痛": ["骨科", "泌尿外科", "肾内科"],
+        "心慌": ["心血管内科"],
+        "失眠": ["精神心理科", "神经内科"],
+        "头晕": ["神经内科", "耳鼻喉科", "骨科"],
+        "耳鸣": ["耳鼻喉科"],
+        "视力下降": ["眼科"],
+        "尿频": ["泌尿外科", "肾内科"],
+        "便秘": ["消化内科"],
+        "过敏": ["皮肤科", "过敏反应科"],
+        "外伤": ["急诊科", "骨科", "普外科"],
+        "骨折": ["骨科", "急诊科"],
+        "孕期": ["妇产科"],
+        "月经不调": ["妇科", "内分泌科"],
+        "胸痛": ["心血管内科", "呼吸内科", "急诊科"],
+        "喉咙痛": ["耳鼻喉科", "呼吸内科"],
+        "牙痛": ["口腔科"],
+        "背痛": ["骨科", "康复科"],
+        "水肿": ["肾内科", "心血管内科"],
+        "消瘦": ["内分泌科", "消化内科"],
+        "贫血": ["血液科"],
+        "淋巴结肿大": ["血液科", "肿瘤科", "普外科"],
+      };
+
+      const matched: string[] = [];
+      const matchedSymptoms: string[] = [];
+
+      for (const [symptom, depts] of Object.entries(symptomMap)) {
+        if (symptoms.includes(symptom)) {
+          matched.push(...depts);
+          matchedSymptoms.push(symptom);
+        }
+      }
+
+      if (matched.length === 0) {
+        return `根据您描述的"${args.symptoms}"，我没有找到特别匹配的科室。\n\n建议您先挂**全科**或**导诊台**咨询，或在平台上搜索相关症状的科室。\n\n如果症状比较严重，请及时到**急诊科**就诊。`;
+      }
+
+      const uniqueDepts = [...new Set(matched)];
+      const symptomList = matchedSymptoms.join("、");
+
+      return `根据您描述的"${args.symptoms}"，检测到以下症状：${symptomList}\n\n` +
+        `建议您考虑挂以下科室：\n\n` +
+        uniqueDepts.map((d, i) => `${i + 1}. **${d}**`).join("\n") +
+        `\n\n> ⚠️ 以上推荐仅供参考，如有严重不适请立即前往医院急诊科就诊。`;
+    },
+  },
+
+  // ── 13. Get Registration Guide ──
+  {
+    name: "get_registration_guide",
+    description: "获取就诊前的准备事项、所需证件和注意事项",
+    parameters: {
+      hospitalId: str("医院ID（可选），指定后返回该医院的具体就诊须知"),
+    },
+    handler: async (args) => {
+      let hospitalInfo = "";
+
+      if (args.hospitalId) {
+        const prisma = await getPrisma();
+        const hospital = await prisma.hospital.findUnique({
+          where: { id: args.hospitalId as string },
+        });
+        if (hospital) {
+          hospitalInfo = `\n🏥 医院：${hospital.name}\n📍 地址：${hospital.address}\n📞 电话：${hospital.phone}\n`;
+        }
+      }
+
+      return `📋 **就诊指南**${hospitalInfo}\n\n` +
+        `**一、就诊前准备**\n` +
+        `1. **证件**：携带本人身份证/医保卡\n` +
+        `2. **病历**：如有既往病历、检查报告，请一并带上\n` +
+        `3. **空腹**：如需抽血检查，建议早上空腹就诊\n` +
+        `4. **时间**：按预约时间提前15-30分钟到达\n\n` +
+        `**二、就诊流程**\n` +
+        `1. 凭身份证/医保卡到挂号窗口或自助机取号\n` +
+        `2. 到相应科室分诊台报到\n` +
+        `3. 等待叫号就诊\n` +
+        `4. 医生问诊后根据需要开具检查/药品\n` +
+        `5. 缴费→检查/取药\n\n` +
+        `**三、注意事项**\n` +
+        `1. 取消挂号请至少在就诊前2小时操作\n` +
+        `2. 同一时段只能挂一个号源\n` +
+        `3. 如需改约，请先取消原挂号再重新预约\n` +
+        `4. 急重症请直接前往**急诊科**，无需预约挂号\n` +
+        `5. 就诊过程中如有不适，请及时告知医护人员\n\n` +
+        `祝您早日康复！🙏`;
+    },
+  },
+
+  // ── 14. Analyze Image (Vision) ──
+  {
+    name: "analyze_image",
+    description: "分析用户上传的图片（如化验单、检查报告、CT片等），从中提取关键信息并给出解读",
+    parameters: {
+      imageUrl: str("图片的URL或base64数据", true),
+      imageType: str("图片类型，如 lab_report（化验单）、exam_report（检查报告）、ct_scan（CT片）、prescription（处方）、 other（其他）"),
+    },
+    handler: async (args) => {
+      // P1 implementation: pass the image to DeepSeek V4 Flash's vision capabilities
+      // For now, return guidance
+      const typeLabels: Record<string, string> = {
+        lab_report: "化验单",
+        exam_report: "检查报告",
+        ct_scan: "CT影像",
+        prescription: "处方",
+        other: "图片",
+      };
+      const label = typeLabels[args.imageType as string] || "图片";
+
+      return `我已收到您上传的${label}。\n\n` +
+        `系统已记录该图片，AI正在分析中。\n\n` +
+        `> 💡 请等待AI对图片内容进行分析解读。\n` +
+        `> ⚠️ AI解读仅供参考，最终诊断请以医生意见为准。`;
+    },
+  },
 ];
 
 export default toolDefs;

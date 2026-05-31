@@ -123,4 +123,53 @@
   .animate-bounce-subtle {
     animation: bounce-subtle 2s ease-in-out infinite;
   }
+
+  /* ── Markdown styling for chat messages ── */
+  .chat-message-content p {
+    margin-bottom: 0.5rem;
+    line-height: 1.6;
+  }
+  .chat-message-content p:last-child {
+    margin-bottom: 0;
+  }
+  .chat-message-content strong {
+    font-weight: 600;
+  }
+  .chat-message-content code {
+    background: rgba(99,102,241,0.1);
+    padding: 0.1em 0.3em;
+    border-radius: 4px;
+    font-size: 0.9em;
+    font-family: "SF Mono", "Fira Code", monospace;
+  }
+  .chat-message-content blockquote {
+    border-left: 3px solid #6366f1;
+    padding-left: 0.75rem;
+    margin: 0.5rem 0;
+    opacity: 0.85;
+    font-style: italic;
+  }
+  .chat-message-content ul, .chat-message-content ol {
+    margin: 0.25rem 0 0.5rem 0;
+    padding-left: 1.25rem;
+  }
+  .chat-message-content li {
+    margin-bottom: 0.2rem;
+    line-height: 1.5;
+  }
+  .chat-message-content hr {
+    margin: 0.75rem 0;
+    border: none;
+    border-top: 1px solid rgba(0,0,0,0.1);
+  }
+  .dark .chat-message-content hr {
+    border-top-color: rgba(255,255,255,0.1);
+  }
+  .chat-message-content h2, .chat-message-content h3, .chat-message-content h4 {
+    font-weight: 600;
+    margin: 0.75rem 0 0.25rem 0;
+  }
+  .chat-message-content h2 { font-size: 1.1em; }
+  .chat-message-content h3 { font-size: 1.05em; }
+  .chat-message-content h4 { font-size: 1em; }
 }

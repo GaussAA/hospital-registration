@@ -89,7 +89,6 @@ async function runAgentLoop(
 ) {
   const toolMap = new Map(toolDefs.map((t) => [t.name, t]));
   let fullAssistantContent = "";
-  let allToolCalls: any[] = [];
 
   for (let round = 0; round < 8; round++) {
     // Call DeepSeek API
@@ -205,8 +204,6 @@ async function runAgentLoop(
       } else {
         result = `未知工具: ${tc.function.name}`;
       }
-
-      allToolCalls.push({ name: tc.function.name, args, result });
 
       messages.push({
         role: "tool",
