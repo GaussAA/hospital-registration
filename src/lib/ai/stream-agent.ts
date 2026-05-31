@@ -194,8 +194,6 @@ async function runAgentLoop(
       let result: string;
 
       if (toolDef) {
-        // Emit tool call event
-        controller.enqueue(encoder.encode(`0:${JSON.stringify(`🔍 正在${toolDef.description}...`)}\n`));
         try {
           result = await toolDef.handler(args, context);
         } catch (e: any) {

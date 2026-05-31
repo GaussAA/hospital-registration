@@ -47,6 +47,7 @@ export function useChatStream(opts?: UseChatStreamOptions): UseChatStreamReturn 
   );
   const abortRef = useRef<AbortController | null>(null);
   const msgIdCounter = useRef(0);
+  const restoredRef = useRef(false); // Prevent double-restore in StrictMode
 
   const genId = () => `msg_${++msgIdCounter.current}`;
 
@@ -236,8 +237,11 @@ export function useChatStream(opts?: UseChatStreamOptions): UseChatStreamReturn 
     [isLoading, conversationId]
   );
 
-  // Restore conversation on mount
+  // Restore conversation on mount (guarded against StrictMode double-mount)
   useEffect(() => {
+    if (restoredRef.current) return;
+    restoredRef.current = true;
+
     if (!opts?.initialMessages && !opts?.initialConversationId) {
       const savedConvId = localStorage.getItem(CONV_KEY);
       if (savedConvId) {

@@ -19,8 +19,12 @@ export default function ChatBubble() {
       {/* Chat Panel */}
       {isOpen && <ChatPanel isOpen={isOpen} onClose={close} />}
 
-      {/* Floating Trigger Button */}
-      <div className="fixed bottom-6 right-6 z-[9999]">
+      {/* Floating Trigger Button — hidden when panel is open */}
+      <div
+        className={`fixed bottom-6 right-6 z-[9999] transition-all duration-200 ${
+          isOpen ? "opacity-0 pointer-events-none scale-75" : "opacity-100 scale-100"
+        }`}
+      >
         {/* Notification dot */}
         {!isOpen && (
           <span
