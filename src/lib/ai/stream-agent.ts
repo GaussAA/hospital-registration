@@ -162,6 +162,10 @@ async function runAgentLoop(
   const MAX_TOTAL_MS = 60000; // 60s total timeout
   const initialMsgCount = messages.length; // Track initial messages to avoid re-persisting history
 
+  // Hoist final round data to function scope for persistence after the loop
+  let finalAssistantContent = "";
+  let finalAssistantReasoningContent = "";
+
   for (let round = 0; round < 8; round++) {
     // 总超时检查
     if (Date.now() - overallStartTime > MAX_TOTAL_MS) {
@@ -173,6 +177,7 @@ async function runAgentLoop(
     const response = await callDeepSeek(messages, tools);
 
     let assistantContent = "";
+    let assistantReasoningContent = "";
     let toolCalls: ToolCall[] = [];
 
     // Parse SSE response
@@ -215,6 +220,8 @@ async function runAgentLoop(
           // Handle reasoning/thinking content (DeepSeek reasoning mode)
           if (delta?.reasoning_content) {
             const reasoningText = delta.reasoning_content;
+            // Accumulate for persistence
+            assistantReasoningContent += reasoningText;
             // Emit as single-line SSE event for frontend
             controller.enqueue(
               encoder.encode(
@@ -265,12 +272,16 @@ async function runAgentLoop(
       // 无工具调用——更新会话记忆标记
       sessionMem.step = "idle";
       SessionMemoryStore.set(sessionId, sessionMem);
+      // Capture final round data before breaking (for persistence)
+      finalAssistantContent = assistantContent;
+      finalAssistantReasoningContent = assistantReasoningContent;
       break;
     }
 
     const assistantMsg: ChatMessage = {
       role: "assistant",
       content: assistantContent || null,
+      reasoningContent: assistantReasoningContent || undefined,
       tool_calls: toolCalls.map((tc) => ({
         id: tc.id,
         type: "function" as const,
@@ -397,6 +408,8 @@ async function runAgentLoop(
           role: "assistant",
           content: m.content,
           toolCalls: JSON.stringify(m.tool_calls || []),
+          // Persist reasoning content from DeepSeek thinking mode
+          reasoningContent: m.reasoningContent || null,
         };
       }
       if (m.role === "tool") {
@@ -417,6 +430,24 @@ async function runAgentLoop(
         `e:tool-messages:${JSON.stringify({ messages: toolMessagesForPersistence })}\n`
       )
     );
+  }
+
+  // Persist final assistant's reasoning content if it wasn't covered by tool-messages
+  // (tool-messages only includes assistant messages with tool_calls)
+  if (finalAssistantReasoningContent) {
+    const wasAlreadyPersisted = toolMessagesForPersistence.some(
+      (m) => m.role === "assistant" && m.reasoningContent
+    );
+    if (!wasAlreadyPersisted) {
+      controller.enqueue(
+        encoder.encode(
+          `e:assistant-final:${JSON.stringify({
+            content: finalAssistantContent || null,
+            reasoningContent: finalAssistantReasoningContent,
+          })}\n`
+        )
+      );
+    }
   }
 
   controller.enqueue(encoder.encode("e:finish\nd:{}\n\n"));

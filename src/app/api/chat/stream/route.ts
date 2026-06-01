@@ -83,7 +83,8 @@ export async function POST(req: NextRequest) {
     // 9. Pipe through a wrapper that persists messages and tool calls on completion
     const encoder = new TextEncoder();
     const fullContent: string[] = [];
-    const toolMessagesToPersist: Array<{ role: string; content: string | null; toolCalls?: string }> = [];
+    const toolMessagesToPersist: Array<{ role: string; content: string | null; toolCalls?: string; reasoningContent?: string }> = [];
+    let finalReasoningContent: string | undefined;
     let titleUpdated = false;
 
     const wrappedStream = new ReadableStream({
@@ -114,16 +115,28 @@ export async function POST(req: NextRequest) {
                   if (data.messages && Array.isArray(data.messages)) {
                     toolMessagesToPersist.push(
                       ...data.messages.map(
-                        (m: { role: string; content: string | null; toolCalls?: string }) => ({
+                        (m: { role: string; content: string | null; toolCalls?: string; reasoningContent?: string }) => ({
                           role: m.role,
                           content: m.content ?? null,
                           toolCalls: m.toolCalls || undefined,
+                          reasoningContent: m.reasoningContent || undefined,
                         })
                       )
                     );
                   }
                 } catch {
                   // Ignore parse errors on tool-messages
+                }
+              } else if (line.startsWith("e:assistant-final:")) {
+                // Final assistant response reasoning content (not covered by tool-messages)
+                try {
+                  const dataStr = line.slice("e:assistant-final:".length).trim();
+                  const data = JSON.parse(dataStr);
+                  if (data.reasoningContent) {
+                    finalReasoningContent = data.reasoningContent;
+                  }
+                } catch {
+                  // Ignore parse errors
                 }
               }
             }
@@ -136,18 +149,19 @@ export async function POST(req: NextRequest) {
           let assistantMessageId: string | undefined;
 
           if (content.trim()) {
-            // Save assistant message with toolCalls (if any)
-            const assistantToolCalls = toolMessagesToPersist
-              .filter((m) => m.role === "assistant" && m.toolCalls)
-              .map((m) => m.toolCalls);
+            // Save assistant message with toolCalls and reasoningContent (if any)
+            const assistantMsgs = toolMessagesToPersist.filter((m) => m.role === "assistant");
+            const lastAssistant = assistantMsgs[assistantMsgs.length - 1];
+            const assistantToolCalls = lastAssistant?.toolCalls;
+            // Reasoning content priority: e:assistant-final > e:tool-messages > none
+            const reasoningToPersist = finalReasoningContent || lastAssistant?.reasoningContent;
 
             assistantMessageId = await ConversationStore.addMessage(
               conversationId,
               "assistant",
               content,
-              assistantToolCalls.length > 0
-                ? assistantToolCalls[assistantToolCalls.length - 1]
-                : undefined
+              assistantToolCalls || undefined,
+              reasoningToPersist || undefined
             );
 
             // Auto-generate smart title from first user message

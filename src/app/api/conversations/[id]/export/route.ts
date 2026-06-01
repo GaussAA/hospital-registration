@@ -45,6 +45,7 @@ function generateMarkdown(detail: {
     role: string;
     content: string | null;
     toolCalls: string | null;
+    reasoningContent: string | null;
     createdAt: string;
   }>;
 }): string {
@@ -101,6 +102,17 @@ function generateMarkdown(detail: {
       } catch {
         // Ignore parse errors
       }
+    }
+
+    // Reasoning/thinking content
+    if (msg.role === "assistant" && msg.reasoningContent) {
+      lines.push("");
+      lines.push("<details>");
+      lines.push("<summary><strong>🧠 思考过程</strong></summary>");
+      lines.push("");
+      lines.push(msg.reasoningContent);
+      lines.push("");
+      lines.push("</details>");
     }
 
     lines.push("");

@@ -9,6 +9,77 @@ interface ApiMessage {
   id: string;
   role: string;
   content: string;
+  toolCalls?: string;
+  reasoningContent?: string;
+}
+
+/**
+ * Convert API message array to StreamMessage[], reconstructing thinking
+ * content, tool call names, and tool call results from persisted data.
+ */
+function convertApiMessages(apiMessages: ApiMessage[]): StreamMessage[] {
+  const result: StreamMessage[] = [];
+  let currentToolNames: string[] = [];
+  let toolResultIdx = 0;
+
+  for (const m of apiMessages) {
+    if (m.role === "user") {
+      result.push({
+        id: m.id,
+        role: "user",
+        content: m.content || "",
+      });
+      currentToolNames = [];
+      toolResultIdx = 0;
+    } else if (m.role === "assistant") {
+      const msg: StreamMessage = {
+        id: m.id,
+        role: "assistant",
+        content: m.content || "",
+        isTyping: false,
+      };
+
+      // Restore reasoning content (DeepSeek thinking mode)
+      if (m.reasoningContent) {
+        msg.thinkingContent = m.reasoningContent;
+      }
+
+      // Restore tool call names from toolCalls JSON
+      if (m.toolCalls) {
+        try {
+          const calls = JSON.parse(m.toolCalls);
+          if (Array.isArray(calls)) {
+            msg.toolCallNames = calls.map((tc: { function?: { name?: string } }) =>
+              tc.function?.name || "unknown"
+            );
+            currentToolNames = msg.toolCallNames;
+            toolResultIdx = 0;
+          }
+        } catch {
+          // skip
+        }
+      }
+
+      result.push(msg);
+    } else if (m.role === "tool") {
+      // Pair tool result with the last assistant's tool names
+      if (toolResultIdx < currentToolNames.length && result.length > 0) {
+        const lastMsg = result[result.length - 1];
+        if (lastMsg.role === "assistant") {
+          if (!lastMsg.toolCallResults) {
+            lastMsg.toolCallResults = [];
+          }
+          lastMsg.toolCallResults.push({
+            name: currentToolNames[toolResultIdx],
+            result: m.content || "",
+          });
+          toolResultIdx++;
+        }
+      }
+    }
+  }
+
+  return result;
 }
 
 const SESSION_KEY = "hospital-chat-session-id";
@@ -160,12 +231,7 @@ export function useChatStream(opts?: UseChatStreamOptions): UseChatStreamReturn 
       const res = await fetch(`/api/conversations/${id}`);
       const data = await res.json();
       if (data.code === 0 && data.data) {
-        const history: StreamMessage[] = (data.data.messages || []).map((m: ApiMessage) => ({
-          id: m.id,
-          role: m.role as "user" | "assistant",
-          content: m.content || "",
-          isTyping: false,
-        }));
+        const history = convertApiMessages(data.data.messages || []);
         setMessages(history);
         setConversationId(id);
         convIdRef.current = id;
@@ -322,18 +388,39 @@ export function useChatStream(opts?: UseChatStreamOptions): UseChatStreamReturn 
               } catch {}
             } else if (line.startsWith("e:tool-result:")) {
               // Tool result received — single-line SSE format: e:tool-result:{json}
-              setMessages((prev) => {
-                const updated = [...prev];
-                const last = updated[updated.length - 1];
-                if (last && last.id === assistantId) {
-                  updated[updated.length - 1] = {
-                    ...last,
-                    isExecutingTool: false,
-                    executingToolName: undefined,
-                  };
-                }
-                return updated;
-              });
+              try {
+                const dataStr = line.slice("e:tool-result:".length).trim();
+                const toolData = JSON.parse(dataStr);
+                setMessages((prev) => {
+                  const updated = [...prev];
+                  const last = updated[updated.length - 1];
+                  if (last && last.id === assistantId) {
+                    const existingResults = last.toolCallResults || [];
+                    existingResults.push({ name: toolData.toolName, result: toolData.result });
+                    updated[updated.length - 1] = {
+                      ...last,
+                      isExecutingTool: false,
+                      executingToolName: undefined,
+                      toolCallResults: [...existingResults],
+                    };
+                  }
+                  return updated;
+                });
+              } catch {
+                // Fallback: just clear executing state
+                setMessages((prev) => {
+                  const updated = [...prev];
+                  const last = updated[updated.length - 1];
+                  if (last && last.id === assistantId) {
+                    updated[updated.length - 1] = {
+                      ...last,
+                      isExecutingTool: false,
+                      executingToolName: undefined,
+                    };
+                  }
+                  return updated;
+                });
+              }
             } else if (line.startsWith("e:reasoning:")) {
               // DeepSeek reasoning/thinking mode — single-line SSE format: e:reasoning:{json}
               try {
@@ -455,12 +542,7 @@ export function useChatStream(opts?: UseChatStreamOptions): UseChatStreamReturn 
           .then((r) => r.json())
           .then((data) => {
             if (data.code === 0 && data.data) {
-              const history: StreamMessage[] = (data.data.messages || []).map((m: ApiMessage) => ({
-                id: m.id,
-                role: m.role as "user" | "assistant",
-                content: m.content || "",
-                isTyping: false,
-              }));
+              const history = convertApiMessages(data.data.messages || []);
               setMessages(history);
               setConversationId(savedConvId);
               convIdRef.current = savedConvId;

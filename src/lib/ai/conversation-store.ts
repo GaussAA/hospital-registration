@@ -41,7 +41,8 @@ export class ConversationStore {
     conversationId: string,
     role: string,
     content: string | null,
-    toolCalls?: string
+    toolCalls?: string,
+    reasoningContent?: string
   ): Promise<string> {
     const prisma = await getPrisma();
     const msg = await prisma.message.create({
@@ -50,6 +51,7 @@ export class ConversationStore {
         role,
         content,
         toolCalls: toolCalls || null,
+        reasoningContent: reasoningContent || null,
       },
     });
     return msg.id;
@@ -60,7 +62,7 @@ export class ConversationStore {
    */
   static async addMessages(
     conversationId: string,
-    messages: Array<{ role: string; content?: string | null; toolCalls?: string }>
+    messages: Array<{ role: string; content?: string | null; toolCalls?: string; reasoningContent?: string }>
   ): Promise<void> {
     const prisma = await getPrisma();
     await prisma.message.createMany({
@@ -69,6 +71,7 @@ export class ConversationStore {
         role: m.role,
         content: m.content ?? null,
         toolCalls: m.toolCalls || null,
+        reasoningContent: m.reasoningContent || null,
       })),
     });
   }
@@ -91,11 +94,13 @@ export class ConversationStore {
       take: maxMessages,
     });
 
-    // Step 1: Reconstruct messages with tool call info
+    // Step 1: Reconstruct messages with tool call info and reasoning content
     const reconstructed: ChatMessage[] = rawMessages.map((m) => {
       const msg: ChatMessage = {
         role: m.role as ChatMessage["role"],
         content: m.content,
+        // Restore reasoning content (DeepSeek thinking mode)
+        reasoningContent: m.reasoningContent || undefined,
       };
 
       // Restore tool_calls from stored JSON for assistant messages
@@ -220,6 +225,7 @@ export class ConversationStore {
         role: m.role,
         content: m.content,
         toolCalls: m.toolCalls,
+        reasoningContent: m.reasoningContent,
         createdAt: m.createdAt.toISOString(),
       })),
     };

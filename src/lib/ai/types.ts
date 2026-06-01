@@ -19,6 +19,8 @@ export interface ChatMessage {
   tool_calls?: ToolCallData[];
   /** For tool messages — ID of the tool call this result belongs to */
   tool_call_id?: string;
+  /** DeepSeek reasoning/thinking mode content */
+  reasoningContent?: string;
 }
 
 export interface ChatRequest {
@@ -108,6 +110,8 @@ export interface StreamMessage {
   executingToolName?: string;
   /** 累积的已调用工具名列表（用于完成后折叠展示） */
   toolCallNames?: string[];
+  /** 工具调用结果详情（名+结果摘要） */
+  toolCallResults?: Array<{ name: string; result: string }>;
   /** DeepSeek 推理模式下的思考过程 */
   isThinking?: boolean;
   thinkingContent?: string;
@@ -137,6 +141,7 @@ export interface ConversationDetail {
     role: string;
     content: string | null;
     toolCalls: string | null;
+    reasoningContent: string | null;
     createdAt: string;
   }>;
 }

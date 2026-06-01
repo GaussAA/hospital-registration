@@ -588,6 +588,7 @@ export default function ChatPanel({ isOpen, onClose }: ChatPanelProps) {
                     toolCallNames={msg.toolCallNames}
                     isThinking={isLastMsg && msg.isThinking === true}
                     thinkingContent={msg.thinkingContent}
+                    toolCallResults={msg.toolCallResults}
                   />
                 );
               })}
