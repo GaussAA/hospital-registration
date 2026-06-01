@@ -15,11 +15,12 @@ interface Hospital {
   imageUrl: string;
 }
 
+// 浮于图片之上的 badge 固定使用浅色样式，图片不随主题变化
 const levelBadge: Record<string, string> = {
-  "三级甲等": "bg-green-100 dark:bg-green-500/15 text-green-700 dark:text-green-300 border border-green-200 dark:border-green-800/30",
-  "三级乙等": "bg-blue-100 dark:bg-blue-500/15 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800/30",
-  "二级甲等": "bg-yellow-100 dark:bg-yellow-500/15 text-yellow-700 dark:text-yellow-300 border border-yellow-200 dark:border-yellow-800/30",
-  "二级乙等": "bg-orange-100 dark:bg-orange-500/15 text-orange-700 dark:text-orange-300 border border-orange-200 dark:border-orange-800/30",
+  三级甲等: "bg-green-100 text-green-700 border border-green-200",
+  三级乙等: "bg-blue-100 text-blue-700 border border-blue-200",
+  二级甲等: "bg-yellow-100 text-yellow-700 border border-yellow-200",
+  二级乙等: "bg-orange-100 text-orange-700 border border-orange-200",
 };
 
 export default function FeaturedHospitals() {
@@ -88,14 +89,29 @@ export default function FeaturedHospitals() {
               {/* Image area */}
               <div className="h-44 relative bg-gradient-to-br from-blue-100 dark:from-gray-800 to-indigo-100 dark:to-gray-800 flex items-center justify-center overflow-hidden">
                 {hospital.imageUrl ? (
-                  <Image src={hospital.imageUrl} alt={hospital.name} fill className="object-cover group-hover:scale-105 transition-transform duration-500" sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" />
+                  <Image
+                    src={hospital.imageUrl}
+                    alt={hospital.name}
+                    fill
+                    className="object-cover group-hover:scale-105 transition-transform duration-500"
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    priority={i < 3}
+                  />
                 ) : (
-                  <Image src="/images/hospital-placeholder.svg" alt={hospital.name} fill className="object-cover group-hover:scale-105 transition-transform duration-500" sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" />
+                  <Image
+                    src="/images/hospital-placeholder.svg"
+                    alt={hospital.name}
+                    fill
+                    className="object-cover group-hover:scale-105 transition-transform duration-500"
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                  />
                 )}
                 {/* Gradient overlay */}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 {/* Level badge on image */}
-                <span className={`absolute top-3 right-3 inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium shadow-sm ${levelBadge[hospital.level] ?? "bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200"}`}>
+                <span
+                  className={`absolute top-3 right-3 inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium shadow-sm ${levelBadge[hospital.level] ?? "bg-gray-100 text-gray-800 border border-gray-200"}`}
+                >
                   {hospital.level}
                 </span>
               </div>
@@ -105,9 +121,7 @@ export default function FeaturedHospitals() {
                 <h3 className="text-lg font-semibold text-[var(--text-primary)] mb-1.5 line-clamp-1 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                   {hospital.name}
                 </h3>
-                <p className="text-sm text-[var(--text-secondary)] mb-1 line-clamp-1">
-                  {hospital.address}
-                </p>
+                <p className="text-sm text-[var(--text-secondary)] mb-1 line-clamp-1">{hospital.address}</p>
                 <p className="text-sm text-[var(--text-muted)]">
                   {hospital.departmentCount} 个科室 · {hospital.doctorCount} 位医生
                 </p>
@@ -118,12 +132,14 @@ export default function FeaturedHospitals() {
 
         {/* View all */}
         <div className="text-center">
-          <button
-            onClick={() => router.push("/hospitals")}
-            className="btn-secondary group"
-          >
+          <button onClick={() => router.push("/hospitals")} className="btn-secondary group">
             <span>查看全部医院</span>
-            <svg className="w-4 h-4 transition-transform group-hover:translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg
+              className="w-4 h-4 transition-transform group-hover:translate-x-0.5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
             </svg>
           </button>
