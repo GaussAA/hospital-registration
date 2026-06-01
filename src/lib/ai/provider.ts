@@ -89,21 +89,6 @@ async function callOpenAICompatible(
 
 /* ── Vision (Image Analysis) Support ── */
 
-interface VisionMessage {
-  role: "user" | "assistant" | "system";
-  content: Array<{
-    type: "text" | "image_url";
-    text?: string;
-    image_url?: { url: string };
-  }>;
-}
-
-interface VisionRequest {
-  messages: VisionMessage[];
-  temperature?: number;
-  maxTokens?: number;
-}
-
 /**
  * Call DeepSeek Vision API with image analysis.
  * imageUrl can be a public URL or a base64 data URL.
@@ -149,9 +134,9 @@ export async function visionCompletion(
 
     const data = await response.json();
     return data.choices?.[0]?.message?.content || "无法分析该图片。";
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("[Vision API Error]", error);
-    return `图片分析失败：${error.message}`;
+    return `图片分析失败：${error instanceof Error ? error.message : "未知错误"}`;
   }
 }
 

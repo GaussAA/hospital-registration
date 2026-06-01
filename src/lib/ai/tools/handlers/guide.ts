@@ -111,8 +111,8 @@ export async function handleAnalyzeImage(
       `${analysis}\n\n` +
       `> ⚠️ AI分析仅供参考，最终的诊断和治疗方案请以医生的专业意见为准。`
     );
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("[analyzeImage] Error:", error);
-    return `图片分析请求失败：${error.message}。请稍后重试。`;
+    return `图片分析请求失败：${error instanceof Error ? error.message : "未知错误"}。请稍后重试。`;
   }
 }

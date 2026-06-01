@@ -2,6 +2,7 @@
 
 import { useRef, useEffect, useState, useMemo, useCallback } from "react";
 import { useTheme } from "@/components/ui/ThemeProvider";
+import Image from "next/image";
 import ChatMessage from "./ChatMessage";
 import { useChatStream } from "@/hooks/useChatStream";
 import { useUser } from "@/components/auth/UserProvider";
@@ -324,7 +325,7 @@ export default function ChatPanel({ isOpen, onClose }: ChatPanelProps) {
     }
     setInput("");
     sendMessage(finalMessage);
-  }, [input, pendingImage, isLoading, sendMessage]);
+  }, [input, pendingImage, isLoading, sendMessage, setInput]);
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); handleSend(); }
@@ -641,9 +642,9 @@ export default function ChatPanel({ isOpen, onClose }: ChatPanelProps) {
               {pendingImage && (
                 <div className="relative px-4 pt-3 pb-0">
                   <div className="relative inline-block rounded-lg overflow-hidden border"
-                    style={{ borderColor, maxWidth: "180px", maxHeight: "120px" }}
+                    style={{ borderColor, maxWidth: "180px", maxHeight: "120px", width: "180px", height: "100px" }}
                   >
-                    <img src={pendingImage} alt="待发送图片" className="w-full h-full object-cover" style={{ maxHeight: "100px" }} />
+                    <Image src={pendingImage} alt="待发送图片" fill className="object-cover" sizes="180px" unoptimized />
                     <button
                       onClick={() => setPendingImage(null)}
                       className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full flex items-center justify-center transition-colors"

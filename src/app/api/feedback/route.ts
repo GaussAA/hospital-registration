@@ -32,7 +32,7 @@ export async function POST(req: NextRequest) {
     const prisma = await getPrisma();
 
     // upsert：同一用户对同一条消息只能有一个反馈
-    await (prisma as any).messageFeedback.upsert({
+    await (prisma as unknown as { messageFeedback: { upsert: (args: Record<string, unknown>) => Promise<unknown> } }).messageFeedback.upsert({
       where: {
         messageId_userId: {
           messageId: body.messageId,

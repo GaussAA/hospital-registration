@@ -191,7 +191,7 @@ export async function POST(req: NextRequest) {
               })}\n\n`
             )
           );
-        } catch (err: any) {
+        } catch (err: unknown) {
           console.error("[chat/stream] Stream error:", err);
         } finally {
           try {
@@ -211,9 +211,10 @@ export async function POST(req: NextRequest) {
         "x-conversation-id": conversationId,
       },
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("[chat/stream] Error:", error);
-    return new Response(JSON.stringify({ error: error.message || "内部错误" }), {
+    const message = error instanceof Error ? error.message : "内部错误";
+    return new Response(JSON.stringify({ error: message }), {
       status: 500,
     });
   }
