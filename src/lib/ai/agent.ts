@@ -4,6 +4,10 @@ import { completion, isProviderConfigured } from "./provider";
 import { getSystemPrompt, SYSTEM_PROMPT } from "./prompts/system";
 
 /**
+ * @deprecated 请使用 stream-agent.ts（流式 Agent）替代。
+ * 此文件保留仅用于向后兼容 `/api/chat` 非流式路由。
+ * 新功能开发请使用 `createStreamResponse()` from `./stream-agent`。
+ *
  * AI Agent for hospital registration assistant.
  *
  * Architecture:

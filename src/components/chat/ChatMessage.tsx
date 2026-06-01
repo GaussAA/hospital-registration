@@ -340,12 +340,10 @@ export default function ChatMessage({
                   </div>
                   {item.result && (
                     <div
-                      className="ml-3 mt-0.5 text-[11px] leading-relaxed"
+                      className="ml-3 mt-0.5 text-[11px] leading-relaxed max-h-32 overflow-y-auto whitespace-pre-wrap"
                       style={{ color: isDark ? "rgba(148,163,184,0.7)" : "rgba(71,85,105,0.7)" }}
                     >
-                      {item.result.length > 200
-                        ? item.result.slice(0, 200) + "…"
-                        : item.result}
+                      {item.result}
                     </div>
                   )}
                 </div>

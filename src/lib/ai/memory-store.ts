@@ -65,14 +65,14 @@ export class UserMemoryStore {
       if (!memRecord) return null;
 
       return {
-        userId: memRecord.userId,
+        userId: memRecord.userId as string,
         preferences: typeof memRecord.preferences === "string"
-          ? JSON.parse(memRecord.preferences)
+          ? JSON.parse(memRecord.preferences as string)
           : memRecord.preferences,
         summary: typeof memRecord.summary === "string"
-          ? JSON.parse(memRecord.summary)
-          : memRecord.summary ?? [],
-        lastActive: memRecord.updatedAt ?? new Date(),
+          ? JSON.parse(memRecord.summary as string)
+          : (memRecord.summary ?? []) as string[],
+        lastActive: (memRecord.updatedAt as Date) ?? new Date(),
       };
     } catch {
       return null;
@@ -189,31 +189,114 @@ export class UserMemoryStore {
   }
 }
 
-/* ── Session Memory Store (in-memory, per-session) ── */
-
-const sessionMemories = new Map<string, SessionMemory>();
+/* ── Session Memory Store (DB-backed via SessionState table) ── */
 
 export class SessionMemoryStore {
-  static get(sessionId: string): SessionMemory | null {
-    return sessionMemories.get(sessionId) ?? null;
-  }
+  /**
+   * 从 DB SessionState 表加载会话状态。
+   */
+  static async get(sessionId: string): Promise<SessionMemory | null> {
+    try {
+      const prisma = await getPrisma();
+      const record = await (prisma as unknown as { sessionState?: { findUnique: (args: { where: { sessionId: string } }) => Promise<Record<string, unknown> | null> } }).sessionState?.findUnique({
+        where: { sessionId },
+      });
+      if (!record) return null;
 
-  static set(sessionId: string, memory: SessionMemory): void {
-    sessionMemories.set(sessionId, memory);
-  }
+      let cache: Record<string, unknown> = {};
+      try {
+        cache = JSON.parse(typeof record.cache === "string" ? record.cache : "{}");
+      } catch {}
 
-  static update(sessionId: string, updates: Partial<SessionMemory>): void {
-    const existing = sessionMemories.get(sessionId);
-    if (existing) {
-      Object.assign(existing, updates);
+      // estimatedTokens may be stored inside cache
+      const estimatedTokens = (cache._estimatedTokens as number) || 0;
+      delete cache._estimatedTokens;
+
+      return {
+        contextSummary: (record.contextSummary as string) || "",
+        step: (record.step as string) || "idle",
+        cache,
+        estimatedTokens,
+      };
+    } catch {
+      return null;
     }
   }
 
-  static delete(sessionId: string): void {
-    sessionMemories.delete(sessionId);
+  /**
+   * 将会话状态写入 DB SessionState 表（upsert）。
+   */
+  static async set(sessionId: string, memory: SessionMemory): Promise<void> {
+    try {
+      const prisma = await getPrisma();
+      const cacheWithMeta = {
+        ...memory.cache,
+        _estimatedTokens: memory.estimatedTokens,
+      };
+
+      await (prisma as unknown as { sessionState: { upsert: (args: { where: { sessionId: string }, update: Record<string, unknown>, create: Record<string, unknown> }) => Promise<void> } }).sessionState.upsert({
+        where: { sessionId },
+        update: {
+          step: memory.step,
+          cache: JSON.stringify(cacheWithMeta),
+          contextSummary: memory.contextSummary || "",
+        },
+        create: {
+          sessionId,
+          step: memory.step,
+          cache: JSON.stringify(cacheWithMeta),
+          contextSummary: memory.contextSummary || "",
+        },
+      });
+    } catch {
+      // Session memory failure is non-critical
+    }
   }
 
-  static clear(): void {
-    sessionMemories.clear();
+  /**
+   * 合并更新会话状态。
+   */
+  static async update(sessionId: string, updates: Partial<SessionMemory>): Promise<void> {
+    const existing = await SessionMemoryStore.get(sessionId);
+    if (existing) {
+      Object.assign(existing, updates);
+      await SessionMemoryStore.set(sessionId, existing);
+    } else {
+      // Create new with defaults merged with updates
+      const newMemory: SessionMemory = {
+        contextSummary: "",
+        step: "idle",
+        cache: {},
+        estimatedTokens: 0,
+        ...updates,
+      };
+      await SessionMemoryStore.set(sessionId, newMemory);
+    }
+  }
+
+  /**
+   * 删除会话状态。
+   */
+  static async delete(sessionId: string): Promise<void> {
+    try {
+      const prisma = await getPrisma();
+      await (prisma as unknown as { sessionState: { delete: (args: { where: { sessionId: string } }) => Promise<void> } }).sessionState?.delete({
+        where: { sessionId },
+      }).catch(() => {});
+    } catch {
+      // non-critical
+    }
+  }
+
+  /**
+   * 清除所有会话状态（仅在调试/测试时使用）。
+   */
+  static async clear(): Promise<void> {
+    try {
+      const prisma = await getPrisma();
+      await (prisma as unknown as { sessionState: { deleteMany: () => Promise<void> } }).sessionState?.deleteMany();
+    } catch {
+      // non-critical
+    }
   }
 }

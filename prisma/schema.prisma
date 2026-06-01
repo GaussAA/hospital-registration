@@ -171,19 +171,48 @@ model Conversation {
   @@index([updatedAt])
 }
 
+/// 工具调用记录表
+model ToolCall {
+  id        String   @id @default(cuid())
+  messageId String
+  sequence  Int
+  toolName  String
+  arguments String   /// JSON
+  result    String?
+  status    String   @default("pending") /// pending | success | error
+  createdAt DateTime @default(now())
+
+  message Message @relation(fields: [messageId], references: [id], onDelete: Cascade)
+
+  @@index([messageId])
+}
+
 /// 消息表
 model Message {
   id             String   @id @default(cuid())
   conversationId String
   role           String
   content        String?
-  toolCalls      String?
   /// DeepSeek 推理模式的思考过程文本
   reasoningContent String?
   createdAt      DateTime @default(now())
 
   conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  toolCalls    ToolCall[]
 
   @@index([conversationId])
   @@index([conversationId, createdAt])
+}
+
+/// 会话状态表
+model SessionState {
+  id             String   @id @default(cuid())
+  sessionId      String   @unique
+  userId         String?
+  step           String   @default("idle")
+  cache          String   @default("{}")
+  contextSummary String   @default("")
+  updatedAt      DateTime @updatedAt
+
+  @@index([sessionId])
 }

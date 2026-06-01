@@ -622,15 +622,18 @@ export default function ChatPanel({ isOpen, onClose }: ChatPanelProps) {
             return null;
           })()}
 
-          {/* ── Floating Input Area ── */}
-          <div className="sticky bottom-0 left-0 right-0 px-3 pb-3 pt-0 pointer-events-none">
-            <div
-              className="pointer-events-auto rounded-2xl shadow-lg shadow-black/10 dark:shadow-black/30 backdrop-blur-xl transition-all duration-300"
-              style={{
-                background: isDark ? "rgba(23,23,30,0.92)" : "rgba(255,255,255,0.92)",
-                border: `1px solid ${borderColor}`,
-              }}
-            >
+        </div>
+        {/* ── End of scrollable messages area ── */}
+
+        {/* ── Floating Input Area (outside scroll area, fixed at bottom) ── */}
+        <div className="flex-shrink-0 px-3 pb-3 pt-1">
+          <div
+            className="rounded-2xl shadow-lg shadow-black/10 dark:shadow-black/30 backdrop-blur-xl transition-all duration-300"
+            style={{
+              background: isDark ? "rgba(23,23,30,0.92)" : "rgba(255,255,255,0.92)",
+              border: `1px solid ${borderColor}`,
+            }}
+          >
               <input
                 ref={fileInputRef}
                 type="file"
@@ -772,7 +775,6 @@ export default function ChatPanel({ isOpen, onClose }: ChatPanelProps) {
             </div>
           </div>
         </div>
-      </div>
     </>
   );
 }

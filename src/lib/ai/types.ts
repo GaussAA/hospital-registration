@@ -97,6 +97,16 @@ export function createInitialState(): ConversationState {
   return { step: "idle", cache: {} };
 }
 
+/* ── Agent Runner Types ── */
+
+/** 工具执行结果（供持久化层使用） */
+export interface ToolExecutionResult {
+  name: string;
+  arguments: string;
+  result: string;
+  status: "success" | "error";
+}
+
 // ── 流式消息（含 UI 状态） ──
 export interface StreamMessage {
   id: string;
@@ -125,6 +135,26 @@ export interface ToolCallInfo {
   result?: string;
 }
 
+/** 数据库存储的 ToolCall 记录（对应 ToolCall 模型） */
+export interface StoredToolCall {
+  id: string;
+  messageId: string;
+  sequence: number;
+  toolName: string;
+  arguments: string;
+  result: string | null;
+  status: string;
+  createdAt: string;
+}
+
+/** 创建 ToolCall 时传入的参数 */
+export interface ToolCallInput {
+  toolName: string;
+  arguments: string;
+  result?: string | null;
+  status?: string;
+}
+
 // ── Conversation 类型 ──
 export interface ConversationSummary {
   id: string;
@@ -143,6 +173,7 @@ export interface ConversationDetail {
     toolCalls: string | null;
     reasoningContent: string | null;
     createdAt: string;
+    toolCallRecords?: StoredToolCall[];
   }>;
 }
 
@@ -151,6 +182,5 @@ export type SSEEventType =
   | { type: "text"; content: string }
   | { type: "tool-call"; toolName: string; args: Record<string, unknown> }
   | { type: "tool-result"; toolName: string; result: string }
-  | { type: "tool-messages"; messages: Array<{ role: string; content: string | null; toolCalls?: string; toolCallId?: string }> }
   | { type: "finish"; finishReason: string; conversationId?: string }
   | { type: "error"; message: string };

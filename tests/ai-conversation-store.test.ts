@@ -8,7 +8,6 @@ const mockConversationFindUnique = vi.fn();
 const mockConversationUpdate = vi.fn();
 const mockConversationDelete = vi.fn();
 const mockMessageCreate = vi.fn();
-const mockMessageCreateMany = vi.fn();
 
 const mockPrisma = {
   conversation: {
@@ -21,7 +20,6 @@ const mockPrisma = {
   },
   message: {
     create: mockMessageCreate,
-    createMany: mockMessageCreateMany,
   },
 };
 
@@ -109,19 +107,20 @@ describe("ConversationStore", () => {
           conversationId: "conv-1",
           role: "user",
           content: "你好",
-          toolCalls: null,
+          reasoningContent: null,
+          toolCalls: undefined,
         },
       });
     });
 
-    it("should accept optional toolCalls", async () => {
+    it("should accept optional toolCalls array", async () => {
       mockMessageCreate.mockResolvedValue({ id: "msg-2" });
 
       await ConversationStore.addMessage(
         "conv-1",
         "assistant",
         "正在查询",
-        '[{"name":"search","args":{}}]'
+        [{ toolName: "search_hospitals", arguments: '{"keyword":"北京"}', result: "找到了", status: "success" }]
       );
 
       expect(mockMessageCreate).toHaveBeenCalledWith({
@@ -129,7 +128,12 @@ describe("ConversationStore", () => {
           conversationId: "conv-1",
           role: "assistant",
           content: "正在查询",
-          toolCalls: '[{"name":"search","args":{}}]',
+          reasoningContent: null,
+          toolCalls: {
+            create: [
+              { sequence: 0, toolName: "search_hospitals", arguments: '{"keyword":"北京"}', result: "找到了", status: "success" },
+            ],
+          },
         },
       });
     });
@@ -144,7 +148,8 @@ describe("ConversationStore", () => {
           conversationId: "conv-1",
           role: "tool",
           content: null,
-          toolCalls: null,
+          reasoningContent: null,
+          toolCalls: undefined,
         },
       });
     });
@@ -153,39 +158,42 @@ describe("ConversationStore", () => {
   // ── addMessages (batch) ──
   describe("addMessages", () => {
     it("should batch add multiple messages", async () => {
-      mockMessageCreateMany.mockResolvedValue({ count: 2 });
+      mockMessageCreate
+        .mockResolvedValueOnce({ id: "msg-1" })
+        .mockResolvedValueOnce({ id: "msg-2" });
 
-      await ConversationStore.addMessages("conv-1", [
+      const ids = await ConversationStore.addMessages("conv-1", [
         { role: "user", content: "你好" },
         { role: "assistant", content: "您好！有什么可以帮您的？" },
       ]);
 
-      expect(mockMessageCreateMany).toHaveBeenCalledWith({
-        data: [
-          {
-            conversationId: "conv-1",
-            role: "user",
-            content: "你好",
-            toolCalls: null,
-          },
-          {
-            conversationId: "conv-1",
-            role: "assistant",
-            content: "您好！有什么可以帮您的？",
-            toolCalls: null,
-          },
-        ],
+      expect(ids).toEqual(["msg-1", "msg-2"]);
+      expect(mockMessageCreate).toHaveBeenCalledTimes(2);
+      expect(mockMessageCreate).toHaveBeenNthCalledWith(1, {
+        data: {
+          conversationId: "conv-1",
+          role: "user",
+          content: "你好",
+          reasoningContent: null,
+          toolCalls: undefined,
+        },
+      });
+      expect(mockMessageCreate).toHaveBeenNthCalledWith(2, {
+        data: {
+          conversationId: "conv-1",
+          role: "assistant",
+          content: "您好！有什么可以帮您的？",
+          reasoningContent: null,
+          toolCalls: undefined,
+        },
       });
     });
 
     it("should handle empty messages array", async () => {
-      mockMessageCreateMany.mockResolvedValue({ count: 0 });
+      const ids = await ConversationStore.addMessages("conv-1", []);
 
-      await ConversationStore.addMessages("conv-1", []);
-
-      expect(mockMessageCreateMany).toHaveBeenCalledWith({
-        data: [],
-      });
+      expect(ids).toEqual([]);
+      expect(mockMessageCreate).not.toHaveBeenCalled();
     });
   });
 
@@ -252,7 +260,7 @@ describe("ConversationStore", () => {
 
   // ── getDetail ──
   describe("getDetail", () => {
-    it("should return conversation detail with messages sorted by createdAt asc", async () => {
+    it("should return conversation detail with messages and toolCallRecords", async () => {
       mockConversationFindUnique.mockResolvedValue({
         id: "conv-1",
         title: "对话1",
@@ -261,14 +269,16 @@ describe("ConversationStore", () => {
             id: "msg-1",
             role: "user",
             content: "你好",
-            toolCalls: null,
+            toolCalls: [],
+            reasoningContent: null,
             createdAt: new Date("2024-01-01T00:00:00Z"),
           },
           {
             id: "msg-2",
             role: "assistant",
             content: "您好！",
-            toolCalls: null,
+            toolCalls: [],
+            reasoningContent: null,
             createdAt: new Date("2024-01-01T00:00:01Z"),
           },
         ],
@@ -285,12 +295,17 @@ describe("ConversationStore", () => {
         role: "user",
         content: "你好",
         toolCalls: null,
+        reasoningContent: null,
         createdAt: "2024-01-01T00:00:00.000Z",
+        toolCallRecords: [],
       });
       expect(mockConversationFindUnique).toHaveBeenCalledWith({
         where: { id: "conv-1" },
         include: {
-          messages: { orderBy: { createdAt: "asc" } },
+          messages: {
+            orderBy: { createdAt: "asc" },
+            include: { toolCalls: { orderBy: { sequence: "asc" } } },
+          },
         },
       });
     });
@@ -343,10 +358,19 @@ describe("ConversationStore", () => {
 
   // ── mergeToUser ──
   describe("mergeToUser", () => {
-    it("should throw Not implemented error (P1 feature)", async () => {
-      await expect(
-        ConversationStore.mergeToUser("session-1", "user-1")
-      ).rejects.toThrow("Not implemented: mergeToUser is a P1 feature");
+    it("should transfer anonymous conversations to user", async () => {
+      mockConversationFindMany.mockResolvedValue([
+        { id: "conv-1", title: "对话1" },
+      ]);
+      mockConversationFindFirst.mockResolvedValue(null);
+      mockConversationUpdate.mockResolvedValue({ id: "conv-1" });
+
+      await ConversationStore.mergeToUser("session-1", "user-1");
+
+      expect(mockConversationUpdate).toHaveBeenCalledWith({
+        where: { id: "conv-1" },
+        data: { userId: "user-1" },
+      });
     });
   });
 });

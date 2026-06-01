@@ -47,6 +47,13 @@ function generateMarkdown(detail: {
     toolCalls: string | null;
     reasoningContent: string | null;
     createdAt: string;
+    toolCallRecords?: Array<{
+      id: string;
+      toolName: string;
+      arguments: string;
+      result: string | null;
+      status: string;
+    }>;
   }>;
 }): string {
   const lines: string[] = [];
@@ -72,11 +79,9 @@ function generateMarkdown(detail: {
 
     // Content
     if (msg.content) {
-      // For user/assistant messages with markdown content
       if (msg.role === "assistant" || msg.role === "user") {
         lines.push(msg.content);
       } else {
-        // Tool messages — wrap in code block
         lines.push("```");
         lines.push(msg.content);
         lines.push("```");
@@ -85,22 +90,13 @@ function generateMarkdown(detail: {
       lines.push("*（无内容）*");
     }
 
-    // Tool calls info
-    if (msg.role === "assistant" && msg.toolCalls) {
-      try {
-        const calls = JSON.parse(msg.toolCalls);
-        if (Array.isArray(calls) && calls.length > 0) {
-          lines.push("");
-          lines.push("**调用的工具：**");
-          for (const tc of calls) {
-            const args = tc.function?.arguments
-              ? `\`${tc.function.name}(${tc.function.arguments})\``
-              : `\`${tc.function.name}\``;
-            lines.push(`- ${args}`);
-          }
-        }
-      } catch {
-        // Ignore parse errors
+    // Tool calls info (from toolCallRecords or legacy toolCalls)
+    const records = msg.toolCallRecords;
+    if (msg.role === "assistant" && records && records.length > 0) {
+      lines.push("");
+      lines.push("**调用的工具：**");
+      for (const tc of records) {
+        lines.push(`- \`${tc.toolName}(${tc.arguments})\``);
       }
     }
 
@@ -108,7 +104,7 @@ function generateMarkdown(detail: {
     if (msg.role === "assistant" && msg.reasoningContent) {
       lines.push("");
       lines.push("<details>");
-      lines.push("<summary><strong>🧠 思考过程</strong></summary>");
+      lines.push("<summary><strong>思考过程</strong></summary>");
       lines.push("");
       lines.push(msg.reasoningContent);
       lines.push("");

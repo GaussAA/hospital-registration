@@ -1,9 +1,9 @@
 import { getPrisma } from "@/lib/db";
-import type { ConversationSummary, ConversationDetail, ChatMessage } from "./types";
+import type { ConversationSummary, ConversationDetail, ChatMessage, ToolCallInput } from "./types";
 
 /**
  * Conversation persistence layer.
- * Manages conversation and message records via Prisma.
+ * Manages conversation, message, and tool call records via Prisma.
  */
 export class ConversationStore {
   /**
@@ -35,13 +35,14 @@ export class ConversationStore {
   }
 
   /**
-   * Add a single message to a conversation.
+   * Add a single message to a conversation, optionally with tool call records.
+   * Automatically creates ToolCall records when toolCalls array is provided.
    */
   static async addMessage(
     conversationId: string,
     role: string,
     content: string | null,
-    toolCalls?: string,
+    toolCalls?: ToolCallInput[],
     reasoningContent?: string
   ): Promise<string> {
     const prisma = await getPrisma();
@@ -50,8 +51,18 @@ export class ConversationStore {
         conversationId,
         role,
         content,
-        toolCalls: toolCalls || null,
         reasoningContent: reasoningContent || null,
+        toolCalls: toolCalls
+          ? {
+              create: toolCalls.map((tc, idx) => ({
+                sequence: idx,
+                toolName: tc.toolName,
+                arguments: tc.arguments,
+                result: tc.result ?? null,
+                status: tc.status ?? "pending",
+              })),
+            }
+          : undefined,
       },
     });
     return msg.id;
@@ -59,29 +70,54 @@ export class ConversationStore {
 
   /**
    * Batch add messages to a conversation.
+   * Supports toolCalls as ToolCallInput[] for each message.
    */
   static async addMessages(
     conversationId: string,
-    messages: Array<{ role: string; content?: string | null; toolCalls?: string; reasoningContent?: string }>
-  ): Promise<void> {
+    messages: Array<{
+      role: string;
+      content?: string | null;
+      toolCalls?: ToolCallInput[];
+      reasoningContent?: string;
+    }>
+  ): Promise<string[]> {
     const prisma = await getPrisma();
-    await prisma.message.createMany({
-      data: messages.map((m) => ({
-        conversationId,
-        role: m.role,
-        content: m.content ?? null,
-        toolCalls: m.toolCalls || null,
-        reasoningContent: m.reasoningContent || null,
-      })),
-    });
+    const ids: string[] = [];
+
+    for (const m of messages) {
+      const msg = await prisma.message.create({
+        data: {
+          conversationId,
+          role: m.role,
+          content: m.content ?? null,
+          reasoningContent: m.reasoningContent || null,
+          toolCalls: m.toolCalls
+            ? {
+                create: m.toolCalls.map((tc, idx) => ({
+                  sequence: idx,
+                  toolName: tc.toolName,
+                  arguments: tc.arguments,
+                  result: tc.result ?? null,
+                  status: tc.status ?? "pending",
+                })),
+              }
+            : undefined,
+        },
+      });
+      ids.push(msg.id);
+    }
+
+    return ids;
   }
 
   /**
-   * Load conversation history as ChatMessage[] with full tool call reconstruction.
-   * - Assistant messages with toolCalls → parse JSON to restore tool_calls array
-   * - Tool messages (role="tool") with toolCalls → extract tool_call_id from JSON
-   * - Filters out incomplete tool call rounds (missing tool_call_id due to
-   *   legacy data or partial persistence) to avoid DeepSeek API validation errors.
+   * Load conversation history as ChatMessage[] with tool calls reconstructed
+   * from the ToolCall table.
+   *
+   * Backward compatibility:
+   * - Messages with ToolCall records reconstruct tool_calls from the table.
+   * - Messages without ToolCall records (old data) are kept as plain messages;
+   *   the filtering logic drops incomplete tool rounds gracefully.
    */
   static async loadHistoryAsChatMessages(
     conversationId: string,
@@ -92,6 +128,11 @@ export class ConversationStore {
       where: { conversationId },
       orderBy: { createdAt: "asc" },
       take: maxMessages,
+      include: {
+        toolCalls: {
+          orderBy: { sequence: "asc" },
+        },
+      },
     });
 
     // Step 1: Reconstruct messages with tool call info and reasoning content
@@ -99,39 +140,32 @@ export class ConversationStore {
       const msg: ChatMessage = {
         role: m.role as ChatMessage["role"],
         content: m.content,
-        // Restore reasoning content (DeepSeek thinking mode)
         reasoningContent: m.reasoningContent || undefined,
       };
 
-      // Restore tool_calls from stored JSON for assistant messages
-      if (m.role === "assistant" && m.toolCalls) {
-        try {
-          msg.tool_calls = JSON.parse(m.toolCalls);
-        } catch {
-          // Invalid JSON stored, skip tool_calls restoration
-        }
+      // Reconstruct tool_calls from ToolCall records for assistant messages
+      if (m.role === "assistant" && m.toolCalls.length > 0) {
+        msg.tool_calls = m.toolCalls.map((tc) => ({
+          id: tc.id,
+          type: "function" as const,
+          function: {
+            name: tc.toolName,
+            arguments: tc.arguments,
+          },
+        }));
       }
 
-      // Restore tool_call_id from stored JSON for tool messages
-      if (m.role === "tool" && m.toolCalls) {
-        try {
-          const parsed = JSON.parse(m.toolCalls);
-          if (parsed && parsed.tool_call_id) {
-            msg.tool_call_id = parsed.tool_call_id;
-          }
-        } catch {
-          // Invalid JSON stored, skip tool_call_id restoration
-        }
+      // Reconstruct tool_call_id from ToolCall records for tool messages
+      if (m.role === "tool" && m.toolCalls.length > 0) {
+        // For tool messages, we use the first (and only) ToolCall's id as tool_call_id
+        msg.tool_call_id = m.toolCalls[0].id;
       }
 
       return msg;
     });
 
     // Step 2: Filter out incomplete tool call rounds
-    // DeepSeek API requires every "tool" message to have tool_call_id,
-    // and every assistant tool_calls entry must have a corresponding tool result.
-    // Drop any tool message without a valid tool_call_id, and also drop
-    // the preceding assistant message that triggered it (to keep history coherent).
+    // (same logic as before — unchanged)
     const filtered: ChatMessage[] = [];
     let skipNextToolRound = false;
 
@@ -139,8 +173,6 @@ export class ConversationStore {
       const msg = reconstructed[i];
 
       if (msg.role === "assistant" && msg.tool_calls && msg.tool_calls.length > 0) {
-        // This assistant message contains tool calls. Check if the FOLLOWING
-        // tool messages have valid tool_call_ids.
         let hasValidToolResults = true;
         let toolResultCount = 0;
 
@@ -153,32 +185,25 @@ export class ConversationStore {
         }
 
         if (hasValidToolResults && toolResultCount > 0) {
-          // Valid — keep everything
           filtered.push(msg);
         } else {
-          // Invalid — skip this assistant message and all following tool messages
           skipNextToolRound = true;
         }
       } else if (msg.role === "tool") {
-        // Only add tool message if we're not skipping and it has a valid ID
         if (!skipNextToolRound && msg.tool_call_id) {
           filtered.push(msg);
         }
-        // If this is the last tool message in the round, reset skip flag
         const nextMsg = reconstructed[i + 1];
         if (!nextMsg || nextMsg.role !== "tool") {
           skipNextToolRound = false;
         }
       } else {
-        // Normal user/assistant message — always keep
         filtered.push(msg);
       }
     }
 
     return filtered;
   }
-
-  /** ... existing methods unchanged ... */
 
   /**
    * List conversation summaries for a session.
@@ -204,7 +229,7 @@ export class ConversationStore {
   }
 
   /**
-   * Get conversation detail including all messages.
+   * Get conversation detail including all messages with tool call sub-records.
    */
   static async getDetail(conversationId: string): Promise<ConversationDetail | null> {
     const prisma = await getPrisma();
@@ -213,6 +238,11 @@ export class ConversationStore {
       include: {
         messages: {
           orderBy: { createdAt: "asc" },
+          include: {
+            toolCalls: {
+              orderBy: { sequence: "asc" },
+            },
+          },
         },
       },
     });
@@ -224,9 +254,19 @@ export class ConversationStore {
         id: m.id,
         role: m.role,
         content: m.content,
-        toolCalls: m.toolCalls,
+        toolCalls: null, // Legacy field kept for compatibility
         reasoningContent: m.reasoningContent,
         createdAt: m.createdAt.toISOString(),
+        toolCallRecords: m.toolCalls.map((tc) => ({
+          id: tc.id,
+          messageId: tc.messageId,
+          sequence: tc.sequence,
+          toolName: tc.toolName,
+          arguments: tc.arguments,
+          result: tc.result,
+          status: tc.status,
+          createdAt: tc.createdAt.toISOString(),
+        })),
       })),
     };
   }
@@ -250,18 +290,12 @@ export class ConversationStore {
     const cleaned = message.trim();
     if (!cleaned) return "新对话";
 
-    // 提取关键信息生成标题
     let title = cleaned;
-
-    // 截断到合理长度（最多 30 字符）
     const chars = Array.from(title);
     if (chars.length > 30) {
       title = chars.slice(0, 30).join("") + "…";
     }
-
-    // 去除多余空格
     title = title.replace(/\s+/g, " ").trim();
-
     return title;
   }
 
@@ -277,34 +311,21 @@ export class ConversationStore {
 
   /**
    * Merge anonymous conversations into a user account after login.
-   * Transfers all conversations with matching sessionId to the user's userId.
    */
   static async mergeToUser(sessionId: string, userId: string): Promise<void> {
     if (!sessionId || !userId) return;
 
     const prisma = await getPrisma();
-
-    // 查找该 session 下的所有匿名对话
     const anonymousConversations = await prisma.conversation.findMany({
-      where: {
-        sessionId,
-        userId: null,
-      },
+      where: { sessionId, userId: null },
     });
 
     if (anonymousConversations.length === 0) return;
 
-    // 逐个迁移到用户
     for (const conv of anonymousConversations) {
-      // 检查该用户是否已有同名对话（避免重复）
       const existingForUser = await prisma.conversation.findFirst({
-        where: {
-          userId,
-          title: conv.title,
-          // 不是完全精准匹配，但防大部分重复
-        },
+        where: { userId, title: conv.title },
       });
-
       if (!existingForUser) {
         await prisma.conversation.update({
           where: { id: conv.id },

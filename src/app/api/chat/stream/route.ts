@@ -1,15 +1,19 @@
 import { NextRequest } from "next/server";
 import { verifyToken } from "@/lib/utils/jwt";
 import { ConversationStore } from "@/lib/ai/conversation-store";
+import { ConversationPersistence } from "@/lib/ai/persistence";
 import { createStreamResponse } from "@/lib/ai/stream-agent";
 import type { ToolContext } from "@/lib/ai/types";
 
 /**
  * POST /api/chat/stream — SSE streaming chat endpoint.
  *
- * Uses direct DeepSeek Chat Completions API with streaming + tool calling.
- * Messages are persisted to the database on stream completion,
- * including tool call chains for context preservation across conversations.
+ * Architecture:
+ * 1. User message is persisted immediately (for feedback ID reference)
+ * 2. createStreamResponse() returns { stream, result } where
+ *    result = { content, reasoningContent, toolCalls[] }
+ * 3. After the stream finishes, ConversationPersistence.saveAssistantResponse()
+ *    persists the complete AI response + tool call chain in one call
  */
 export async function POST(req: NextRequest) {
   try {
@@ -23,9 +27,7 @@ export async function POST(req: NextRequest) {
     // 2. Get or create session ID
     const sessionId = req.headers.get("x-session-id") || crypto.randomUUID();
 
-    // 3. Parse JWT token (optional) — dual authentication:
-    //    Primary: cookie-based JWT (httpOnly security)
-    //    Fallback: userId from request body (from useUser context)
+    // 3. Parse JWT token (optional) — dual authentication
     const token = req.cookies.get("token")?.value;
     let userId: string | undefined;
     let userRole: string | undefined;
@@ -38,130 +40,74 @@ export async function POST(req: NextRequest) {
         // Token invalid — fall through to body fallback
       }
     }
-
-    // Fallback: if cookie auth failed but client provided userId from auth context
     if (!userId && bodyUserId && typeof bodyUserId === "string") {
       userId = bodyUserId;
     }
 
-    // Log auth status for diagnostics (no personal info)
     console.log(`[chat/stream] session=${sessionId.slice(0,8)}... auth=${!!userId}`);
 
     // 4. Get or create conversation
-    //    If existingConvId is provided (from a "new conversation" action or existing),
-    //    use it directly. Otherwise, create a brand new conversation.
     let conversationId: string;
     if (existingConvId) {
       conversationId = existingConvId;
     } else {
-      // When no conversationId provided, always create new (not getOrCreate)
       conversationId = await ConversationStore.create(sessionId, userId);
     }
 
-    // 5. Save user message immediately, capture its ID for feedback
+    // 5. Save user message immediately (for feedback ID reference)
     const userMessageId = await ConversationStore.addMessage(
       conversationId,
       "user",
       message.trim()
     );
 
-    // 6. Load recent history with full tool call reconstruction
-    const history = await ConversationStore.loadHistoryAsChatMessages(
-      conversationId,
-      40 // Max messages to load
-    );
+    // 6. Load recent history
+    const history = await ConversationStore.loadHistoryAsChatMessages(conversationId, 40);
 
     // 7. Build ToolContext
     const context: ToolContext = { userId, userRole };
 
-    // 8. Create streaming response — pass full ChatMessage[] so tool_calls and tool_call_id are preserved
-    const aiStream = await createStreamResponse(
+    // 8. Create streaming response — returns { stream, promise } where
+    //    stream is the real-time SSE stream, promise resolves with AgentResult
+    const { stream: aiStream, promise: agentPromise } = await createStreamResponse(
       [...history, { role: "user", content: message.trim() }],
       context
     );
 
-    // 9. Pipe through a wrapper that persists messages and tool calls on completion
+    // 9. Pipe through a wrapper that persists data after stream ends
     const encoder = new TextEncoder();
-    const fullContent: string[] = [];
-    const toolMessagesToPersist: Array<{ role: string; content: string | null; toolCalls?: string; reasoningContent?: string }> = [];
-    let finalReasoningContent: string | undefined;
     let titleUpdated = false;
 
     const wrappedStream = new ReadableStream({
       async start(controller) {
         const reader = aiStream.getReader();
-        const decoder = new TextDecoder();
 
         try {
+          // Forward all stream data as-is (no interception needed)
           while (true) {
             const { done, value } = await reader.read();
             if (done) break;
-
-            // Collect text chunks and tool messages for persistence
-            const chunk = decoder.decode(value, { stream: true });
-            for (const line of chunk.split("\n")) {
-              if (line.startsWith("0:")) {
-                try {
-                  const text = JSON.parse(line.slice(2));
-                  fullContent.push(text);
-                } catch {
-                  // Ignore parse errors on text chunks
-                }
-              } else if (line.startsWith("e:tool-messages:")) {
-                // Capture complete tool call chain for persistence
-                try {
-                  const dataStr = line.slice("e:tool-messages:".length).trim();
-                  const data = JSON.parse(dataStr);
-                  if (data.messages && Array.isArray(data.messages)) {
-                    toolMessagesToPersist.push(
-                      ...data.messages.map(
-                        (m: { role: string; content: string | null; toolCalls?: string; reasoningContent?: string }) => ({
-                          role: m.role,
-                          content: m.content ?? null,
-                          toolCalls: m.toolCalls || undefined,
-                          reasoningContent: m.reasoningContent || undefined,
-                        })
-                      )
-                    );
-                  }
-                } catch {
-                  // Ignore parse errors on tool-messages
-                }
-              } else if (line.startsWith("e:assistant-final:")) {
-                // Final assistant response reasoning content (not covered by tool-messages)
-                try {
-                  const dataStr = line.slice("e:assistant-final:".length).trim();
-                  const data = JSON.parse(dataStr);
-                  if (data.reasoningContent) {
-                    finalReasoningContent = data.reasoningContent;
-                  }
-                } catch {
-                  // Ignore parse errors
-                }
-              }
-            }
-
             controller.enqueue(value);
           }
 
-          // 10. Persist AI response and tool messages on completion
-          const content = fullContent.join("");
-          let assistantMessageId: string | undefined;
+          // 10. Wait for agent loop to complete, then persist assistant response + tool calls
+          const agentResult = await agentPromise;
 
-          if (content.trim()) {
-            // Save assistant message with toolCalls and reasoningContent (if any)
-            const assistantMsgs = toolMessagesToPersist.filter((m) => m.role === "assistant");
-            const lastAssistant = assistantMsgs[assistantMsgs.length - 1];
-            const assistantToolCalls = lastAssistant?.toolCalls;
-            // Reasoning content priority: e:assistant-final > e:tool-messages > none
-            const reasoningToPersist = finalReasoningContent || lastAssistant?.reasoningContent;
+          if (agentResult.content.trim() || agentResult.toolCalls.length > 0) {
+            const toolCallInputs = agentResult.toolCalls.map((tc) => ({
+              toolName: tc.name,
+              arguments: tc.arguments,
+              result: tc.result,
+              status: tc.status,
+            }));
 
-            assistantMessageId = await ConversationStore.addMessage(
+            const assistantMessageId = await ConversationPersistence.saveAssistantResponse(
               conversationId,
-              "assistant",
-              content,
-              assistantToolCalls || undefined,
-              reasoningToPersist || undefined
+              {
+                content: agentResult.content,
+                reasoningContent: agentResult.reasoningContent,
+              },
+              toolCallInputs
             );
 
             // Auto-generate smart title from first user message
@@ -173,24 +119,29 @@ export async function POST(req: NextRequest) {
                 titleUpdated = true;
               }
             }
-          }
 
-          // 11. Persist tool messages (tool results) after the assistant message
-          const toolResultMessages = toolMessagesToPersist.filter((m) => m.role === "tool");
-          if (toolResultMessages.length > 0) {
-            await ConversationStore.addMessages(conversationId, toolResultMessages);
+            // Send finish event with IDs for feedback
+            controller.enqueue(
+              encoder.encode(
+                `d:${JSON.stringify({
+                  conversationId,
+                  userMessageId,
+                  assistantMessageId,
+                })}\n\n`
+              )
+            );
+          } else {
+            // No content and no tool calls — send finish with null assistant ID
+            controller.enqueue(
+              encoder.encode(
+                `d:${JSON.stringify({
+                  conversationId,
+                  userMessageId,
+                  assistantMessageId: null,
+                })}\n\n`
+              )
+            );
           }
-
-          // 12. Send finish event with IDs for feedback
-          controller.enqueue(
-            encoder.encode(
-              `d:${JSON.stringify({
-                conversationId,
-                userMessageId,
-                assistantMessageId: assistantMessageId || null,
-              })}\n\n`
-            )
-          );
         } catch (err: unknown) {
           console.error("[chat/stream] Stream error:", err);
         } finally {

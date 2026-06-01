@@ -5,11 +5,23 @@ import type { StreamMessage, ConversationSummary } from "@/lib/ai/types";
 
 /* ── Internal types ── */
 
+/** Tool call record from the new ToolCall subtable */
+interface ToolCallRecord {
+  id: string;
+  toolName: string;
+  arguments: string;
+  result?: string | null;
+  status?: string;
+}
+
 interface ApiMessage {
   id: string;
   role: string;
   content: string;
-  toolCalls?: string;
+  /** JSON string (legacy) or ToolCallRecord[] (new ToolCall subtable) */
+  toolCalls?: string | ToolCallRecord[];
+  /** New: ToolCall subtable records (from getDetail response) */
+  toolCallRecords?: ToolCallRecord[];
   reasoningContent?: string;
 }
 
@@ -44,21 +56,39 @@ function convertApiMessages(apiMessages: ApiMessage[]): StreamMessage[] {
         msg.thinkingContent = m.reasoningContent;
       }
 
-      // Restore tool call names from toolCalls JSON
-      if (m.toolCalls) {
-        try {
-          const calls = JSON.parse(m.toolCalls);
-          if (Array.isArray(calls)) {
-            msg.toolCallNames = calls.map((tc: { function?: { name?: string } }) =>
-              tc.function?.name || "unknown"
-            );
-            currentToolNames = msg.toolCallNames;
-            toolResultIdx = 0;
-          }
-        } catch {
-          // skip
+      // Restore tool call names and results from toolCalls or toolCallRecords
+      // Priority: toolCallRecords (new ToolCall subtable) > toolCalls (legacy JSON)
+      const toolData = m.toolCallRecords && m.toolCallRecords.length > 0
+        ? m.toolCallRecords
+        : Array.isArray(m.toolCalls)
+          ? m.toolCalls
+          : null;
+
+      if (toolData) {
+        msg.toolCallNames = toolData.map((tc: ToolCallRecord) => tc.toolName || "unknown");
+        const results = toolData
+          .filter((tc: ToolCallRecord) => tc.result)
+          .map((tc: ToolCallRecord) => ({ name: tc.toolName, result: tc.result! }));
+        if (results.length > 0) {
+          msg.toolCallResults = results;
         }
-      }
+        currentToolNames = msg.toolCallNames;
+        toolResultIdx = 0;
+      } else if (typeof m.toolCalls === "string") {
+          // Legacy format: JSON string
+          try {
+            const calls = JSON.parse(m.toolCalls);
+            if (Array.isArray(calls)) {
+              msg.toolCallNames = calls.map((tc: { function?: { name?: string } }) =>
+                tc.function?.name || "unknown"
+              );
+              currentToolNames = msg.toolCallNames;
+              toolResultIdx = 0;
+            }
+          } catch {
+            // skip
+          }
+        }
 
       result.push(msg);
     } else if (m.role === "tool") {
