@@ -70,6 +70,8 @@ export function useChatStream(opts?: UseChatStreamOptions): UseChatStreamReturn 
   // Use a ref for userId so sendMessage always has the latest auth state
   // (UserProvider loads async, so opts?.userId starts as null then updates)
   const userIdRef = useRef<string | undefined>(opts?.userId);
+  // Use a ref for messages length to check if current conversation is empty
+  const msgCountRef = useRef(messages.length);
 
   // Sync conversationId ref with state
   useEffect(() => {
@@ -80,6 +82,11 @@ export function useChatStream(opts?: UseChatStreamOptions): UseChatStreamReturn 
   useEffect(() => {
     userIdRef.current = opts?.userId;
   }, [opts?.userId]);
+
+  // Sync messages count ref
+  useEffect(() => {
+    msgCountRef.current = messages.length;
+  }, [messages]);
 
   const genId = () => `msg_${++msgIdCounter.current}`;
 
@@ -109,7 +116,10 @@ export function useChatStream(opts?: UseChatStreamOptions): UseChatStreamReturn 
     }
   }, []);
 
-  /** Create a new conversation — actually creates one on the server */
+  /** Create a new conversation.
+   *  If the current conversation already has messages, create a new one on the server.
+   *  If it's already empty, skip server creation to avoid accumulating empty conversations.
+   */
   const newConversation = useCallback(async () => {
     stop();
     setMessages([]);
@@ -117,22 +127,27 @@ export function useChatStream(opts?: UseChatStreamOptions): UseChatStreamReturn 
     convIdRef.current = null;
     localStorage.removeItem(CONV_KEY);
 
-    try {
-      const sessionId = getSessionId();
-      const res = await fetch("/api/conversations", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "x-session-id": sessionId },
-        body: JSON.stringify({ sessionId }),
-      });
-      const data = await res.json();
-      if (data.code === 0 && data.data?.id) {
-        const newId = data.data.id;
-        setConversationId(newId);
-        convIdRef.current = newId;
-        localStorage.setItem(CONV_KEY, newId);
+    // If current conversation was already empty, don't create another empty one on the server
+    const hasMessages = msgCountRef.current > 0;
+
+    if (hasMessages) {
+      try {
+        const sessionId = getSessionId();
+        const res = await fetch("/api/conversations", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "x-session-id": sessionId },
+          body: JSON.stringify({ sessionId }),
+        });
+        const data = await res.json();
+        if (data.code === 0 && data.data?.id) {
+          const newId = data.data.id;
+          setConversationId(newId);
+          convIdRef.current = newId;
+          localStorage.setItem(CONV_KEY, newId);
+        }
+      } catch {
+        // Server-side creation failed; next message will create a new one
       }
-    } catch {
-      // Server-side creation failed; next message will still create a new one
     }
 
     fetchConversations();
@@ -250,7 +265,7 @@ export function useChatStream(opts?: UseChatStreamOptions): UseChatStreamReturn 
 
           for (const line of lines) {
             if (line.startsWith("0:")) {
-              // Text chunk
+              // Text chunk — clear thinking state if present (thinking phase ended)
               const text = line.slice(2);
               try {
                 const decoded = JSON.parse(text);
@@ -262,6 +277,7 @@ export function useChatStream(opts?: UseChatStreamOptions): UseChatStreamReturn 
                       ...last,
                       content: last.content + decoded,
                       isTyping: true,
+                      isThinking: false, // Thinking phase done
                     };
                   }
                   return updated;
@@ -280,26 +296,32 @@ export function useChatStream(opts?: UseChatStreamOptions): UseChatStreamReturn 
                   return updated;
                 });
               }
-            } else if (line.startsWith("e:tool-call")) {
-              // Tool call started — show executing state
+            } else if (line.startsWith("e:tool-call:")) {
+              // Tool call started — single-line SSE format: e:tool-call:{json}
               try {
-                const dataPart = line.replace("e:tool-call\nd:", "").trim();
-                const toolData = JSON.parse(dataPart);
+                const dataStr = line.slice("e:tool-call:".length).trim();
+                const toolData = JSON.parse(dataStr);
                 setMessages((prev) => {
                   const updated = [...prev];
                   const last = updated[updated.length - 1];
                   if (last && last.id === assistantId) {
+                    const existingNames = last.toolCallNames || [];
+                    // Avoid duplicates (same tool may be called multiple times in one turn)
+                    if (!existingNames.includes(toolData.toolName)) {
+                      existingNames.push(toolData.toolName);
+                    }
                     updated[updated.length - 1] = {
                       ...last,
                       isExecutingTool: true,
                       executingToolName: toolData.toolName,
+                      toolCallNames: [...existingNames],
                     };
                   }
                   return updated;
                 });
               } catch {}
-            } else if (line.startsWith("e:tool-result")) {
-              // Tool result received — clear executing state
+            } else if (line.startsWith("e:tool-result:")) {
+              // Tool result received — single-line SSE format: e:tool-result:{json}
               setMessages((prev) => {
                 const updated = [...prev];
                 const last = updated[updated.length - 1];
@@ -312,6 +334,24 @@ export function useChatStream(opts?: UseChatStreamOptions): UseChatStreamReturn 
                 }
                 return updated;
               });
+            } else if (line.startsWith("e:reasoning:")) {
+              // DeepSeek reasoning/thinking mode — single-line SSE format: e:reasoning:{json}
+              try {
+                const dataStr = line.slice("e:reasoning:".length).trim();
+                const data = JSON.parse(dataStr);
+                setMessages((prev) => {
+                  const updated = [...prev];
+                  const last = updated[updated.length - 1];
+                  if (last && last.id === assistantId) {
+                    updated[updated.length - 1] = {
+                      ...last,
+                      isThinking: true,
+                      thinkingContent: (last.thinkingContent || "") + (data.content || ""),
+                    };
+                  }
+                  return updated;
+                });
+              } catch {}
             } else if (line.startsWith("e:finish")) {
               // Finish event
               setMessages((prev) => {
@@ -322,6 +362,7 @@ export function useChatStream(opts?: UseChatStreamOptions): UseChatStreamReturn 
                     ...last,
                     isTyping: false,
                     isExecutingTool: false,
+                    isThinking: false,
                   };
                 }
                 return updated;

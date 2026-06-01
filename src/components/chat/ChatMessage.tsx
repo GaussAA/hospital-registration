@@ -17,6 +17,11 @@ interface ChatMessageProps {
   isTyping?: boolean;
   isExecutingTool?: boolean;
   executingToolName?: string;
+  /** List of tool names called in this assistant turn (for collapsed display) */
+  toolCallNames?: string[];
+  /** DeepSeek reasoning/thinking mode indicator */
+  isThinking?: boolean;
+  thinkingContent?: string;
 }
 
 /* ── Tool name labels ── */
@@ -42,6 +47,69 @@ function getToolLabel(name: string): string {
   return TOOL_LABELS[name] || name;
 }
 
+/* ── CollapsibleSection ↴ ── */
+
+function CollapsibleSection({
+  icon,
+  label,
+  children,
+  defaultOpen = false,
+}: {
+  icon: string;
+  label: string;
+  children: ReactNode;
+  defaultOpen?: boolean;
+}) {
+  const [open, setOpen] = useState(defaultOpen);
+  const { theme } = useTheme();
+  const isDark = theme === "dark";
+
+  return (
+    <div
+      className="mb-2 rounded-lg overflow-hidden animate-fade-in"
+      style={{
+        border: `1px solid ${isDark ? "rgba(148,163,184,0.12)" : "rgba(148,163,184,0.15)"}`,
+      }}
+    >
+      <button
+        type="button"
+        onClick={() => setOpen(!open)}
+        className="flex items-center gap-1.5 w-full px-3 py-1.5 text-xs transition-colors"
+        style={{
+          color: isDark ? "#94a3b8" : "#64748b",
+          background: isDark ? "rgba(148,163,184,0.04)" : "rgba(148,163,184,0.03)",
+        }}
+        onMouseOver={(e) => (e.currentTarget.style.background = isDark ? "rgba(148,163,184,0.08)" : "rgba(148,163,184,0.06)")}
+        onMouseOut={(e) => (e.currentTarget.style.background = isDark ? "rgba(148,163,184,0.04)" : "rgba(148,163,184,0.03)")}
+      >
+        {/* Chevron */}
+        <svg
+          width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
+          className="flex-shrink-0 transition-transform duration-200"
+          style={{ transform: open ? "rotate(90deg)" : "rotate(0deg)" }}
+        >
+          <polyline points="9 18 15 12 9 6" />
+        </svg>
+        <span>{icon}</span>
+        <span className="font-medium">{label}</span>
+      </button>
+      {open && (
+        <div
+          className="px-3 py-2 text-xs leading-relaxed animate-slide-up whitespace-pre-wrap"
+          style={{
+            color: isDark ? "rgba(148,163,184,0.8)" : "rgba(71,85,105,0.8)",
+            background: isDark ? "rgba(148,163,184,0.02)" : "rgba(148,163,184,0.02)",
+            borderTop: `1px solid ${isDark ? "rgba(148,163,184,0.06)" : "rgba(148,163,184,0.08)"}`,
+          }}
+        >
+          {children}
+        </div>
+      )}
+    </div>
+  );
+}
+
 /* ── Component ── */
 
 export default function ChatMessage({
@@ -53,6 +121,9 @@ export default function ChatMessage({
   isTyping,
   isExecutingTool,
   executingToolName,
+  toolCallNames,
+  isThinking,
+  thinkingContent,
 }: ChatMessageProps) {
   const { theme } = useTheme();
   const isDark = theme === "dark";
@@ -166,12 +237,23 @@ export default function ChatMessage({
     ),
   };
 
+  /* ── Build tool call label ── */
+
+  const toolCount = toolCallNames?.length || 0;
+  const toolLabel = toolCount > 0
+    ? toolCount >= 4
+      ? `调用了 ${toolCount} 个工具`
+      : toolCallNames!.map(getToolLabel).join("、")
+    : executingToolName
+      ? getToolLabel(executingToolName)
+      : "";
+
   // AI message: plain text on background, left-aligned, no bubble
   if (role === "assistant") {
     return (
       <div ref={msgRef} className="flex justify-start mb-4 animate-fade-in">
         <div className="max-w-[90%] min-w-0">
-          {/* Tool execution indicator */}
+          {/* ── Tool execution: in-progress (spinning) ── */}
           {isExecutingTool && executingToolName && (
             <div
               className="flex items-center gap-2 mb-2 px-3 py-2 rounded-lg animate-fade-in"
@@ -180,7 +262,6 @@ export default function ChatMessage({
                 border: `1px solid ${isDark ? "rgba(99,102,241,0.2)" : "rgba(99,102,241,0.1)"}`,
               }}
             >
-              {/* Spinning icon */}
               <svg
                 className="animate-spin flex-shrink-0"
                 width="14" height="14" viewBox="0 0 24 24" fill="none"
@@ -193,6 +274,70 @@ export default function ChatMessage({
                 {getToolLabel(executingToolName)}…
               </span>
             </div>
+          )}
+
+          {/* ── Tools completed: collapsed summary ── */}
+          {!isExecutingTool && toolCount > 0 && (
+            <CollapsibleSection icon="🛠" label={toolLabel}>
+              {toolCallNames!.map((name, i) => (
+                <div key={name} className="flex items-center gap-1.5 py-0.5">
+                  <span
+                    className="w-1.5 h-1.5 rounded-full flex-shrink-0"
+                    style={{ background: isDark ? "#6366f1" : "#818cf8" }}
+                  />
+                  <span>{getToolLabel(name)}</span>
+                  {i < toolCallNames!.length - 1 && (
+                    <svg className="ml-0.5" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" style={{ color: mutedColor }}>
+                      <polyline points="9 18 15 12 9 6" />
+                    </svg>
+                  )}
+                </div>
+              ))}
+            </CollapsibleSection>
+          )}
+
+          {/* ── Thinking: in-progress (live updates) ── */}
+          {isThinking && (
+            <div
+              className="flex items-start gap-2 mb-2 px-3 py-2 rounded-lg animate-fade-in"
+              style={{
+                background: isDark ? "rgba(139,92,246,0.08)" : "rgba(139,92,246,0.04)",
+                border: `1px solid ${isDark ? "rgba(139,92,246,0.2)" : "rgba(139,92,246,0.1)"}`,
+              }}
+            >
+              <div className="flex-shrink-0 mt-0.5">
+                <svg
+                  className="animate-pulse"
+                  width="14" height="14" viewBox="0 0 24 24" fill="none"
+                  style={{ color: isDark ? "#c4b5fd" : "#8b5cf6" }}
+                >
+                  <path d="M12 2a10 10 0 0 1 10 10" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                    <animateTransform attributeName="transform" type="rotate" from="0 12 12" to="360 12 12" dur="1.5s" repeatCount="indefinite" />
+                  </path>
+                  <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.5" opacity="0.2" />
+                </svg>
+              </div>
+              <div className="flex-1 min-w-0">
+                <span className="text-xs font-medium" style={{ color: isDark ? "#c4b5fd" : "#8b5cf6" }}>
+                  AI 正在思考…
+                </span>
+                {thinkingContent && (
+                  <p
+                    className="text-[11px] mt-1 leading-relaxed"
+                    style={{ color: isDark ? "rgba(196,181,253,0.6)" : "rgba(139,92,246,0.5)" }}
+                  >
+                    {thinkingContent}
+                  </p>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* ── Thinking completed: collapsed summary ── */}
+          {!isThinking && thinkingContent && (
+            <CollapsibleSection icon="🧠" label="查看思考过程">
+              <div className="leading-relaxed">{thinkingContent}</div>
+            </CollapsibleSection>
           )}
 
           {isLoading && !isExecutingTool ? (

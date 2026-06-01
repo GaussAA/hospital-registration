@@ -581,10 +581,13 @@ export default function ChatPanel({ isOpen, onClose }: ChatPanelProps) {
                     content={msg.content ?? ""}
                     messageId={msg.messageId}
                     isLast={isLastMsg}
-                    isLoading={isAssistantLoading && msg.content === "" && !msg.isTyping && !msg.isExecutingTool}
+                    isLoading={isAssistantLoading && msg.content === "" && !msg.isTyping && !msg.isExecutingTool && !msg.isThinking}
                     isTyping={isLastMsg && msg.role === "assistant" && msg.isTyping === true}
                     isExecutingTool={isLastMsg && msg.isExecutingTool === true}
                     executingToolName={msg.executingToolName}
+                    toolCallNames={msg.toolCallNames}
+                    isThinking={isLastMsg && msg.isThinking === true}
+                    thinkingContent={msg.thinkingContent}
                   />
                 );
               })}

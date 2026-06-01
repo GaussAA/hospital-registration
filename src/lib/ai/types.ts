@@ -106,6 +106,11 @@ export interface StreamMessage {
   isTyping?: boolean;
   isExecutingTool?: boolean;
   executingToolName?: string;
+  /** 累积的已调用工具名列表（用于完成后折叠展示） */
+  toolCallNames?: string[];
+  /** DeepSeek 推理模式下的思考过程 */
+  isThinking?: boolean;
+  thinkingContent?: string;
 }
 
 export interface ToolCallInfo {

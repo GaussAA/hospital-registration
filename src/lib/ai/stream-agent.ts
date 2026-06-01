@@ -22,6 +22,7 @@ import type { ToolContext, ChatMessage, FunctionCallTool } from "./types";
 const BASE_URL = (process.env.AI_BASE_URL || "https://api.deepseek.com").replace(/\/+$/, "");
 const API_KEY = process.env.AI_API_KEY || "";
 const MODEL = process.env.AI_MODEL || "deepseek-v4-flash";
+const REASONING_EFFORT = process.env.AI_REASONING_EFFORT || "off"; // off | low | medium | high
 
 /* ── Internal types for tool calling ── */
 
@@ -211,6 +212,18 @@ async function runAgentLoop(
           const delta = chunk.choices?.[0]?.delta;
           const finishReason = chunk.choices?.[0]?.finish_reason;
 
+          // Handle reasoning/thinking content (DeepSeek reasoning mode)
+          if (delta?.reasoning_content) {
+            const reasoningText = delta.reasoning_content;
+            // Emit as single-line SSE event for frontend
+            controller.enqueue(
+              encoder.encode(
+                `e:reasoning:${JSON.stringify({ content: reasoningText })}\n`
+              )
+            );
+            continue;
+          }
+
           if (delta?.content) {
             assistantContent += delta.content;
             controller.enqueue(encoder.encode(`0:${JSON.stringify(delta.content)}\n`));
@@ -268,9 +281,9 @@ async function runAgentLoop(
 
     // Execute each tool and add results
     for (const tc of toolCalls) {
-      // Emit tool-call start event
+      // Emit tool-call start event (single-line SSE format)
       controller.enqueue(
-        encoder.encode(`e:tool-call\nd:${JSON.stringify({ toolName: tc.function.name, args: tc.function.arguments })}\n\n`)
+        encoder.encode(`e:tool-call:${JSON.stringify({ toolName: tc.function.name, args: tc.function.arguments })}\n`)
       );
 
       let args: Record<string, unknown>;
@@ -335,9 +348,9 @@ async function runAgentLoop(
         result = `未知工具: ${tc.function.name}`;
       }
 
-      // Emit tool-result event
+      // Emit tool-result event (single-line SSE format)
       controller.enqueue(
-        encoder.encode(`e:tool-result\nd:${JSON.stringify({ toolName: tc.function.name, result })}\n\n`)
+        encoder.encode(`e:tool-result:${JSON.stringify({ toolName: tc.function.name, result })}\n`)
       );
 
       messages.push({
@@ -431,6 +444,11 @@ async function callDeepSeek(
     stream: true,
     temperature: 0.7,
   };
+
+  // Enable DeepSeek reasoning/thinking mode for complex tool calling
+  if (REASONING_EFFORT !== "off") {
+    body.reasoning = { effort: REASONING_EFFORT };
+  }
 
   if (tools.length > 0) {
     body.tools = tools;
