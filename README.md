@@ -1,6 +1,6 @@
 # 健康挂号 — 在线预约挂号平台
 
-> TS + Next.js 16 + Prisma 7 + SQLite + Tailwind CSS 4 + Bun
+> TS 6 + Next.js 16 + Prisma 7 + SQLite + Tailwind CSS 4 + Bun
 
 在线医院挂号系统，支持患者端浏览医院/科室/医生、预约号源、AI 对话挂号，以及管理员后台管理。
 
