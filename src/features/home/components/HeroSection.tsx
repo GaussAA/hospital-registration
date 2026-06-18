@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import heroPoster from "@/features/home/assets/hero-medical.jpg";
 
 export default function HeroSection() {
   const router = useRouter();
@@ -25,7 +26,7 @@ export default function HeroSection() {
           muted
           loop
           playsInline
-          poster="/images/hero-medical.jpg"
+          poster={heroPoster.src}
           className="absolute inset-0 w-full h-full object-cover"
           aria-hidden="true"
         >

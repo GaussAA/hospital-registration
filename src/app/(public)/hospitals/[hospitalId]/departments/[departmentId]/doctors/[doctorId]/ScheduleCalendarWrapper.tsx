@@ -2,9 +2,9 @@
 
 import { useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { ScheduleCalendar } from "@/features/hospital";
+import { ScheduleCalendar } from "@/features/hospital/client";
 import type { ScheduleSlot } from "@/features/hospital";
-import { PatientSelector, ConfirmCard } from "@/features/registration";
+import { PatientSelector, ConfirmCard } from "@/features/registration/client";
 import type { PatientProfile } from "@/features/registration";
 
 interface ScheduleCalendarWrapperProps {

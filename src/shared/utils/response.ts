@@ -10,10 +10,7 @@ export interface ApiResponseData<T> {
 /**
  * Create a success response.
  */
-export function success<T>(
-  data: T,
-  message: string = "ok"
-): ApiResponseData<T> {
+export function success<T>(data: T, message: string = "ok"): ApiResponseData<T> {
   return { code: 0, data, message };
 }
 

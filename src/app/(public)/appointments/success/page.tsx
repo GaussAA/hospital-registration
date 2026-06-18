@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { cookies } from "next/headers";
-import type { PageProps } from "@/types/next";
+import type { PageProps } from "@/shared/types/next";
 import { verifyToken } from "@/shared/utils/jwt";
 import { getRegistrationById, SuccessCard } from "@/features/registration";
 
@@ -8,9 +8,7 @@ import { getRegistrationById, SuccessCard } from "@/features/registration";
  * Registration success page (server component).
  * Shows a success message with registration details.
  */
-export default async function AppointmentSuccessPage(
-  props: PageProps
-) {
+export default async function AppointmentSuccessPage(props: PageProps) {
   const searchParams = await props.searchParams;
   const id = typeof searchParams.id === "string" ? searchParams.id : "";
 
@@ -21,13 +19,8 @@ export default async function AppointmentSuccessPage(
   if (!token) {
     return (
       <div className="mx-auto max-w-2xl px-4 py-16 text-center">
-        <h1 className="mb-4 text-2xl font-bold text-[var(--text-primary)]">
-          请先登录
-        </h1>
-        <Link
-          href="/login"
-          className="text-blue-600 hover:text-blue-700"
-        >
+        <h1 className="mb-4 text-2xl font-bold text-[var(--text-primary)]">请先登录</h1>
+        <Link href="/login" className="text-blue-600 hover:text-blue-700">
           去登录
         </Link>
       </div>
@@ -45,8 +38,7 @@ export default async function AppointmentSuccessPage(
     return <InvalidState />;
   }
 
-  let registration: Awaited<ReturnType<typeof getRegistrationById>> | null =
-    null;
+  let registration: Awaited<ReturnType<typeof getRegistrationById>> | null = null;
   try {
     registration = await getRegistrationById(id);
     // Ensure ownership
@@ -93,13 +85,8 @@ export default async function AppointmentSuccessPage(
 function InvalidState() {
   return (
     <div className="mx-auto max-w-2xl px-4 py-16 text-center">
-      <h1 className="mb-4 text-2xl font-bold text-[var(--text-primary)]">
-        挂号信息不存在
-      </h1>
-      <Link
-        href="/appointments"
-        className="text-blue-600 hover:text-blue-700"
-      >
+      <h1 className="mb-4 text-2xl font-bold text-[var(--text-primary)]">挂号信息不存在</h1>
+      <Link href="/appointments" className="text-blue-600 hover:text-blue-700">
         查看挂号记录
       </Link>
     </div>

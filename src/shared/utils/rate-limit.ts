@@ -33,11 +33,7 @@ function cleanup() {
  * @param windowMs - Time window in milliseconds (default: 60_000)
  * @returns True if the request is allowed, false if rate-limited
  */
-export function checkRateLimit(
-  key: string,
-  maxRequests: number,
-  windowMs: number = 60_000,
-): boolean {
+export function checkRateLimit(key: string, maxRequests: number, windowMs: number = 60_000): boolean {
   cleanup();
   const now = Date.now();
   const entry = store.get(key);
@@ -59,13 +55,8 @@ export function checkRateLimit(
  * Extract a rate-limit key from the request.
  * Falls back to "unknown" if IP cannot be determined.
  */
-export function getRateLimitKey(
-  request: Request,
-  pathPrefix: string,
-): string {
+export function getRateLimitKey(request: Request, pathPrefix: string): string {
   const ip =
-    request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
-    request.headers.get("x-real-ip") ??
-    "unknown";
+    request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? request.headers.get("x-real-ip") ?? "unknown";
   return `${ip}:${pathPrefix}`;
 }

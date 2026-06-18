@@ -14,12 +14,8 @@ import {
   updateSchedule,
   deleteSchedule,
 } from "@/features/hospital";
-import {
-  getCurrentUser,
-} from "@/features/auth";
-import {
-  listRegistrations,
-} from "@/features/registration";
+import { getCurrentUser } from "@/features/auth";
+import { listRegistrations } from "@/features/registration";
 
 // Re-export CRUD actions from feature modules
 export {

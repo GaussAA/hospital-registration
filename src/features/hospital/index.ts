@@ -39,6 +39,9 @@ export {
   deleteSchedule,
 } from "./actions";
 
+// Queries (server data access)
+export { listHospitals } from "./queries";
+
 // Validations
 export { listHospitalsSchema, departmentIdSchema, doctorIdSchema } from "./validations";
 

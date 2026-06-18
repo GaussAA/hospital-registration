@@ -6,7 +6,7 @@ import Link from "next/link";
 import ConfirmDialog from "@/shared/ui/ConfirmDialog";
 import { CardSkeleton } from "@/shared/ui/Skeleton";
 import type { RegistrationStatus } from "../types";
-import type { ApiResponse, PaginatedData } from "@/types/api";
+import type { ApiResponse, PaginatedData } from "@/shared/types/api";
 
 interface RegistrationItem {
   id: string;

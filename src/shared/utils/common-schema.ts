@@ -15,10 +15,7 @@ export type PaginationInput = z.infer<typeof paginationSchema>;
  * Extract and validate query parameters from a URL search params.
  * Returns the validated data or throws with a clear message.
  */
-export function parseQuery<T extends z.ZodTypeAny>(
-  schema: T,
-  searchParams: URLSearchParams,
-): z.infer<T> {
+export function parseQuery<T extends z.ZodTypeAny>(schema: T, searchParams: URLSearchParams): z.infer<T> {
   // Convert URLSearchParams to a plain object
   const raw: Record<string, string> = {};
   searchParams.forEach((value, key) => {

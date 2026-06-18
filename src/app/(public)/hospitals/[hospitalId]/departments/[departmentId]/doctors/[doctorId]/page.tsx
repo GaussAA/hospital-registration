@@ -2,9 +2,8 @@ import Link from "next/link";
 import { unstable_noStore as noStore } from "next/cache";
 import { DoctorInfo } from "@/features/hospital";
 import type { DoctorInfoData } from "@/features/hospital";
-// eslint-disable-next-line no-restricted-imports
 import { getDoctorById, listSchedulesByDoctor } from "@/features/hospital/queries";
-import type { PageProps } from "@/types/next";
+import type { PageProps } from "@/shared/types/next";
 import ScheduleCalendarWrapper from "./ScheduleCalendarWrapper";
 
 export const dynamic = "force-dynamic";

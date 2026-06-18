@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { cookies } from "next/headers";
-import type { PaginatedData } from "@/types/api";
+import type { PaginatedData } from "@/shared/types/api";
 import { verifyToken } from "@/shared/utils/jwt";
 import { listRegistrations, AppointmentList } from "@/features/registration";
 

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { cookies } from "next/headers";
-import type { PageProps } from "@/types/next";
+import type { PageProps } from "@/shared/types/next";
 import { verifyToken } from "@/shared/utils/jwt";
 import { getRegistrationById } from "@/features/registration";
 
@@ -12,12 +12,9 @@ const statusLabels: Record<string, string> = {
 };
 
 const statusStyles: Record<string, string> = {
-  pending:
-    "bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-800",
-  done:
-    "bg-green-50 dark:bg-green-500/10 text-green-600 dark:text-green-400 border-green-200 dark:border-green-800",
-  cancelled:
-    "bg-[var(--bg-muted)] text-[var(--text-muted)] border-[var(--border-default)]",
+  pending: "bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-800",
+  done: "bg-green-50 dark:bg-green-500/10 text-green-600 dark:text-green-400 border-green-200 dark:border-green-800",
+  cancelled: "bg-[var(--bg-muted)] text-[var(--text-muted)] border-[var(--border-default)]",
 };
 
 const statusIcons: Record<string, string> = {
@@ -39,12 +36,9 @@ const typeLabels: Record<string, string> = {
 };
 
 const typeColors: Record<string, string> = {
-  normal:
-    "bg-blue-100 dark:bg-blue-500/20 text-blue-700 dark:text-blue-300",
-  expert:
-    "bg-purple-100 dark:bg-purple-500/20 text-purple-700 dark:text-purple-300",
-  special:
-    "bg-amber-100 dark:bg-amber-500/20 text-amber-700 dark:text-amber-300",
+  normal: "bg-blue-100 dark:bg-blue-500/20 text-blue-700 dark:text-blue-300",
+  expert: "bg-purple-100 dark:bg-purple-500/20 text-purple-700 dark:text-purple-300",
+  special: "bg-amber-100 dark:bg-amber-500/20 text-amber-700 dark:text-amber-300",
 };
 
 /**
@@ -61,9 +55,7 @@ export default async function AppointmentDetailPage(props: PageProps) {
   if (!token) {
     return (
       <div className="mx-auto max-w-2xl px-4 py-16 text-center">
-        <h1 className="mb-4 text-2xl font-bold text-gray-900 dark:text-gray-100">
-          请先登录
-        </h1>
+        <h1 className="mb-4 text-2xl font-bold text-gray-900 dark:text-gray-100">请先登录</h1>
         <Link
           href={`/auth/login?redirect=/appointments/${id}`}
           className="rounded-lg bg-blue-600 px-6 py-2.5 text-sm font-medium text-white hover:bg-blue-700"
@@ -80,13 +72,8 @@ export default async function AppointmentDetailPage(props: PageProps) {
   } catch {
     return (
       <div className="mx-auto max-w-2xl px-4 py-16 text-center">
-        <h1 className="mb-4 text-2xl font-bold text-gray-900 dark:text-gray-100">
-          登录已过期
-        </h1>
-        <Link
-          href={`/auth/login?redirect=/appointments/${id}`}
-          className="text-blue-600 hover:text-blue-700"
-        >
+        <h1 className="mb-4 text-2xl font-bold text-gray-900 dark:text-gray-100">登录已过期</h1>
+        <Link href={`/auth/login?redirect=/appointments/${id}`} className="text-blue-600 hover:text-blue-700">
           重新登录
         </Link>
       </div>
@@ -110,10 +97,7 @@ export default async function AppointmentDetailPage(props: PageProps) {
     <div className="mx-auto max-w-lg px-4 py-6">
       {/* Breadcrumb */}
       <nav className="mb-6 text-sm text-[var(--text-muted)]">
-        <Link
-          href="/appointments"
-          className="transition-colors hover:text-blue-600 dark:hover:text-blue-400"
-        >
+        <Link href="/appointments" className="transition-colors hover:text-blue-600 dark:hover:text-blue-400">
           我的挂号
         </Link>
         <span className="mx-2">/</span>
@@ -133,9 +117,7 @@ export default async function AppointmentDetailPage(props: PageProps) {
               <div>
                 <h1 className="text-lg font-bold text-white">挂号凭证</h1>
                 <div className="flex items-center gap-2 mt-0.5">
-                  <span className="text-xs text-blue-100/80 font-mono">
-                    #{registration.id.slice(0, 8)}
-                  </span>
+                  <span className="text-xs text-blue-100/80 font-mono">#{registration.id.slice(0, 8)}</span>
                   <span
                     className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium ${
                       statusStyles[status] ?? ""
@@ -161,7 +143,11 @@ export default async function AppointmentDetailPage(props: PageProps) {
           <InfoRow
             icon={
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+                />
               </svg>
             }
             label="医院"
@@ -172,7 +158,11 @@ export default async function AppointmentDetailPage(props: PageProps) {
           <InfoRow
             icon={
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"
+                />
               </svg>
             }
             label="科室"
@@ -194,7 +184,11 @@ export default async function AppointmentDetailPage(props: PageProps) {
           <InfoRow
             icon={
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                />
               </svg>
             }
             label="就诊人"
@@ -235,7 +229,9 @@ export default async function AppointmentDetailPage(props: PageProps) {
             label="号类"
             value={typeLabels[registration.type] ?? registration.type}
             badge={
-              <span className={`inline-flex items-center rounded-md px-2 py-0.5 text-xs font-medium ${typeColors[registration.type] ?? ""}`}>
+              <span
+                className={`inline-flex items-center rounded-md px-2 py-0.5 text-xs font-medium ${typeColors[registration.type] ?? ""}`}
+              >
                 {typeLabels[registration.type] ?? registration.type}
               </span>
             }
@@ -244,14 +240,16 @@ export default async function AppointmentDetailPage(props: PageProps) {
 
         {/* Bottom footer */}
         <div className="border-t border-dashed border-[var(--border-default)] px-5 py-3 flex items-center justify-between">
-          <span className="text-xs text-[var(--text-muted)]">
-            {formatDateTime(registration.createdAt)} 创建
-          </span>
-          <span className={`text-xs font-medium ${
-            status === "pending" ? "text-blue-600 dark:text-blue-400" :
-            status === "done" ? "text-green-600 dark:text-green-400" :
-            "text-[var(--text-muted)]"
-          }`}>
+          <span className="text-xs text-[var(--text-muted)]">{formatDateTime(registration.createdAt)} 创建</span>
+          <span
+            className={`text-xs font-medium ${
+              status === "pending"
+                ? "text-blue-600 dark:text-blue-400"
+                : status === "done"
+                  ? "text-green-600 dark:text-green-400"
+                  : "text-[var(--text-muted)]"
+            }`}
+          >
             {statusLabels[status] ?? status}
           </span>
         </div>
@@ -304,11 +302,11 @@ function InfoRow({
       <div className="flex-1 min-w-0">
         <div className="text-xs text-[var(--text-muted)]">{label}</div>
         <div className="flex items-center gap-2">
-          <span className={`text-sm truncate ${
-            highlight
-              ? "font-semibold text-[var(--text-primary)]"
-              : "font-medium text-[var(--text-primary)]"
-          }`}>
+          <span
+            className={`text-sm truncate ${
+              highlight ? "font-semibold text-[var(--text-primary)]" : "font-medium text-[var(--text-primary)]"
+            }`}
+          >
             {value}
           </span>
           {extra && (

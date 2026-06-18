@@ -1,5 +1,4 @@
 import type { ToolContext } from "../../types";
-// eslint-disable-next-line no-restricted-imports
 import { getPatientProfilesByUser, createPatientProfile } from "@/features/auth/queries";
 import { fmtProfile } from "../formatters";
 import { createPatientProfileSchema } from "../validators";

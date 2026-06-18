@@ -1,4 +1,5 @@
 import Image from "next/image";
+import hospitalPlaceholder from "@/shared/assets/hospital-placeholder.svg";
 
 export interface HospitalInfoData {
   id: string;
@@ -31,7 +32,7 @@ export default function HospitalInfo({ hospital }: { hospital: HospitalInfoData 
       ) : (
         <div className="h-48 relative bg-gradient-to-r from-blue-500 to-blue-700 dark:from-blue-800 dark:to-blue-900 flex items-center justify-center overflow-hidden">
           <Image
-            src="/images/hospital-placeholder.svg"
+            src={hospitalPlaceholder}
             alt={hospital.name}
             fill
             className="object-cover opacity-80"

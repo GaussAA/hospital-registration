@@ -5,6 +5,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
+  schemas  = ["auth", "hospital", "registration", "chat"]
 }
 
 // ==================== Auth 模块 ====================

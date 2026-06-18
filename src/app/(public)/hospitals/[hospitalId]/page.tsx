@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { HospitalInfo, DepartmentList } from "@/features/hospital";
 import type { HospitalInfoData, DepartmentCardData } from "@/features/hospital";
-import type { PageProps } from "@/types/next";
-import type { ApiResponse } from "@/types/api";
+import type { PageProps } from "@/shared/types/next";
+import type { ApiResponse } from "@/shared/types/api";
 
 export default async function HospitalDetailPage(props: PageProps) {
   const { hospitalId } = await props.params;

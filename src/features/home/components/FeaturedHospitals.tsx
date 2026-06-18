@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { CardSkeleton } from "@/shared/ui/Skeleton";
+import hospitalPlaceholder from "@/shared/assets/hospital-placeholder.svg";
 
 interface Hospital {
   id: string;
@@ -99,7 +100,7 @@ export default function FeaturedHospitals() {
                   />
                 ) : (
                   <Image
-                    src="/images/hospital-placeholder.svg"
+                    src={hospitalPlaceholder}
                     alt={hospital.name}
                     fill
                     className="object-cover group-hover:scale-105 transition-transform duration-500"

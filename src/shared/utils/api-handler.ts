@@ -49,14 +49,8 @@ const STATUS_TO_CODE: Record<number, number> = {
  * }, { requireAuth: true });
  * ```
  */
-export function apiHandler<T = unknown>(
-  handler: ApiHandler<T>,
-  config?: RouteConfig,
-) {
-  return async (
-    req: NextRequest,
-    routeContext: { params: Promise<T> },
-  ): Promise<NextResponse> => {
+export function apiHandler<T = unknown>(handler: ApiHandler<T>, config?: RouteConfig) {
+  return async (req: NextRequest, routeContext: { params: Promise<T> }): Promise<NextResponse> => {
     try {
       // ── Auth check ──────────────────────────────────────────────
       let user: JwtPayload | undefined;
@@ -78,34 +72,17 @@ export function apiHandler<T = unknown>(
       // ── Handle known AppErrors ────────────────────────────────
       if (error instanceof AppError) {
         const code = STATUS_TO_CODE[error.statusCode] ?? 50000;
-        return NextResponse.json(
-          fail(code, error.message),
-          { status: error.statusCode },
-        );
+        return NextResponse.json(fail(code, error.message), { status: error.statusCode });
       }
 
       // ── Handle Prisma unique constraint violations ─────────────
-      if (
-        error &&
-        typeof error === "object" &&
-        "code" in error &&
-        (error as { code: string }).code === "P2002"
-      ) {
-        return NextResponse.json(
-          fail(40900, "该记录已存在"),
-          { status: 409 },
-        );
+      if (error && typeof error === "object" && "code" in error && (error as { code: string }).code === "P2002") {
+        return NextResponse.json(fail(40900, "该记录已存在"), { status: 409 });
       }
 
       // ── Handle unexpected errors ──────────────────────────────
-      console.error(
-        `[API Error] ${req.method} ${req.nextUrl.pathname}:`,
-        error,
-      );
-      return NextResponse.json(
-        fail(50000, "服务器内部错误"),
-        { status: 500 },
-      );
+      console.error(`[API Error] ${req.method} ${req.nextUrl.pathname}:`, error);
+      return NextResponse.json(fail(50000, "服务器内部错误"), { status: 500 });
     }
   };
 }

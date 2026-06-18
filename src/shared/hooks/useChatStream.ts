@@ -58,11 +58,12 @@ function convertApiMessages(apiMessages: ApiMessage[]): StreamMessage[] {
 
       // Restore tool call names and results from toolCalls or toolCallRecords
       // Priority: toolCallRecords (new ToolCall subtable) > toolCalls (legacy JSON)
-      const toolData = m.toolCallRecords && m.toolCallRecords.length > 0
-        ? m.toolCallRecords
-        : Array.isArray(m.toolCalls)
-          ? m.toolCalls
-          : null;
+      const toolData =
+        m.toolCallRecords && m.toolCallRecords.length > 0
+          ? m.toolCallRecords
+          : Array.isArray(m.toolCalls)
+            ? m.toolCalls
+            : null;
 
       if (toolData) {
         msg.toolCallNames = toolData.map((tc: ToolCallRecord) => tc.toolName || "unknown");
@@ -75,20 +76,18 @@ function convertApiMessages(apiMessages: ApiMessage[]): StreamMessage[] {
         currentToolNames = msg.toolCallNames;
         toolResultIdx = 0;
       } else if (typeof m.toolCalls === "string") {
-          // Legacy format: JSON string
-          try {
-            const calls = JSON.parse(m.toolCalls);
-            if (Array.isArray(calls)) {
-              msg.toolCallNames = calls.map((tc: { function?: { name?: string } }) =>
-                tc.function?.name || "unknown"
-              );
-              currentToolNames = msg.toolCallNames;
-              toolResultIdx = 0;
-            }
-          } catch {
-            // skip
+        // Legacy format: JSON string
+        try {
+          const calls = JSON.parse(m.toolCalls);
+          if (Array.isArray(calls)) {
+            msg.toolCallNames = calls.map((tc: { function?: { name?: string } }) => tc.function?.name || "unknown");
+            currentToolNames = msg.toolCallNames;
+            toolResultIdx = 0;
           }
+        } catch {
+          // skip
         }
+      }
 
       result.push(msg);
     } else if (m.role === "tool") {
@@ -154,14 +153,10 @@ interface UseChatStreamReturn {
  * tool call visualization, and conversation management.
  */
 export function useChatStream(opts?: UseChatStreamOptions): UseChatStreamReturn {
-  const [messages, setMessages] = useState<StreamMessage[]>(
-    opts?.initialMessages || []
-  );
+  const [messages, setMessages] = useState<StreamMessage[]>(opts?.initialMessages || []);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [conversationId, setConversationId] = useState<string | null>(
-    opts?.initialConversationId || null
-  );
+  const [conversationId, setConversationId] = useState<string | null>(opts?.initialConversationId || null);
   const [conversations, setConversations] = useState<ConversationSummary[]>([]);
   const abortRef = useRef<AbortController | null>(null);
   const msgIdCounter = useRef(0);
@@ -255,39 +250,45 @@ export function useChatStream(opts?: UseChatStreamOptions): UseChatStreamReturn 
   }, [stop, fetchConversations]);
 
   /** Switch to an existing conversation */
-  const switchConversation = useCallback(async (id: string) => {
-    stop();
-    try {
-      const res = await fetch(`/api/conversations/${id}`);
-      const data = await res.json();
-      if (data.code === 0 && data.data) {
-        const history = convertApiMessages(data.data.messages || []);
-        setMessages(history);
-        setConversationId(id);
-        convIdRef.current = id;
-        localStorage.setItem(CONV_KEY, id);
+  const switchConversation = useCallback(
+    async (id: string) => {
+      stop();
+      try {
+        const res = await fetch(`/api/conversations/${id}`);
+        const data = await res.json();
+        if (data.code === 0 && data.data) {
+          const history = convertApiMessages(data.data.messages || []);
+          setMessages(history);
+          setConversationId(id);
+          convIdRef.current = id;
+          localStorage.setItem(CONV_KEY, id);
+        }
+      } catch {
+        // Failed to switch
       }
-    } catch {
-      // Failed to switch
-    }
-  }, [stop]);
+    },
+    [stop],
+  );
 
   /** Delete a conversation */
-  const deleteConversation = useCallback(async (id: string) => {
-    try {
-      const res = await fetch(`/api/conversations/${id}`, { method: "DELETE" });
-      const data = await res.json();
-      if (data.code === 0) {
-        // If the deleted conversation was active, clear it
-        if (conversationId === id) {
-          clearConversation();
+  const deleteConversation = useCallback(
+    async (id: string) => {
+      try {
+        const res = await fetch(`/api/conversations/${id}`, { method: "DELETE" });
+        const data = await res.json();
+        if (data.code === 0) {
+          // If the deleted conversation was active, clear it
+          if (conversationId === id) {
+            clearConversation();
+          }
+          fetchConversations();
         }
-        fetchConversations();
+      } catch {
+        // Failed to delete
       }
-    } catch {
-      // Failed to delete
-    }
-  }, [conversationId, clearConversation, fetchConversations]);
+    },
+    [conversationId, clearConversation, fetchConversations],
+  );
 
   const sendMessage = useCallback(
     async (content: string) => {
@@ -336,8 +337,7 @@ export function useChatStream(opts?: UseChatStreamOptions): UseChatStreamReturn 
         }
 
         // Get conversationId from response headers
-        const newConvId =
-          response.headers.get("x-conversation-id") || convIdRef.current;
+        const newConvId = response.headers.get("x-conversation-id") || convIdRef.current;
         if (newConvId) {
           setConversationId(newConvId);
           convIdRef.current = newConvId;
@@ -554,7 +554,7 @@ export function useChatStream(opts?: UseChatStreamOptions): UseChatStreamReturn 
         setIsLoading(false);
       }
     },
-    [isLoading, fetchConversations]
+    [isLoading, fetchConversations],
   );
 
   // Restore conversation on mount

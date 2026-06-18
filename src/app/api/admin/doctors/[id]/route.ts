@@ -3,7 +3,6 @@ import { getPrisma } from "@/shared/db";
 import { success } from "@/shared/utils/response";
 import { apiHandler } from "@/shared/utils/api-handler";
 import { NotFoundError } from "@/shared/utils/errors";
-// eslint-disable-next-line no-restricted-imports
 import { getDoctorById } from "@/features/hospital/queries";
 
 export const GET = apiHandler<{ id: string }>(async (req, { params }) => {

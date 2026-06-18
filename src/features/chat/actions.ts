@@ -19,19 +19,14 @@ export async function streamChat(
 /**
  * Create a new conversation.
  */
-export async function createConversation(
-  sessionId: string,
-  userId?: string,
-): Promise<string> {
+export async function createConversation(sessionId: string, userId?: string): Promise<string> {
   return ConversationStore.create(sessionId, userId);
 }
 
 /**
  * Delete a conversation.
  */
-export async function deleteConversation(
-  conversationId: string,
-): Promise<void> {
+export async function deleteConversation(conversationId: string): Promise<void> {
   await ConversationStore.remove(conversationId);
 }
 
@@ -44,9 +39,5 @@ export async function persistAssistantResponse(
   toolCalls: Array<{ toolName: string; arguments: string; result: string; status: string }>,
   reasoningContent?: string,
 ): Promise<string> {
-  return ConversationPersistence.saveAssistantResponse(
-    conversationId,
-    { content, reasoningContent },
-    toolCalls,
-  );
+  return ConversationPersistence.saveAssistantResponse(conversationId, { content, reasoningContent }, toolCalls);
 }

@@ -1,4 +1,5 @@
 import Image from "next/image";
+import doctorAvatarFallback from "@/features/hospital/assets/doctor-avatar.svg";
 
 export interface DoctorInfoData {
   id: string;
@@ -20,7 +21,7 @@ export default function DoctorInfo({ doctor }: { doctor: DoctorInfoData }) {
           {doctor.avatarUrl ? (
             <Image src={doctor.avatarUrl} alt={doctor.name} width={80} height={80} className="object-cover" />
           ) : (
-            <Image src="/images/doctor-avatar.svg" alt={doctor.name} width={80} height={80} className="object-cover" />
+            <Image src={doctorAvatarFallback} alt={doctor.name} width={80} height={80} className="object-cover" />
           )}
         </div>
 

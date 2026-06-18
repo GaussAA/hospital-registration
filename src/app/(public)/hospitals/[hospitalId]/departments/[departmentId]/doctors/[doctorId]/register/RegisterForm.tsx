@@ -3,9 +3,9 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { DoctorInfo, ScheduleSlotData } from "@/features/hospital";
-import type { DoctorInfoData } from "@/features/hospital";
-import { PatientSelector, SlotSelector } from "@/features/registration";
+import { DoctorInfo } from "@/features/hospital/client";
+import type { DoctorInfoData, ScheduleSlotData } from "@/features/hospital";
+import { PatientSelector, SlotSelector } from "@/features/registration/client";
 import type { PatientProfile } from "@/features/registration";
 
 interface RegisterFormProps {

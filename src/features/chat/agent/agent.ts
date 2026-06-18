@@ -22,10 +22,16 @@ import { getSystemPrompt, SYSTEM_PROMPT } from "../prompts/system";
 
 function getNoApiKeyResponse(message: string): string {
   const msg = message.toLowerCase();
-  if (msg.includes("挂号") || msg.includes("预约") || msg.includes("医生") || msg.includes("医院") || msg.includes("科室")) {
+  if (
+    msg.includes("挂号") ||
+    msg.includes("预约") ||
+    msg.includes("医生") ||
+    msg.includes("医院") ||
+    msg.includes("科室")
+  ) {
     return "您好！我是AI挂号助手。\n\n很抱歉，AI服务尚未配置API密钥，暂时无法使用智能对话功能。\n\n您可以通过以下方式完成挂号：\n1. 在首页搜索医院\n2. 选择科室和医生\n3. 查看排班并手动挂号\n\n如需开启AI助手，请管理员在 `.env` 文件中配置 `AI_API_KEY`。";
   }
-  return '您好！我是AI挂号助手，可以帮助您完成在线挂号。\n\n请告诉我想挂什么科、找哪位医生，或者直接说「我想挂号」，我来帮您一步步完成！';
+  return "您好！我是AI挂号助手，可以帮助您完成在线挂号。\n\n请告诉我想挂什么科、找哪位医生，或者直接说「我想挂号」，我来帮您一步步完成！";
 }
 
 /* ── Agent Logic ── */
@@ -78,18 +84,12 @@ export async function processMessage(
  * The core agent loop: LLM → tool call → result → LLM → final response.
  * Max 8 rounds of tool calling to prevent infinite loops.
  */
-async function runAgentLoop(
-  message: string,
-  history: ChatMessage[],
-  context: ToolContext
-): Promise<string> {
+async function runAgentLoop(message: string, history: ChatMessage[], context: ToolContext): Promise<string> {
   const functionTools = toolsToFunctionCalling();
   const toolMap = new Map(tools.map((t) => [t.name, t]));
 
   // Build system prompt with user context
-  const systemPrompt = context.userId
-    ? getSystemPrompt()
-    : getSystemPrompt();
+  const systemPrompt = context.userId ? getSystemPrompt() : getSystemPrompt();
 
   // Build messages array for the LLM
   const messages: ChatMessage[] = [

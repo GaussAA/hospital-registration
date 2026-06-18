@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 import { unstable_noStore as noStore } from "next/cache";
 import { cookies } from "next/headers";
 import Link from "next/link";
-import type { PageProps } from "@/types/next";
+import type { PageProps } from "@/shared/types/next";
 import { verifyToken } from "@/shared/utils/jwt";
 
 export const dynamic = "force-dynamic";

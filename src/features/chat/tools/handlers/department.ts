@@ -1,4 +1,3 @@
-// eslint-disable-next-line no-restricted-imports
 import { listDepartmentsByHospital } from "@/features/hospital/queries";
 import { fmtDepartment } from "../formatters";
 import { searchDepartmentsSchema, recommendDepartmentSchema } from "../validators";

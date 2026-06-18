@@ -1,5 +1,4 @@
 import type { ToolContext } from "../../types";
-// eslint-disable-next-line no-restricted-imports
 import { createRegistration, listRegistrations, cancelRegistration } from "@/features/registration/queries";
 import { statusLabels, timeSlotLabels, typeLabels } from "../formatters";
 import { createRegistrationSchema, listRegistrationsSchema, cancelRegistrationSchema } from "../validators";

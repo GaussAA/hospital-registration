@@ -2,10 +2,7 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { requireAuth, requireAdmin } from "@/features/auth";
 import { checkRateLimit, getRateLimitKey } from "@/shared/utils/rate-limit";
-import {
-  AUTH_RATE_LIMIT_MAX,
-  AUTH_RATE_LIMIT_WINDOW_MS,
-} from "@/shared/utils/constants";
+import { AUTH_RATE_LIMIT_MAX, AUTH_RATE_LIMIT_WINDOW_MS } from "@/shared/utils/constants";
 
 /**
  * Next.js 16 proxy / middleware.
@@ -20,15 +17,11 @@ export function proxy(request: NextRequest) {
   // ── Rate limiting for auth endpoints (prevent brute force) ─────────
   if (
     request.method === "POST" &&
-    (pathname.startsWith("/api/auth/login") ||
-      pathname.startsWith("/api/auth/register"))
+    (pathname.startsWith("/api/auth/login") || pathname.startsWith("/api/auth/register"))
   ) {
     const key = getRateLimitKey(request, "auth");
     if (!checkRateLimit(key, AUTH_RATE_LIMIT_MAX, AUTH_RATE_LIMIT_WINDOW_MS)) {
-      return NextResponse.json(
-        { code: 42900, data: null, message: "请求过于频繁，请稍后再试" },
-        { status: 429 },
-      );
+      return NextResponse.json({ code: 42900, data: null, message: "请求过于频繁，请稍后再试" }, { status: 429 });
     }
   }
 

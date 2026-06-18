@@ -31,8 +31,4 @@ export {
 } from "./actions";
 
 // Types
-export type {
-  DashboardStats,
-  AdminMenuItem,
-  OverviewData,
-} from "./types";
+export type { DashboardStats, AdminMenuItem, OverviewData } from "./types";

@@ -62,9 +62,7 @@ interface UseAdminCrudReturn<T> {
  * );
  * ```
  */
-export function useAdminCrud<T extends { id: string }>(
-  options: UseAdminCrudOptions,
-): UseAdminCrudReturn<T> {
+export function useAdminCrud<T extends { id: string }>(options: UseAdminCrudOptions): UseAdminCrudReturn<T> {
   const {
     baseUrl,
     pageSize = 10,
@@ -90,7 +88,9 @@ export function useAdminCrud<T extends { id: string }>(
 
   useEffect(() => {
     mountedRef.current = true;
-    return () => { mountedRef.current = false; };
+    return () => {
+      mountedRef.current = false;
+    };
   }, []);
 
   /* ── Fetch ── */
@@ -112,7 +112,7 @@ export function useAdminCrud<T extends { id: string }>(
     } finally {
       if (mountedRef.current) setLoading(false);
     }
-// eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [baseUrl, page, pageSize, fetchDeps]);
 
   useEffect(() => {
@@ -167,9 +167,7 @@ export function useAdminCrud<T extends { id: string }>(
   const remove = useCallback(
     async (record: T) => {
       try {
-        const url = buildDeleteUrl
-          ? buildDeleteUrl(baseUrl, record)
-          : `${baseUrl}/${record.id}`;
+        const url = buildDeleteUrl ? buildDeleteUrl(baseUrl, record) : `${baseUrl}/${record.id}`;
 
         const res = await fetch(url, { method: "DELETE" });
         const json = await res.json();

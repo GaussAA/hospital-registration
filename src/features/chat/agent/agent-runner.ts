@@ -17,12 +17,20 @@
 import type { ChatMessage, ToolContext, FunctionCallTool, ToolExecutionResult } from "../types";
 import toolDefs from "./tools";
 
-/* ── Config ── */
+/* ── Config (lazy getters for testability) ── */
 
-const BASE_URL = (process.env.AI_BASE_URL || "https://api.deepseek.com").replace(/\/+$/, "");
-const API_KEY = process.env.AI_API_KEY || "";
-const MODEL = process.env.AI_MODEL || "deepseek-v4-flash";
-const REASONING_EFFORT = process.env.AI_REASONING_EFFORT || "off";
+function getBaseUrl(): string {
+  return (process.env.AI_BASE_URL || "https://api.deepseek.com").replace(/\/+$/, "");
+}
+function getApiKey(): string {
+  return process.env.AI_API_KEY || "";
+}
+function getModel(): string {
+  return process.env.AI_MODEL || "deepseek-v4-flash";
+}
+function getReasoningEffort(): string {
+  return process.env.AI_REASONING_EFFORT || "off";
+}
 
 /* ── Internal types for tool calling ── */
 
@@ -308,7 +316,7 @@ async function callDeepSeek(
   tools: FunctionCallTool[]
 ): Promise<Response> {
   const body: Record<string, unknown> = {
-    model: MODEL,
+    model: getModel(),
     messages: messages.map((m) => {
       const msg: { role: string; content: string; tool_call_id?: string; tool_calls?: Array<{ id: string; type: string; function: { name: string; arguments: string } }> } = { role: m.role, content: m.content || "" };
       if ((m as unknown as { tool_call_id?: string }).tool_call_id) {
@@ -324,8 +332,8 @@ async function callDeepSeek(
   };
 
   // Enable DeepSeek reasoning/thinking mode for complex tool calling
-  if (REASONING_EFFORT !== "off") {
-    body.reasoning = { effort: REASONING_EFFORT };
+  if (getReasoningEffort() !== "off") {
+    body.reasoning = { effort: getReasoningEffort() };
   }
 
   if (tools.length > 0) {
@@ -333,11 +341,11 @@ async function callDeepSeek(
     body.tool_choice = "auto";
   }
 
-  const response = await fetch(`${BASE_URL}/chat/completions`, {
+  const response = await fetch(`${getBaseUrl()}/chat/completions`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${API_KEY}`,
+      Authorization: `Bearer ${getApiKey()}`,
     },
     body: JSON.stringify(body),
   });

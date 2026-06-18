@@ -75,7 +75,15 @@ export interface FunctionCallTool {
 
 export interface ConversationState {
   /** Current step in the registration flow, if any */
-  step?: "idle" | "selecting_hospital" | "selecting_department" | "selecting_doctor" | "checking_schedule" | "selecting_profile" | "confirming" | "done";
+  step?:
+    | "idle"
+    | "selecting_hospital"
+    | "selecting_department"
+    | "selecting_doctor"
+    | "checking_schedule"
+    | "selecting_profile"
+    | "confirming"
+    | "done";
   /** Cached data for multi-turn flows */
   cache: {
     hospitalId?: string;

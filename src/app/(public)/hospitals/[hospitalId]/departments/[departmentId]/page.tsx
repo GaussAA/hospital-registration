@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { DoctorCard } from "@/features/hospital";
 import type { DoctorCardData } from "@/features/hospital";
-import type { PageProps } from "@/types/next";
-import type { ApiResponse } from "@/types/api";
+import type { PageProps } from "@/shared/types/next";
+import type { ApiResponse } from "@/shared/types/api";
 
 interface DepartmentData {
   id: string;

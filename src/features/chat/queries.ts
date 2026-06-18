@@ -4,19 +4,14 @@ import type { ConversationSummary, ConversationDetail, ChatMessage } from "./typ
 /**
  * List conversations for a session.
  */
-export async function listConversations(
-  sessionId: string,
-  userId?: string,
-): Promise<ConversationSummary[]> {
+export async function listConversations(sessionId: string, userId?: string): Promise<ConversationSummary[]> {
   return ConversationStore.list(sessionId, userId);
 }
 
 /**
  * Get conversation detail including all messages.
  */
-export async function getConversation(
-  conversationId: string,
-): Promise<ConversationDetail | null> {
+export async function getConversation(conversationId: string): Promise<ConversationDetail | null> {
   return ConversationStore.getDetail(conversationId);
 }
 
@@ -33,9 +28,6 @@ export async function loadConversationHistory(
 /**
  * Get or create a conversation for a session.
  */
-export async function getOrCreateConversation(
-  sessionId: string,
-  userId?: string,
-): Promise<string> {
+export async function getOrCreateConversation(sessionId: string, userId?: string): Promise<string> {
   return ConversationStore.getOrCreate(sessionId, userId);
 }
