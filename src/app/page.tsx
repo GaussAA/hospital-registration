@@ -1,11 +1,11 @@
-import Header from "@/components/layout/Header";
-import Footer from "@/components/layout/Footer";
-import HeroSection from "@/components/home/HeroSection";
-import StatsSection from "@/components/home/StatsSection";
-import ServiceCards from "@/components/home/ServiceCards";
-import FeaturedHospitals from "@/components/home/FeaturedHospitals";
-import HowItWorks from "@/components/home/HowItWorks";
-import TrustSection from "@/components/home/TrustSection";
+import Header from "@/shared/ui/Header";
+import Footer from "@/shared/ui/Footer";
+import HeroSection from "@/features/home/components/HeroSection";
+import StatsSection from "@/features/home/components/StatsSection";
+import ServiceCards from "@/features/home/components/ServiceCards";
+import FeaturedHospitals from "@/features/home/components/FeaturedHospitals";
+import HowItWorks from "@/features/home/components/HowItWorks";
+import TrustSection from "@/features/home/components/TrustSection";
 
 export default function HomePage() {
   return (

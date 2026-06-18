@@ -1,14 +1,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useToast } from "@/components/ui/Toast";
-import AdminHeader from "@/components/layout/AdminHeader";
-import DataTable from "@/components/admin/DataTable";
-import type { Column, ColumnValue } from "@/components/admin/DataTable";
-import DepartmentForm from "@/components/admin/DepartmentForm";
-import type { DepartmentFormData } from "@/components/admin/DepartmentForm";
-import { useAdminCrud } from "@/lib/hooks/useAdminCrud";
-import Modal from "@/components/ui/Modal";
+import { useToast } from "@/shared/ui/Toast";
+import { AdminHeader, DataTable, DepartmentForm } from "@/features/admin/client";
+import type { Column, ColumnValue, DepartmentFormData } from "@/features/admin/client";
+import { useAdminCrud } from "@/shared/hooks/useAdminCrud";
+import Modal from "@/shared/ui/Modal";
 
 interface HospitalOption {
   id: string;

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getPrisma } from "@/lib/db";
-import { verifyToken } from "@/lib/utils/jwt";
-import { success, fail } from "@/lib/utils/response";
+import { getPrisma } from "@/shared/db";
+import { verifyToken } from "@/shared/utils/jwt";
+import { success, fail } from "@/shared/utils/response";
 
 /**
  * POST /api/feedback — 提交消息反馈（有帮助/没帮助）。

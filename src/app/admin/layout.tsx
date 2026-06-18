@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
-import { requireAuthServer } from "@/lib/auth/middleware";
-import AdminSidebar from "@/components/layout/AdminSidebar";
-import AdminToastWrapper from "@/components/ui/AdminToastWrapper";
+import { requireAuthServer } from "@/features/auth";
+import { AdminSidebar } from "@/features/admin/client";
+import AdminToastWrapper from "@/shared/ui/AdminToastWrapper";
 
 export default async function AdminLayout({
   children,

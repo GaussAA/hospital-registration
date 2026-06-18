@@ -1,9 +1,9 @@
 import Link from "next/link";
 import { unstable_noStore as noStore } from "next/cache";
-import DoctorInfo from "@/components/doctor/DoctorInfo";
-import type { DoctorInfoData } from "@/components/doctor/DoctorInfo";
-import { getDoctorById } from "@/lib/services/doctor.service";
-import { listSchedulesByDoctor } from "@/lib/services/schedule.service";
+import DoctorInfo from "@/features/hospital/components/DoctorInfo";
+import type { DoctorInfoData } from "@/features/hospital/components/DoctorInfo";
+import { getDoctorById } from "@/features/hospital";
+import { listSchedulesByDoctor } from "@/features/hospital";
 import type { PageProps } from "@/types/next";
 import ScheduleCalendarWrapper from "./ScheduleCalendarWrapper";
 

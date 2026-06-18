@@ -3,12 +3,12 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import type { DoctorInfoData } from "@/components/doctor/DoctorInfo";
-import DoctorInfo from "@/components/doctor/DoctorInfo";
-import PatientSelector from "@/components/appointment/PatientSelector";
-import type { PatientProfile } from "@/components/appointment/PatientSelector";
-import SlotSelector from "@/components/appointment/SlotSelector";
-import type { ScheduleSlotData } from "@/lib/services/schedule.service";
+import type { DoctorInfoData } from "@/features/hospital/components/DoctorInfo";
+import DoctorInfo from "@/features/hospital/components/DoctorInfo";
+import PatientSelector from "@/features/registration/components/PatientSelector";
+import type { PatientProfile } from "@/features/registration/components/PatientSelector";
+import SlotSelector from "@/features/registration/components/SlotSelector";
+import type { ScheduleSlotData } from "@/features/hospital";
 
 interface RegisterFormProps {
   doctor: DoctorInfoData;

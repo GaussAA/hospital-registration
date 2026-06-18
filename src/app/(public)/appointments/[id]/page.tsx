@@ -2,8 +2,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { cookies } from "next/headers";
 import type { PageProps } from "@/types/next";
-import { verifyToken } from "@/lib/utils/jwt";
-import { getRegistrationById } from "@/lib/services/registration.service";
+import { verifyToken } from "@/shared/utils/jwt";
+import { getRegistrationById } from "@/features/registration";
 
 const statusLabels: Record<string, string> = {
   pending: "待就诊",

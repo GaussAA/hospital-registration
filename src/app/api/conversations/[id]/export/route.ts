@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { ConversationStore } from "@/lib/ai/conversation-store";
-import { fail } from "@/lib/utils/response";
+import { ConversationStore } from "@/features/chat";
+import { fail } from "@/shared/utils/response";
 
 /**
  * GET /api/conversations/[id]/export

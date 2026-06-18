@@ -7,6 +7,8 @@ datasource db {
   provider = "postgresql"
 }
 
+// ==================== Auth 模块 ====================
+
 model User {
   id           String   @id @default(cuid())
   name         String
@@ -21,6 +23,7 @@ model User {
 
   @@index([email])
   @@index([phone])
+  @@schema("auth")
 }
 
 model PatientProfile {
@@ -35,7 +38,10 @@ model PatientProfile {
   registrations Registration[]
 
   @@index([userId])
+  @@schema("auth")
 }
+
+// ==================== Hospital 模块 ====================
 
 model Hospital {
   id          String   @id @default(cuid())
@@ -53,6 +59,7 @@ model Hospital {
 
   @@index([city])
   @@index([level])
+  @@schema("hospital")
 }
 
 model Department {
@@ -66,6 +73,7 @@ model Department {
 
   @@unique([name, hospitalId])
   @@index([hospitalId])
+  @@schema("hospital")
 }
 
 model Doctor {
@@ -86,6 +94,7 @@ model Doctor {
   @@index([departmentId])
   @@index([hospitalId])
   @@index([name])
+  @@schema("hospital")
 }
 
 model Schedule {
@@ -104,7 +113,10 @@ model Schedule {
   @@unique([doctorId, date, timeSlot, type])
   @@index([doctorId, date])
   @@index([date])
+  @@schema("hospital")
 }
+
+// ==================== Registration 模块 ====================
 
 model Registration {
   id         String   @id @default(cuid())
@@ -128,7 +140,10 @@ model Registration {
   @@index([scheduleId])
   @@index([date])
   @@index([patientId, date, timeSlot])
+  @@schema("registration")
 }
+
+// ==================== Chat/AI 模块 ====================
 
 /// 消息反馈表
 model MessageFeedback {
@@ -141,6 +156,7 @@ model MessageFeedback {
   @@unique([messageId, userId])
   @@index([messageId])
   @@index([userId])
+  @@schema("chat")
 }
 
 /// 用户记忆表（偏好、历史摘要）
@@ -153,6 +169,7 @@ model UserMemory {
   updatedAt DateTime @updatedAt
 
   @@index([userId])
+  @@schema("chat")
 }
 
 /// 会话表
@@ -169,6 +186,7 @@ model Conversation {
   @@index([sessionId])
   @@index([userId])
   @@index([updatedAt])
+  @@schema("chat")
 }
 
 /// 工具调用记录表
@@ -185,6 +203,7 @@ model ToolCall {
   message Message @relation(fields: [messageId], references: [id], onDelete: Cascade)
 
   @@index([messageId])
+  @@schema("chat")
 }
 
 /// 消息表
@@ -202,6 +221,7 @@ model Message {
 
   @@index([conversationId])
   @@index([conversationId, createdAt])
+  @@schema("chat")
 }
 
 /// 会话状态表
@@ -215,4 +235,5 @@ model SessionState {
   updatedAt      DateTime @updatedAt
 
   @@index([sessionId])
+  @@schema("chat")
 }

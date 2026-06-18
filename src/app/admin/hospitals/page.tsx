@@ -1,12 +1,9 @@
 "use client";
 
-import AdminHeader from "@/components/layout/AdminHeader";
-import DataTable from "@/components/admin/DataTable";
-import type { Column } from "@/components/admin/DataTable";
-import HospitalForm from "@/components/admin/HospitalForm";
-import type { HospitalFormData } from "@/components/admin/HospitalForm";
-import { useAdminCrud } from "@/lib/hooks/useAdminCrud";
-import Modal from "@/components/ui/Modal";
+import { AdminHeader, DataTable, HospitalForm } from "@/features/admin/client";
+import type { Column, HospitalFormData } from "@/features/admin/client";
+import { useAdminCrud } from "@/shared/hooks/useAdminCrud";
+import Modal from "@/shared/ui/Modal";
 
 interface HospitalRecord {
   id: string;

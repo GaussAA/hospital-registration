@@ -2,11 +2,11 @@
 
 import { useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import ScheduleCalendar from "@/components/doctor/ScheduleCalendar";
-import type { ScheduleSlot } from "@/components/doctor/ScheduleCalendar";
-import PatientSelector from "@/components/appointment/PatientSelector";
-import type { PatientProfile } from "@/components/appointment/PatientSelector";
-import ConfirmCard from "@/components/appointment/ConfirmCard";
+import ScheduleCalendar from "@/features/hospital/components/ScheduleCalendar";
+import type { ScheduleSlot } from "@/features/hospital/components/ScheduleCalendar";
+import PatientSelector from "@/features/registration/components/PatientSelector";
+import type { PatientProfile } from "@/features/registration/components/PatientSelector";
+import ConfirmCard from "@/features/registration/components/ConfirmCard";
 
 interface ScheduleCalendarWrapperProps {
   schedules: ScheduleSlot[];

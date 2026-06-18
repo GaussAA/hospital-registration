@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
-import { getPrisma } from "@/lib/db";
-import { success } from "@/lib/utils/response";
-import { apiHandler } from "@/lib/utils/api-handler";
-import { NotFoundError } from "@/lib/utils/errors";
-import { getHospitalById } from "@/lib/services/hospital.service";
+import { getPrisma } from "@/shared/db";
+import { success } from "@/shared/utils/response";
+import { apiHandler } from "@/shared/utils/api-handler";
+import { NotFoundError } from "@/shared/utils/errors";
+import { getHospitalById } from "@/features/hospital";
 
 export const GET = apiHandler<{ hospitalId: string }>(async (req, { params }) => {
   const { hospitalId } = await params;

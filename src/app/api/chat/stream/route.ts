@@ -1,9 +1,7 @@
 import { NextRequest } from "next/server";
-import { verifyToken } from "@/lib/utils/jwt";
-import { ConversationStore } from "@/lib/ai/conversation-store";
-import { ConversationPersistence } from "@/lib/ai/persistence";
-import { createStreamResponse } from "@/lib/ai/stream-agent";
-import type { ToolContext } from "@/lib/ai/types";
+import { verifyToken } from "@/shared/utils/jwt";
+import { ConversationStore, ConversationPersistence, createStreamResponse } from "@/features/chat";
+import type { ToolContext } from "@/features/chat";
 
 /**
  * POST /api/chat/stream — SSE streaming chat endpoint.

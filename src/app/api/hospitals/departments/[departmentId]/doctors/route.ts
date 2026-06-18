@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
-import { success } from "@/lib/utils/response";
-import { apiHandler } from "@/lib/utils/api-handler";
-import { listDoctorsByDepartment } from "@/lib/services/doctor.service";
+import { success } from "@/shared/utils/response";
+import { apiHandler } from "@/shared/utils/api-handler";
+import { listDoctorsByDepartment } from "@/features/hospital";
 
 export const GET = apiHandler<{ departmentId: string }>(async (req, { params }) => {
   const { departmentId } = await params;

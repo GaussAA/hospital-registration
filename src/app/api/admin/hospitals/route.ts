@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
-import { getPrisma } from "@/lib/db";
-import { success } from "@/lib/utils/response";
-import { apiHandler } from "@/lib/utils/api-handler";
-import { ValidationError } from "@/lib/utils/errors";
-import { listHospitals } from "@/lib/services/hospital.service";
+import { getPrisma } from "@/shared/db";
+import { success } from "@/shared/utils/response";
+import { apiHandler } from "@/shared/utils/api-handler";
+import { ValidationError } from "@/shared/utils/errors";
+import { listHospitals } from "@/features/hospital";
 
 export const GET = apiHandler(async (req) => {
   const { searchParams } = new URL(req.url);

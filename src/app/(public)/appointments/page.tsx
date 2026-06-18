@@ -1,9 +1,9 @@
 import Link from "next/link";
 import { cookies } from "next/headers";
 import type { PaginatedData } from "@/types/api";
-import { verifyToken } from "@/lib/utils/jwt";
-import { listRegistrations } from "@/lib/services/registration.service";
-import AppointmentList from "@/components/appointment/AppointmentList";
+import { verifyToken } from "@/shared/utils/jwt";
+import { listRegistrations } from "@/features/registration";
+import AppointmentList from "@/features/registration/components/AppointmentList";
 
 /**
  * Appointments list page (server component).
@@ -71,7 +71,7 @@ export default async function AppointmentsPage() {
   }> = { list: [], total: 0, page: 1, pageSize: 10 };
 
   try {
-    const result = await listRegistrations(payload.userId);
+    const result = await listRegistrations({ patientId: payload.userId });
     initialData = result as unknown as typeof initialData;
   } catch {
     // Use empty data

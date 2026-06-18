@@ -1,9 +1,8 @@
 import { NextResponse } from "next/server";
-import { success } from "@/lib/utils/response";
-import { apiHandler } from "@/lib/utils/api-handler";
-import { ValidationError } from "@/lib/utils/errors";
-import { listHospitals } from "@/lib/services/hospital.service";
-import { listHospitalsSchema } from "@/lib/validations/hospital.schema";
+import { success } from "@/shared/utils/response";
+import { apiHandler } from "@/shared/utils/api-handler";
+import { ValidationError } from "@/shared/utils/errors";
+import { listHospitals, listHospitalsSchema } from "@/features/hospital";
 
 export const GET = apiHandler(async (req) => {
   const { searchParams } = new URL(req.url);

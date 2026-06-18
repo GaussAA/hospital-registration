@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { writeFile, mkdir } from "fs/promises";
 import path from "path";
-import { success, fail } from "@/lib/utils/response";
+import { success, fail } from "@/shared/utils/response";
 
 /**
  * POST /api/upload — 上传文件（图片），保存到 public/uploads/。

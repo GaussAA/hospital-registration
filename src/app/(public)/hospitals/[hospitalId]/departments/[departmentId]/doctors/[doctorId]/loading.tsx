@@ -1,5 +1,5 @@
-import { CalendarSkeleton } from "@/components/ui/Skeleton";
-import { Skeleton } from "@/components/ui/Skeleton";
+import { CalendarSkeleton } from "@/shared/ui/Skeleton";
+import { Skeleton } from "@/shared/ui/Skeleton";
 
 export default function Loading() {
   return (

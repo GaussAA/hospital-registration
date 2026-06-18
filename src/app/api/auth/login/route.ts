@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getPrisma } from "@/lib/db";
-import { comparePassword } from "@/lib/utils/password";
-import { signToken } from "@/lib/utils/jwt";
-import { apiHandler } from "@/lib/utils/api-handler";
-import { success, fail } from "@/lib/utils/response";
-import { SESSION_EXPIRY_SECONDS } from "@/lib/constants";
+import { getPrisma } from "@/shared/db";
+import { comparePassword } from "@/shared/utils/password";
+import { signToken } from "@/shared/utils/jwt";
+import { apiHandler } from "@/shared/utils/api-handler";
+import { success, fail } from "@/shared/utils/response";
+import { SESSION_EXPIRY_SECONDS } from "@/shared/utils/constants";
 
 export const POST = apiHandler(async (req: NextRequest) => {
   const body = await req.json();

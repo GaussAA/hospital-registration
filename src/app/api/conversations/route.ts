@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { verifyToken } from "@/lib/utils/jwt";
-import { ConversationStore } from "@/lib/ai/conversation-store";
-import { success, fail } from "@/lib/utils/response";
+import { verifyToken } from "@/shared/utils/jwt";
+import { ConversationStore } from "@/features/chat";
+import { success, fail } from "@/shared/utils/response";
 
 /**
  * GET /api/conversations?sessionId=xxx&userId=xxx

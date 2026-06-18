@@ -1,8 +1,8 @@
 import Link from "next/link";
-import HospitalInfo from "@/components/hospital/HospitalInfo";
-import type { HospitalInfoData } from "@/components/hospital/HospitalInfo";
-import DepartmentList from "@/components/department/DepartmentList";
-import type { DepartmentCardData } from "@/components/department/DepartmentCard";
+import HospitalInfo from "@/features/hospital/components/HospitalInfo";
+import type { HospitalInfoData } from "@/features/hospital/components/HospitalInfo";
+import DepartmentList from "@/features/hospital/components/DepartmentList";
+import type { DepartmentCardData } from "@/features/hospital/components/DepartmentCard";
 import type { PageProps } from "@/types/next";
 import type { ApiResponse } from "@/types/api";
 

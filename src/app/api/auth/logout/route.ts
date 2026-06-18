@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { success } from "@/lib/utils/response";
+import { success } from "@/shared/utils/response";
 
 export async function POST() {
   const response = NextResponse.json(success(null, "已登出"), { status: 200 });

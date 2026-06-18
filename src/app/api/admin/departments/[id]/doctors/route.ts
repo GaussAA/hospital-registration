@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
-import { getPrisma } from "@/lib/db";
-import { success } from "@/lib/utils/response";
-import { apiHandler } from "@/lib/utils/api-handler";
-import { NotFoundError, ValidationError } from "@/lib/utils/errors";
-import { paginationSchema } from "@/lib/validations/common.schema";
+import { getPrisma } from "@/shared/db";
+import { success } from "@/shared/utils/response";
+import { apiHandler } from "@/shared/utils/api-handler";
+import { NotFoundError, ValidationError } from "@/shared/utils/errors";
+import { paginationSchema } from "@/shared/utils/common-schema";
 
 export const GET = apiHandler<{ id: string }>(async (req, { params }) => {
   const { id } = await params;

@@ -1,11 +1,11 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { requireAuth, requireAdmin } from "@/lib/auth/middleware";
-import { checkRateLimit, getRateLimitKey } from "@/lib/utils/rate-limit";
+import { requireAuth, requireAdmin } from "@/features/auth/middleware";
+import { checkRateLimit, getRateLimitKey } from "@/shared/utils/rate-limit";
 import {
   AUTH_RATE_LIMIT_MAX,
   AUTH_RATE_LIMIT_WINDOW_MS,
-} from "@/lib/constants";
+} from "@/shared/utils/constants";
 
 /**
  * Next.js 16 proxy / middleware.

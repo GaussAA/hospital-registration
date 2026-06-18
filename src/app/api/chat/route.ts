@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import { verifyToken } from "@/lib/utils/jwt";
-import { processMessage } from "@/lib/ai/agent";
-import { success, fail } from "@/lib/utils/response";
-import type { ChatMessage } from "@/lib/ai/types";
+import { verifyToken } from "@/shared/utils/jwt";
+import { processMessage } from "@/features/chat";
+import type { ChatMessageType as ChatMessage } from "@/features/chat";
+import { success, fail } from "@/shared/utils/response";
 
 /**
  * POST /api/chat — Send a message to the AI registration assistant.

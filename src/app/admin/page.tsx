@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
-import { requireAuthServer } from "@/lib/auth/middleware";
-import { getPrisma } from "@/lib/db";
-import AdminHeader from "@/components/layout/AdminHeader";
+import { requireAuthServer } from "@/features/auth";
+import { getPrisma } from "@/shared/db";
+import { AdminHeader } from "@/features/admin/client";
 
 async function getStats() {
   const prisma = await getPrisma();

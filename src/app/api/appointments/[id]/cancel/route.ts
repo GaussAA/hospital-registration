@@ -1,8 +1,8 @@
 import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
-import { apiHandler } from "@/lib/utils/api-handler";
-import { success } from "@/lib/utils/response";
-import { cancelRegistration } from "@/lib/services/registration.service";
+import { apiHandler } from "@/shared/utils/api-handler";
+import { success } from "@/shared/utils/response";
+import { cancelRegistration } from "@/features/registration";
 
 /**
  * POST /api/appointments/[id]/cancel

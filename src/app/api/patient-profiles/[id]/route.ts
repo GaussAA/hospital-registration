@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
-import { getPrisma } from "@/lib/db";
-import { apiHandler } from "@/lib/utils/api-handler";
-import { success, fail } from "@/lib/utils/response";
-import { NotFoundError } from "@/lib/utils/errors";
+import { getPrisma } from "@/shared/db";
+import { apiHandler } from "@/shared/utils/api-handler";
+import { success, fail } from "@/shared/utils/response";
+import { NotFoundError } from "@/shared/utils/errors";
 
 export const GET = apiHandler<{ id: string }>(async (_req, { params, user }) => {
   const { id } = await params;

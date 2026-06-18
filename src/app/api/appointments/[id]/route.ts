@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
-import { apiHandler } from "@/lib/utils/api-handler";
-import { success, fail } from "@/lib/utils/response";
-import { getRegistrationById } from "@/lib/services/registration.service";
+import { apiHandler } from "@/shared/utils/api-handler";
+import { success, fail } from "@/shared/utils/response";
+import { getRegistrationById } from "@/features/registration";
 
 /**
  * GET /api/appointments/[id]

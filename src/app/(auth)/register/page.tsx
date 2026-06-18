@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import RegisterForm from "@/components/auth/RegisterForm";
+import { RegisterForm } from "@/features/auth";
 
 export const metadata: Metadata = {
   title: "注册 - 健康挂号",

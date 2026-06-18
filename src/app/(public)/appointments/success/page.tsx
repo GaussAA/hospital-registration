@@ -1,9 +1,9 @@
 import Link from "next/link";
 import { cookies } from "next/headers";
 import type { PageProps } from "@/types/next";
-import { verifyToken } from "@/lib/utils/jwt";
-import { getRegistrationById } from "@/lib/services/registration.service";
-import SuccessCard from "@/components/appointment/SuccessCard";
+import { verifyToken } from "@/shared/utils/jwt";
+import { getRegistrationById } from "@/features/registration";
+import SuccessCard from "@/features/registration/components/SuccessCard";
 
 /**
  * Registration success page (server component).

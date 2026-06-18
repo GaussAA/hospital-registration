@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { ThemeProvider } from "@/components/ui/ThemeProvider";
-import { UserProvider } from "@/components/auth/UserProvider";
-import { ChatBubble } from "@/components/chat";
+import { ThemeProvider } from "@/shared/ui/ThemeProvider";
+import { UserProvider } from "@/features/auth";
+import { ChatBubble } from "@/features/chat/components";
 
 export const metadata: Metadata = {
   title: "健康挂号 - 在线预约挂号平台",

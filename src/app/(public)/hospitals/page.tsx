@@ -1,9 +1,7 @@
-import HospitalFilter from "@/components/hospital/HospitalFilter";
-import HospitalCard from "@/components/hospital/HospitalCard";
-import Pagination from "@/components/hospital/Pagination";
-import type { HospitalCardData } from "@/components/hospital/HospitalCard";
+import { HospitalFilter, HospitalCard, Pagination } from "@/features/hospital";
+import type { HospitalCardData } from "@/features/hospital/components/HospitalCard";
 import type { PageProps } from "@/types/next";
-import { listHospitals } from "@/lib/services/hospital.service";
+import { listHospitals } from "@/features/hospital";
 import Image from "next/image";
 
 interface PageSearchParams {
@@ -40,6 +38,8 @@ export default async function HospitalsPage(props: PageProps) {
       address: h.address,
       city: h.city,
       imageUrl: h.imageUrl,
+      departmentCount: h.departmentCount,
+      doctorCount: h.doctorCount,
     }));
     total = result.total;
     page = result.page;
@@ -72,6 +72,8 @@ export default async function HospitalsPage(props: PageProps) {
           <Pagination
             page={page}
             totalPages={totalPages}
+            pageSize={pageSize}
+            total={total}
           />
         </>
       ) : (

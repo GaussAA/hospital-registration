@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
-import { getPrisma } from "@/lib/db";
-import { success } from "@/lib/utils/response";
-import { apiHandler } from "@/lib/utils/api-handler";
+import { getPrisma } from "@/shared/db";
+import { success } from "@/shared/utils/response";
+import { apiHandler } from "@/shared/utils/api-handler";
 
 export const GET = apiHandler(async () => {
   const prisma = await getPrisma();

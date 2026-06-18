@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
-import { getPrisma } from "@/lib/db";
-import { apiHandler } from "@/lib/utils/api-handler";
-import { success, fail } from "@/lib/utils/response";
+import { getPrisma } from "@/shared/db";
+import { apiHandler } from "@/shared/utils/api-handler";
+import { success, fail } from "@/shared/utils/response";
 
 /**
  * GET /api/patient-profiles — 获取当前用户的所有就诊人

@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
-import { success } from "@/lib/utils/response";
-import { apiHandler } from "@/lib/utils/api-handler";
-import { getPrisma } from "@/lib/db";
-import { cacheAside, CACHE_KEYS, CACHE_TTL } from "@/lib/cache";
+import { success } from "@/shared/utils/response";
+import { apiHandler } from "@/shared/utils/api-handler";
+import { getPrisma } from "@/shared/db";
+import { cacheAside, CACHE_KEYS, CACHE_TTL } from "@/shared/cache";
 
 export const dynamic = "force-dynamic";
 
