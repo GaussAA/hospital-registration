@@ -109,10 +109,10 @@ describe("SlotSelector", () => {
       />,
     );
 
-    // The selected button should have a blue background (via class)
+    // The selected button should have a blue gradient background (via class)
     const buttons = screen.getAllByRole("button");
     const selectedButton = buttons.find(
-      (b) => b.className.includes("bg-blue-600"),
+      (b) => b.className.includes("from-blue-500") && b.className.includes("to-blue-600"),
     );
     expect(selectedButton).toBeDefined();
   });

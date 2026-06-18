@@ -1,6 +1,16 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { NotFoundError } from "@/lib/utils/errors";
 
+// ─── Mock Cache (bypass Redis) ───────────────────────────────────────
+vi.mock("@/lib/cache", () => ({
+  cacheAside: vi.fn((_key: string, _ttl: number, fetchFn: () => Promise<unknown>) => fetchFn()),
+  CACHE_KEYS: {
+    DOCTORS_BY_DEPARTMENT: vi.fn((id: string) => `doctors:department:${id}`),
+    DOCTOR_DETAIL: vi.fn((id: string) => `doctors:detail:${id}`),
+  },
+  CACHE_TTL: { DOCTORS: 300, DOCTOR_DETAIL: 300 },
+}));
+
 // ─── Mock Prisma & DB ────────────────────────────────────────────────
 const mockPrisma = {
   department: {

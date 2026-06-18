@@ -8,6 +8,7 @@ const {
   mockAddMessages,
   mockUpdateTitle,
   mockVerifyToken,
+  mockSaveAssistantResponse,
 } = vi.hoisted(() => ({
   mockAddMessage: vi.fn(),
   mockGetOrCreate: vi.fn(),
@@ -15,6 +16,7 @@ const {
   mockAddMessages: vi.fn(),
   mockUpdateTitle: vi.fn(),
   mockVerifyToken: vi.fn(),
+  mockSaveAssistantResponse: vi.fn(() => Promise.resolve("msg-assistant-1")),
 }));
 
 vi.mock("@/lib/ai/conversation-store", () => ({
@@ -24,11 +26,43 @@ vi.mock("@/lib/ai/conversation-store", () => ({
     getDetail: mockGetDetail,
     addMessages: mockAddMessages,
     updateTitle: mockUpdateTitle,
+    create: vi.fn(() => Promise.resolve("conv-42")),
+    loadHistoryAsChatMessages: vi.fn(() => Promise.resolve([])),
+    generateSmartTitle: vi.fn(() => "测试对话"),
+  },
+}));
+
+// Mock persistence layer
+vi.mock("@/lib/ai/persistence", () => ({
+  ConversationPersistence: {
+    saveAssistantResponse: mockSaveAssistantResponse,
   },
 }));
 
 vi.mock("@/lib/utils/jwt", () => ({
   verifyToken: mockVerifyToken,
+}));
+
+// Mock agent stream response
+vi.mock("@/lib/ai/stream-agent", () => ({
+  createStreamResponse: vi.fn(() => {
+    const encoder = new TextEncoder();
+    const stream = new ReadableStream({
+      start(controller) {
+        controller.enqueue(encoder.encode("0:AI回复内容\n"));
+        controller.enqueue(encoder.encode("e:finish\n\n"));
+        controller.close();
+      },
+    });
+    return Promise.resolve({
+      stream,
+      promise: Promise.resolve({
+        content: "AI回复内容",
+        reasoningContent: "",
+        toolCalls: [],
+      }),
+    });
+  }),
 }));
 
 import { POST } from "@/app/api/chat/stream/route";
@@ -233,12 +267,11 @@ describe("POST /api/chat/stream", () => {
         decoder.decode(value);
       }
 
-      // After stream completion, addMessages should have been called
-      expect(mockAddMessages).toHaveBeenCalledTimes(1);
-      const addMessagesCall = mockAddMessages.mock.calls[0];
-      expect(addMessagesCall[0]).toBe("conv-42");
-      expect(addMessagesCall[1][0].role).toBe("assistant");
-      expect(addMessagesCall[1][0].content).toBeTruthy();
+      // After stream completion, saveAssistantResponse should have been called
+      expect(mockSaveAssistantResponse).toHaveBeenCalledTimes(1);
+      const saveCall = mockSaveAssistantResponse.mock.calls[0];
+      expect(saveCall[0]).toBe("conv-42");
+      expect(saveCall[1].content).toBeTruthy();
     });
   });
 

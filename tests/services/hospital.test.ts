@@ -1,6 +1,15 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { NotFoundError } from "@/lib/utils/errors";
 
+// ─── Mock Cache (bypass Redis serialization) ─────────────────────────
+vi.mock("@/lib/cache", () => ({
+  cacheAside: vi.fn((_key: string, _ttl: number, fetchFn: () => Promise<unknown>) => fetchFn()),
+  CACHE_KEYS: {
+    HOSPITAL_DETAIL: vi.fn((id: string) => `hospitals:detail:${id}`),
+  },
+  CACHE_TTL: { HOSPITAL_DETAIL: 600 },
+}));
+
 // ─── Mock Prisma & DB ────────────────────────────────────────────────
 const mockPrisma = {
   hospital: {
