@@ -1,5 +1,6 @@
 import { getPrisma } from "@/lib/db";
 import { NotFoundError } from "@/lib/utils/errors";
+import { cacheAside, CACHE_KEYS, CACHE_TTL } from "@/lib/cache";
 
 export interface DepartmentListItem {
   id: string;
@@ -21,60 +22,72 @@ export interface DepartmentDetail {
 export async function listDepartmentsByHospital(
   hospitalId: string,
 ): Promise<DepartmentListItem[]> {
-  const prisma = await getPrisma();
+  return cacheAside(
+    CACHE_KEYS.DEPARTMENTS_BY_HOSPITAL(hospitalId),
+    CACHE_TTL.DEPARTMENTS,
+    async () => {
+      const prisma = await getPrisma();
 
-  // Verify hospital exists
-  const hospital = await prisma.hospital.findUnique({ where: { id: hospitalId } });
-  if (!hospital) {
-    throw new NotFoundError("医院不存在");
-  }
+      // Verify hospital exists
+      const hospital = await prisma.hospital.findUnique({ where: { id: hospitalId } });
+      if (!hospital) {
+        throw new NotFoundError("医院不存在");
+      }
 
-  const departments = await prisma.department.findMany({
-    where: { hospitalId },
-    orderBy: { name: "asc" },
-    include: {
-      _count: {
-        select: { doctors: true },
-      },
+      const departments = await prisma.department.findMany({
+        where: { hospitalId },
+        orderBy: { name: "asc" },
+        include: {
+          _count: {
+            select: { doctors: true },
+          },
+        },
+      });
+
+      const list: DepartmentListItem[] = departments.map((d) => ({
+        id: d.id,
+        name: d.name,
+        description: d.description,
+        hospitalId: d.hospitalId,
+        doctorCount: d._count.doctors,
+      }));
+
+      return list;
     },
-  });
-
-  const list: DepartmentListItem[] = departments.map((d) => ({
-    id: d.id,
-    name: d.name,
-    description: d.description,
-    hospitalId: d.hospitalId,
-    doctorCount: d._count.doctors,
-  }));
-
-  return list;
+  );
 }
 
 export async function getDepartmentById(id: string): Promise<DepartmentDetail> {
-  const prisma = await getPrisma();
+  return cacheAside(
+    CACHE_KEYS.DEPARTMENT_DETAIL(id),
+    CACHE_TTL.DEPARTMENTS,
+    async () => {
+      const prisma = await getPrisma();
 
-  const department = await prisma.department.findUnique({
-    where: { id },
-    include: {
-      hospital: {
-        select: { name: true },
-      },
-      _count: {
-        select: { doctors: true },
-      },
+      const department = await prisma.department.findUnique({
+        where: { id },
+        include: {
+          hospital: {
+            select: { name: true },
+          },
+          _count: {
+            select: { doctors: true },
+          },
+        },
+      });
+
+      if (!department) {
+        throw new NotFoundError("科室不存在");
+      }
+
+      return {
+        id: department.id,
+        name: department.name,
+        description: department.description,
+        hospitalId: department.hospitalId,
+        hospitalName: department.hospital.name,
+        doctorCount: department._count.doctors,
+      };
     },
-  });
-
-  if (!department) {
-    throw new NotFoundError("科室不存在");
-  }
-
-  return {
-    id: department.id,
-    name: department.name,
-    description: department.description,
-    hospitalId: department.hospitalId,
-    hospitalName: department.hospital.name,
-    doctorCount: department._count.doctors,
-  };
+  );
 }

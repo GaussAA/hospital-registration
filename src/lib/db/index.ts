@@ -1,5 +1,5 @@
 import { PrismaClient } from "@generated/prisma/client";
-import { PrismaLibSql } from "@prisma/adapter-libsql";
+import { PrismaPg } from "@prisma/adapter-pg";
 import { env } from "@/lib/env";
 
 let prisma: PrismaClient | null = null;
@@ -7,8 +7,9 @@ let initPromise: Promise<PrismaClient> | null = null;
 
 async function initPrisma(): Promise<PrismaClient> {
   try {
-    const adapter = new PrismaLibSql({ url: env.DATABASE_URL });
+    const adapter = new PrismaPg({ connectionString: env.DATABASE_URL });
     const client = new PrismaClient({ adapter });
+    await client.$connect();
     return client;
   } catch (error) {
     console.error("[DB] Failed to initialize Prisma:", error);
@@ -17,7 +18,7 @@ async function initPrisma(): Promise<PrismaClient> {
 }
 
 /**
- * Get the Prisma client singleton, initializing with the libsql adapter if needed.
+ * Get the Prisma client singleton.
  * Must be called within an async context (e.g., API route handlers).
  */
 export async function getPrisma(): Promise<PrismaClient> {

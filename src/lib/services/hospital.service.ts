@@ -1,5 +1,6 @@
 import { getPrisma } from "@/lib/db";
 import { NotFoundError } from "@/lib/utils/errors";
+import { cacheAside, CACHE_KEYS, CACHE_TTL } from "@/lib/cache";
 import type { Prisma } from "@generated/prisma/client";
 import type {
   HospitalDTO,
@@ -60,35 +61,41 @@ export async function listHospitals(
 }
 
 export async function getHospitalById(id: string): Promise<HospitalDetailDTO> {
-  const prisma = await getPrisma();
+  return cacheAside(
+    CACHE_KEYS.HOSPITAL_DETAIL(id),
+    CACHE_TTL.HOSPITAL_DETAIL,
+    async () => {
+      const prisma = await getPrisma();
 
-  const hospital = await prisma.hospital.findUnique({
-    where: { id },
-    include: {
-      _count: {
-        select: {
-          departments: true,
-          doctors: true,
+      const hospital = await prisma.hospital.findUnique({
+        where: { id },
+        include: {
+          _count: {
+            select: {
+              departments: true,
+              doctors: true,
+            },
+          },
         },
-      },
+      });
+
+      if (!hospital) {
+        throw new NotFoundError("医院不存在");
+      }
+
+      return {
+        id: hospital.id,
+        name: hospital.name,
+        address: hospital.address,
+        city: hospital.city,
+        level: hospital.level,
+        phone: hospital.phone,
+        description: hospital.description,
+        imageUrl: hospital.imageUrl,
+        departmentCount: hospital._count.departments,
+        doctorCount: hospital._count.doctors,
+        createdAt: hospital.createdAt,
+      };
     },
-  });
-
-  if (!hospital) {
-    throw new NotFoundError("医院不存在");
-  }
-
-  return {
-    id: hospital.id,
-    name: hospital.name,
-    address: hospital.address,
-    city: hospital.city,
-    level: hospital.level,
-    phone: hospital.phone,
-    description: hospital.description,
-    imageUrl: hospital.imageUrl,
-    departmentCount: hospital._count.departments,
-    doctorCount: hospital._count.doctors,
-    createdAt: hospital.createdAt,
-  };
+  );
 }

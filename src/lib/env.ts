@@ -5,7 +5,8 @@ const envSchema = z.object({
   AI_API_KEY: z.string().optional(),
   AI_BASE_URL: z.string().url().optional().default("https://api.deepseek.com"),
   AI_MODEL: z.string().optional().default("deepseek-v4-flash"),
-  DATABASE_URL: z.string().optional().default("file:./prisma/dev.db"),
+  DATABASE_URL: z.string().optional().default("postgresql://hospital:hospital123@localhost:5432/hospital_registration?schema=public"),
+  REDIS_URL: z.string().optional().default("redis://:redis123@localhost:6379/0"),
 });
 
 const parsed = envSchema.safeParse(process.env);

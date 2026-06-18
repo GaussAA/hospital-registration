@@ -1,0 +1,2264 @@
+{
+  "users": [
+    {
+      "id": "cmpsasqc20000tousvvuciglk",
+      "name": "系统管理员",
+      "email": "admin@hospital.com",
+      "phone": "13800000000",
+      "passwordHash": "$2b$10$AgtYkBiqiDFxLnDdqhljdOQrgAuFgOtoHTCkrM9hcMIkV.Ms5kZO.",
+      "role": "admin",
+      "createdAt": "2026-05-30T11:59:18.098Z"
+    },
+    {
+      "id": "cmpsasqev0001touswvou74k6",
+      "name": "张三",
+      "email": "patient@demo.com",
+      "phone": "13900000001",
+      "passwordHash": "$2b$10$oB5mRbZvMeZVstz7XvLg3O/di6eaqPxLvtbgLvPZ252wen8JDT18S",
+      "role": "patient",
+      "createdAt": "2026-05-30T11:59:18.199Z"
+    },
+    {
+      "id": "cmpsastrw00003cus8kz5yqcs",
+      "name": "测试用户",
+      "email": "test_1780142361894@example.com",
+      "phone": "13842361894",
+      "passwordHash": "$2b$10$G4DMLoojbU4/kkau.KLiROyzBGhhoc4aKB/SBM2euwUtuA9Z86MF.",
+      "role": "patient",
+      "createdAt": "2026-05-30T11:59:22.556Z"
+    },
+    {
+      "id": "cmpseu9e000005sus5rx89y7u",
+      "name": "夏知秋",
+      "email": "patient123@example.com",
+      "phone": "14785236963",
+      "passwordHash": "$2b$10$uyMXWdZT4w2l14CIqGyb3Ooa..QQ56y2l1hhPKW6KgYxK5y2qgA/i",
+      "role": "patient",
+      "createdAt": "2026-05-30T13:52:27.912Z"
+    }
+  ],
+  "hospitals": [
+    {
+      "id": "hospital-1",
+      "name": "杭州市第一人民医院",
+      "address": "浙江省杭州市上城区浣纱路261号",
+      "city": "杭州",
+      "level": "三级甲等",
+      "phone": "0571-56006600",
+      "description": "杭州市第一人民医院是集医疗、教学、科研于一体的三级甲等综合性医院，拥有雄厚的医疗技术力量和先进的医疗设备。",
+      "imageUrl": "/images/hospital-1.jpg",
+      "createdAt": "2026-05-30T11:59:18.233Z"
+    },
+    {
+      "id": "hospital-2",
+      "name": "杭州仁和诊所",
+      "address": "浙江省杭州市西湖区文三路100号",
+      "city": "杭州",
+      "level": "二级甲等",
+      "phone": "0571-88001000",
+      "description": "杭州仁和诊所是一家综合性医疗机构，提供内科、外科、儿科等常见疾病的诊疗服务。",
+      "imageUrl": "/images/hospital-2.jpg",
+      "createdAt": "2026-05-30T11:59:18.241Z"
+    }
+  ],
+  "patientProfiles": [
+    {
+      "id": "demo-profile-1",
+      "userId": "cmpsasqev0001touswvou74k6",
+      "name": "张三",
+      "idCard": "110101199001011234",
+      "phone": "13900000001",
+      "gender": "male"
+    },
+    {
+      "id": "cmpsasyg200013cus9lcwf6h2",
+      "userId": "cmpsasqev0001touswvou74k6",
+      "name": "张三",
+      "idCard": "110101199001011234",
+      "phone": "13900000001",
+      "gender": "male"
+    },
+    {
+      "id": "cmpsewmml00015susr4zg7a9j",
+      "userId": "cmpseu9e000005sus5rx89y7u",
+      "name": "夏知秋",
+      "idCard": "3562145200402308795",
+      "phone": "14785236963",
+      "gender": "male"
+    }
+  ],
+  "departments": [
+    {
+      "id": "dept-1-1",
+      "name": "内科",
+      "description": "诊治心血管、呼吸、消化等系统疾病的临床科室。",
+      "hospitalId": "hospital-1"
+    },
+    {
+      "id": "dept-1-2",
+      "name": "外科",
+      "description": "处理各类外科手术及创伤救治的临床科室。",
+      "hospitalId": "hospital-1"
+    },
+    {
+      "id": "dept-1-3",
+      "name": "儿科",
+      "description": "提供0-14岁儿童疾病诊疗和健康管理服务。",
+      "hospitalId": "hospital-1"
+    },
+    {
+      "id": "dept-2-1",
+      "name": "内科",
+      "description": "常见内科疾病的诊疗。",
+      "hospitalId": "hospital-2"
+    },
+    {
+      "id": "dept-2-2",
+      "name": "外科",
+      "description": "常见外科手术和创伤处理。",
+      "hospitalId": "hospital-2"
+    },
+    {
+      "id": "dept-2-3",
+      "name": "儿科",
+      "description": "儿童常见病诊疗。",
+      "hospitalId": "hospital-2"
+    }
+  ],
+  "doctors": [
+    {
+      "id": "doctor-1-1",
+      "name": "王建国",
+      "title": "主任医师",
+      "specialty": "心血管内科",
+      "introduction": "从事心血管内科临床工作30余年，擅长冠心病、高血压等疾病的诊治。",
+      "avatarUrl": "",
+      "departmentId": "dept-1-1",
+      "hospitalId": "hospital-1"
+    },
+    {
+      "id": "doctor-1-2",
+      "name": "李芳",
+      "title": "副主任医师",
+      "specialty": "呼吸内科",
+      "introduction": "擅长慢性阻塞性肺疾病、哮喘等呼吸系统疾病的诊治。",
+      "avatarUrl": "",
+      "departmentId": "dept-1-1",
+      "hospitalId": "hospital-1"
+    },
+    {
+      "id": "doctor-1-3",
+      "name": "张伟",
+      "title": "主任医师",
+      "specialty": "普通外科",
+      "introduction": "擅长肝胆外科、胃肠道肿瘤手术治疗。",
+      "avatarUrl": "",
+      "departmentId": "dept-1-2",
+      "hospitalId": "hospital-1"
+    },
+    {
+      "id": "doctor-1-4",
+      "name": "陈小明",
+      "title": "副主任医师",
+      "specialty": "骨科",
+      "introduction": "擅长骨折创伤修复、关节置换等手术。",
+      "avatarUrl": "",
+      "departmentId": "dept-1-2",
+      "hospitalId": "hospital-1"
+    },
+    {
+      "id": "doctor-1-5",
+      "name": "刘婷",
+      "title": "主任医师",
+      "specialty": "小儿内科",
+      "introduction": "擅长儿童呼吸系统疾病、消化系统疾病诊治。",
+      "avatarUrl": "",
+      "departmentId": "dept-1-3",
+      "hospitalId": "hospital-1"
+    },
+    {
+      "id": "doctor-2-1",
+      "name": "赵强",
+      "title": "主治医师",
+      "specialty": "内科",
+      "introduction": "擅长内科常见疾病的诊断与治疗。",
+      "avatarUrl": "",
+      "departmentId": "dept-2-1",
+      "hospitalId": "hospital-2"
+    },
+    {
+      "id": "doctor-2-2",
+      "name": "孙丽",
+      "title": "主治医师",
+      "specialty": "外科",
+      "introduction": "擅长普外科常见手术和创伤处理。",
+      "avatarUrl": "",
+      "departmentId": "dept-2-2",
+      "hospitalId": "hospital-2"
+    },
+    {
+      "id": "doctor-2-3",
+      "name": "周丽华",
+      "title": "副主任医师",
+      "specialty": "儿科",
+      "introduction": "擅长儿童常见病、多发病的诊治。",
+      "avatarUrl": "",
+      "departmentId": "dept-2-3",
+      "hospitalId": "hospital-2"
+    }
+  ],
+  "schedules": [
+    {
+      "id": "cmpsasqjb0002tous97tl3vke",
+      "doctorId": "doctor-1-1",
+      "date": "2026-05-30",
+      "timeSlot": "am",
+      "quota": 30,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.359Z"
+    },
+    {
+      "id": "cmpsasqjf0003tous475s39ev",
+      "doctorId": "doctor-1-1",
+      "date": "2026-05-30",
+      "timeSlot": "pm",
+      "quota": 25,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.363Z"
+    },
+    {
+      "id": "cmpsasqjk0004toustp95ro0o",
+      "doctorId": "doctor-1-1",
+      "date": "2026-05-30",
+      "timeSlot": "evening",
+      "quota": 20,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.368Z"
+    },
+    {
+      "id": "cmpsasqjp0005tous4dc4xlzh",
+      "doctorId": "doctor-1-1",
+      "date": "2026-05-31",
+      "timeSlot": "am",
+      "quota": 30,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.373Z"
+    },
+    {
+      "id": "cmpsasqjt0006tousuwm9f4v0",
+      "doctorId": "doctor-1-1",
+      "date": "2026-05-31",
+      "timeSlot": "pm",
+      "quota": 25,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.377Z"
+    },
+    {
+      "id": "cmpsasqjx0007tousfo0a7t50",
+      "doctorId": "doctor-1-1",
+      "date": "2026-05-31",
+      "timeSlot": "evening",
+      "quota": 20,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.381Z"
+    },
+    {
+      "id": "cmpsasqk10008tousulx448df",
+      "doctorId": "doctor-1-1",
+      "date": "2026-06-01",
+      "timeSlot": "am",
+      "quota": 30,
+      "bookedCount": 1,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.385Z"
+    },
+    {
+      "id": "cmpsasqk50009tousawj33zs5",
+      "doctorId": "doctor-1-1",
+      "date": "2026-06-01",
+      "timeSlot": "pm",
+      "quota": 25,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.389Z"
+    },
+    {
+      "id": "cmpsasqk9000atous17nqx6ge",
+      "doctorId": "doctor-1-1",
+      "date": "2026-06-01",
+      "timeSlot": "evening",
+      "quota": 20,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.393Z"
+    },
+    {
+      "id": "cmpsasqkd000btouscbvkri56",
+      "doctorId": "doctor-1-1",
+      "date": "2026-06-02",
+      "timeSlot": "am",
+      "quota": 30,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.397Z"
+    },
+    {
+      "id": "cmpsasqkh000ctousrzijdc9u",
+      "doctorId": "doctor-1-1",
+      "date": "2026-06-02",
+      "timeSlot": "pm",
+      "quota": 25,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.401Z"
+    },
+    {
+      "id": "cmpsasqkm000dtous7w9rixh7",
+      "doctorId": "doctor-1-1",
+      "date": "2026-06-02",
+      "timeSlot": "evening",
+      "quota": 20,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.406Z"
+    },
+    {
+      "id": "cmpsasqkr000etousln6rixje",
+      "doctorId": "doctor-1-1",
+      "date": "2026-06-03",
+      "timeSlot": "am",
+      "quota": 30,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.411Z"
+    },
+    {
+      "id": "cmpsasqkw000ftousmmt537xd",
+      "doctorId": "doctor-1-1",
+      "date": "2026-06-03",
+      "timeSlot": "pm",
+      "quota": 25,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.416Z"
+    },
+    {
+      "id": "cmpsasql3000gtouspgy7cmmr",
+      "doctorId": "doctor-1-1",
+      "date": "2026-06-03",
+      "timeSlot": "evening",
+      "quota": 20,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.423Z"
+    },
+    {
+      "id": "cmpsasql9000htous8q4wxryd",
+      "doctorId": "doctor-1-1",
+      "date": "2026-06-04",
+      "timeSlot": "am",
+      "quota": 30,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.429Z"
+    },
+    {
+      "id": "cmpsasqlf000itousnihysykn",
+      "doctorId": "doctor-1-1",
+      "date": "2026-06-04",
+      "timeSlot": "pm",
+      "quota": 25,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.435Z"
+    },
+    {
+      "id": "cmpsasqlm000jtous5m9c590w",
+      "doctorId": "doctor-1-1",
+      "date": "2026-06-04",
+      "timeSlot": "evening",
+      "quota": 20,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.442Z"
+    },
+    {
+      "id": "cmpsasqlr000ktouszrgftd6c",
+      "doctorId": "doctor-1-1",
+      "date": "2026-06-05",
+      "timeSlot": "am",
+      "quota": 30,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.447Z"
+    },
+    {
+      "id": "cmpsasqlx000ltouszfayv5fd",
+      "doctorId": "doctor-1-1",
+      "date": "2026-06-05",
+      "timeSlot": "pm",
+      "quota": 25,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.453Z"
+    },
+    {
+      "id": "cmpsasqm3000mtoustfj9q5gq",
+      "doctorId": "doctor-1-1",
+      "date": "2026-06-05",
+      "timeSlot": "evening",
+      "quota": 20,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.459Z"
+    },
+    {
+      "id": "cmpsasqm9000ntousbvbme3nn",
+      "doctorId": "doctor-1-2",
+      "date": "2026-05-30",
+      "timeSlot": "am",
+      "quota": 30,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.465Z"
+    },
+    {
+      "id": "cmpsasqmd000otousxydwg4vh",
+      "doctorId": "doctor-1-2",
+      "date": "2026-05-30",
+      "timeSlot": "pm",
+      "quota": 25,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.469Z"
+    },
+    {
+      "id": "cmpsasqmh000ptousqiauxrkb",
+      "doctorId": "doctor-1-2",
+      "date": "2026-05-30",
+      "timeSlot": "evening",
+      "quota": 20,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.473Z"
+    },
+    {
+      "id": "cmpsasqmn000qtous0furuajj",
+      "doctorId": "doctor-1-2",
+      "date": "2026-05-31",
+      "timeSlot": "am",
+      "quota": 30,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.479Z"
+    },
+    {
+      "id": "cmpsasqmu000rtousdis1q437",
+      "doctorId": "doctor-1-2",
+      "date": "2026-05-31",
+      "timeSlot": "pm",
+      "quota": 25,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.486Z"
+    },
+    {
+      "id": "cmpsasqn0000stousvh8lbc23",
+      "doctorId": "doctor-1-2",
+      "date": "2026-05-31",
+      "timeSlot": "evening",
+      "quota": 20,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.492Z"
+    },
+    {
+      "id": "cmpsasqn5000ttous1xbpvn0e",
+      "doctorId": "doctor-1-2",
+      "date": "2026-06-01",
+      "timeSlot": "am",
+      "quota": 30,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.497Z"
+    },
+    {
+      "id": "cmpsasqn9000utousjdbb2b7j",
+      "doctorId": "doctor-1-2",
+      "date": "2026-06-01",
+      "timeSlot": "pm",
+      "quota": 25,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.501Z"
+    },
+    {
+      "id": "cmpsasqnd000vtousqdv5zi0o",
+      "doctorId": "doctor-1-2",
+      "date": "2026-06-01",
+      "timeSlot": "evening",
+      "quota": 20,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.505Z"
+    },
+    {
+      "id": "cmpsasqni000wtous9awrxopu",
+      "doctorId": "doctor-1-2",
+      "date": "2026-06-02",
+      "timeSlot": "am",
+      "quota": 30,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.510Z"
+    },
+    {
+      "id": "cmpsasqnn000xtous64bb36i4",
+      "doctorId": "doctor-1-2",
+      "date": "2026-06-02",
+      "timeSlot": "pm",
+      "quota": 25,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.515Z"
+    },
+    {
+      "id": "cmpsasqnr000ytous0b6qoaef",
+      "doctorId": "doctor-1-2",
+      "date": "2026-06-02",
+      "timeSlot": "evening",
+      "quota": 20,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.519Z"
+    },
+    {
+      "id": "cmpsasqnv000ztous40xjcs4v",
+      "doctorId": "doctor-1-2",
+      "date": "2026-06-03",
+      "timeSlot": "am",
+      "quota": 30,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.523Z"
+    },
+    {
+      "id": "cmpsasqnz0010touslxt00sly",
+      "doctorId": "doctor-1-2",
+      "date": "2026-06-03",
+      "timeSlot": "pm",
+      "quota": 25,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.527Z"
+    },
+    {
+      "id": "cmpsasqo30011tous49sbepja",
+      "doctorId": "doctor-1-2",
+      "date": "2026-06-03",
+      "timeSlot": "evening",
+      "quota": 20,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.531Z"
+    },
+    {
+      "id": "cmpsasqo80012tous99dygcar",
+      "doctorId": "doctor-1-2",
+      "date": "2026-06-04",
+      "timeSlot": "am",
+      "quota": 30,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.536Z"
+    },
+    {
+      "id": "cmpsasqoc0013tousi32xvlhi",
+      "doctorId": "doctor-1-2",
+      "date": "2026-06-04",
+      "timeSlot": "pm",
+      "quota": 25,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.540Z"
+    },
+    {
+      "id": "cmpsasqog0014touss89tz90q",
+      "doctorId": "doctor-1-2",
+      "date": "2026-06-04",
+      "timeSlot": "evening",
+      "quota": 20,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.544Z"
+    },
+    {
+      "id": "cmpsasqol0015tousydz24cri",
+      "doctorId": "doctor-1-2",
+      "date": "2026-06-05",
+      "timeSlot": "am",
+      "quota": 30,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.549Z"
+    },
+    {
+      "id": "cmpsasqoo0016tousrv80reug",
+      "doctorId": "doctor-1-2",
+      "date": "2026-06-05",
+      "timeSlot": "pm",
+      "quota": 25,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.553Z"
+    },
+    {
+      "id": "cmpsasqot0017tousrt2xu8qr",
+      "doctorId": "doctor-1-2",
+      "date": "2026-06-05",
+      "timeSlot": "evening",
+      "quota": 20,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.557Z"
+    },
+    {
+      "id": "cmpsasqox0018touslnotyukp",
+      "doctorId": "doctor-1-3",
+      "date": "2026-05-30",
+      "timeSlot": "am",
+      "quota": 30,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.561Z"
+    },
+    {
+      "id": "cmpsasqp10019tous9e2i6ddd",
+      "doctorId": "doctor-1-3",
+      "date": "2026-05-30",
+      "timeSlot": "pm",
+      "quota": 25,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.565Z"
+    },
+    {
+      "id": "cmpsasqp5001atousxdny12ex",
+      "doctorId": "doctor-1-3",
+      "date": "2026-05-30",
+      "timeSlot": "evening",
+      "quota": 20,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.569Z"
+    },
+    {
+      "id": "cmpsasqp9001btousrutigmxg",
+      "doctorId": "doctor-1-3",
+      "date": "2026-05-31",
+      "timeSlot": "am",
+      "quota": 30,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.573Z"
+    },
+    {
+      "id": "cmpsasqpd001ctousc5zpcx0d",
+      "doctorId": "doctor-1-3",
+      "date": "2026-05-31",
+      "timeSlot": "pm",
+      "quota": 25,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.577Z"
+    },
+    {
+      "id": "cmpsasqph001dtoustfc24uvf",
+      "doctorId": "doctor-1-3",
+      "date": "2026-05-31",
+      "timeSlot": "evening",
+      "quota": 20,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.581Z"
+    },
+    {
+      "id": "cmpsasqpl001etousrpfzgbns",
+      "doctorId": "doctor-1-3",
+      "date": "2026-06-01",
+      "timeSlot": "am",
+      "quota": 30,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.586Z"
+    },
+    {
+      "id": "cmpsasqpq001ftousq8dmcuo1",
+      "doctorId": "doctor-1-3",
+      "date": "2026-06-01",
+      "timeSlot": "pm",
+      "quota": 25,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.590Z"
+    },
+    {
+      "id": "cmpsasqpu001gtousir6vwj1b",
+      "doctorId": "doctor-1-3",
+      "date": "2026-06-01",
+      "timeSlot": "evening",
+      "quota": 20,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.594Z"
+    },
+    {
+      "id": "cmpsasqpy001htousz2k8s5uv",
+      "doctorId": "doctor-1-3",
+      "date": "2026-06-02",
+      "timeSlot": "am",
+      "quota": 30,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.598Z"
+    },
+    {
+      "id": "cmpsasqq2001itousnvtfwmoj",
+      "doctorId": "doctor-1-3",
+      "date": "2026-06-02",
+      "timeSlot": "pm",
+      "quota": 25,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.602Z"
+    },
+    {
+      "id": "cmpsasqq6001jtous9y649zbd",
+      "doctorId": "doctor-1-3",
+      "date": "2026-06-02",
+      "timeSlot": "evening",
+      "quota": 20,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.606Z"
+    },
+    {
+      "id": "cmpsasqqb001ktousaj2mvrc9",
+      "doctorId": "doctor-1-3",
+      "date": "2026-06-03",
+      "timeSlot": "am",
+      "quota": 30,
+      "bookedCount": 1,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.611Z"
+    },
+    {
+      "id": "cmpsasqqf001ltous81d6qea3",
+      "doctorId": "doctor-1-3",
+      "date": "2026-06-03",
+      "timeSlot": "pm",
+      "quota": 25,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.615Z"
+    },
+    {
+      "id": "cmpsasqqj001mtousfwup4bt7",
+      "doctorId": "doctor-1-3",
+      "date": "2026-06-03",
+      "timeSlot": "evening",
+      "quota": 20,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.619Z"
+    },
+    {
+      "id": "cmpsasqqo001ntousw8zthzcf",
+      "doctorId": "doctor-1-3",
+      "date": "2026-06-04",
+      "timeSlot": "am",
+      "quota": 30,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.624Z"
+    },
+    {
+      "id": "cmpsasqqt001otousuvmqnfav",
+      "doctorId": "doctor-1-3",
+      "date": "2026-06-04",
+      "timeSlot": "pm",
+      "quota": 25,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.629Z"
+    },
+    {
+      "id": "cmpsasqqy001ptousu8p5aztb",
+      "doctorId": "doctor-1-3",
+      "date": "2026-06-04",
+      "timeSlot": "evening",
+      "quota": 20,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.634Z"
+    },
+    {
+      "id": "cmpsasqr3001qtous1w24qjhb",
+      "doctorId": "doctor-1-3",
+      "date": "2026-06-05",
+      "timeSlot": "am",
+      "quota": 30,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.639Z"
+    },
+    {
+      "id": "cmpsasqr7001rtousmk93mo40",
+      "doctorId": "doctor-1-3",
+      "date": "2026-06-05",
+      "timeSlot": "pm",
+      "quota": 25,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.643Z"
+    },
+    {
+      "id": "cmpsasqrc001stouseirsjm32",
+      "doctorId": "doctor-1-3",
+      "date": "2026-06-05",
+      "timeSlot": "evening",
+      "quota": 20,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.648Z"
+    },
+    {
+      "id": "cmpsasqrg001ttousz3zmntrc",
+      "doctorId": "doctor-1-4",
+      "date": "2026-05-30",
+      "timeSlot": "am",
+      "quota": 30,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.652Z"
+    },
+    {
+      "id": "cmpsasqrk001utouswu47gmz6",
+      "doctorId": "doctor-1-4",
+      "date": "2026-05-30",
+      "timeSlot": "pm",
+      "quota": 25,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.656Z"
+    },
+    {
+      "id": "cmpsasqrp001vtousc327x72k",
+      "doctorId": "doctor-1-4",
+      "date": "2026-05-30",
+      "timeSlot": "evening",
+      "quota": 20,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.661Z"
+    },
+    {
+      "id": "cmpsasqrt001wtous9ou990hu",
+      "doctorId": "doctor-1-4",
+      "date": "2026-05-31",
+      "timeSlot": "am",
+      "quota": 30,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.665Z"
+    },
+    {
+      "id": "cmpsasqrx001xtousv90qpy1o",
+      "doctorId": "doctor-1-4",
+      "date": "2026-05-31",
+      "timeSlot": "pm",
+      "quota": 25,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.669Z"
+    },
+    {
+      "id": "cmpsasqs1001ytouse6lwl5xc",
+      "doctorId": "doctor-1-4",
+      "date": "2026-05-31",
+      "timeSlot": "evening",
+      "quota": 20,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.673Z"
+    },
+    {
+      "id": "cmpsasqs6001ztousx2us3qr2",
+      "doctorId": "doctor-1-4",
+      "date": "2026-06-01",
+      "timeSlot": "am",
+      "quota": 30,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.678Z"
+    },
+    {
+      "id": "cmpsasqs90020tous990468en",
+      "doctorId": "doctor-1-4",
+      "date": "2026-06-01",
+      "timeSlot": "pm",
+      "quota": 25,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.681Z"
+    },
+    {
+      "id": "cmpsasqsd0021tousr03kmlvg",
+      "doctorId": "doctor-1-4",
+      "date": "2026-06-01",
+      "timeSlot": "evening",
+      "quota": 20,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.685Z"
+    },
+    {
+      "id": "cmpsasqsi0022tous08wh7iio",
+      "doctorId": "doctor-1-4",
+      "date": "2026-06-02",
+      "timeSlot": "am",
+      "quota": 30,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.690Z"
+    },
+    {
+      "id": "cmpsasqsl0023tous92ldsud4",
+      "doctorId": "doctor-1-4",
+      "date": "2026-06-02",
+      "timeSlot": "pm",
+      "quota": 25,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.693Z"
+    },
+    {
+      "id": "cmpsasqsq0024toustnw75upy",
+      "doctorId": "doctor-1-4",
+      "date": "2026-06-02",
+      "timeSlot": "evening",
+      "quota": 20,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.698Z"
+    },
+    {
+      "id": "cmpsasqsv0025tous858dahzj",
+      "doctorId": "doctor-1-4",
+      "date": "2026-06-03",
+      "timeSlot": "am",
+      "quota": 30,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.704Z"
+    },
+    {
+      "id": "cmpsasqt00026touspd3ywza8",
+      "doctorId": "doctor-1-4",
+      "date": "2026-06-03",
+      "timeSlot": "pm",
+      "quota": 25,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.708Z"
+    },
+    {
+      "id": "cmpsasqt60027tous4anytbe6",
+      "doctorId": "doctor-1-4",
+      "date": "2026-06-03",
+      "timeSlot": "evening",
+      "quota": 20,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.714Z"
+    },
+    {
+      "id": "cmpsasqta0028tousuwj3ngfe",
+      "doctorId": "doctor-1-4",
+      "date": "2026-06-04",
+      "timeSlot": "am",
+      "quota": 30,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.718Z"
+    },
+    {
+      "id": "cmpsasqte0029touso7hd0amf",
+      "doctorId": "doctor-1-4",
+      "date": "2026-06-04",
+      "timeSlot": "pm",
+      "quota": 25,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.722Z"
+    },
+    {
+      "id": "cmpsasqti002atousz2lwixwc",
+      "doctorId": "doctor-1-4",
+      "date": "2026-06-04",
+      "timeSlot": "evening",
+      "quota": 20,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.726Z"
+    },
+    {
+      "id": "cmpsasqtn002btous0pxfrj92",
+      "doctorId": "doctor-1-4",
+      "date": "2026-06-05",
+      "timeSlot": "am",
+      "quota": 30,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.731Z"
+    },
+    {
+      "id": "cmpsasqtr002ctous3uovynay",
+      "doctorId": "doctor-1-4",
+      "date": "2026-06-05",
+      "timeSlot": "pm",
+      "quota": 25,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.735Z"
+    },
+    {
+      "id": "cmpsasqtw002dtous2rz1awwe",
+      "doctorId": "doctor-1-4",
+      "date": "2026-06-05",
+      "timeSlot": "evening",
+      "quota": 20,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.740Z"
+    },
+    {
+      "id": "cmpsasqu0002etous8iz9w29l",
+      "doctorId": "doctor-1-5",
+      "date": "2026-05-30",
+      "timeSlot": "am",
+      "quota": 30,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.744Z"
+    },
+    {
+      "id": "cmpsasqu5002ftousbxogmbnq",
+      "doctorId": "doctor-1-5",
+      "date": "2026-05-30",
+      "timeSlot": "pm",
+      "quota": 25,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.749Z"
+    },
+    {
+      "id": "cmpsasqua002gtous9wvwdplt",
+      "doctorId": "doctor-1-5",
+      "date": "2026-05-30",
+      "timeSlot": "evening",
+      "quota": 20,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.754Z"
+    },
+    {
+      "id": "cmpsasquf002htouskl2wjnq5",
+      "doctorId": "doctor-1-5",
+      "date": "2026-05-31",
+      "timeSlot": "am",
+      "quota": 30,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.759Z"
+    },
+    {
+      "id": "cmpsasquj002itous8g05lbid",
+      "doctorId": "doctor-1-5",
+      "date": "2026-05-31",
+      "timeSlot": "pm",
+      "quota": 25,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.763Z"
+    },
+    {
+      "id": "cmpsasquo002jtousxy5t3va2",
+      "doctorId": "doctor-1-5",
+      "date": "2026-05-31",
+      "timeSlot": "evening",
+      "quota": 20,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.768Z"
+    },
+    {
+      "id": "cmpsasqut002ktousg2bkv5x3",
+      "doctorId": "doctor-1-5",
+      "date": "2026-06-01",
+      "timeSlot": "am",
+      "quota": 30,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.773Z"
+    },
+    {
+      "id": "cmpsasquy002ltouskahk9sz2",
+      "doctorId": "doctor-1-5",
+      "date": "2026-06-01",
+      "timeSlot": "pm",
+      "quota": 25,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.778Z"
+    },
+    {
+      "id": "cmpsasqv2002mtousyq5qn0zr",
+      "doctorId": "doctor-1-5",
+      "date": "2026-06-01",
+      "timeSlot": "evening",
+      "quota": 20,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.782Z"
+    },
+    {
+      "id": "cmpsasqv7002ntousscj4r25x",
+      "doctorId": "doctor-1-5",
+      "date": "2026-06-02",
+      "timeSlot": "am",
+      "quota": 30,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.787Z"
+    },
+    {
+      "id": "cmpsasqvb002otousqlc2gn7r",
+      "doctorId": "doctor-1-5",
+      "date": "2026-06-02",
+      "timeSlot": "pm",
+      "quota": 25,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.791Z"
+    },
+    {
+      "id": "cmpsasqvf002ptous8v4ybg0n",
+      "doctorId": "doctor-1-5",
+      "date": "2026-06-02",
+      "timeSlot": "evening",
+      "quota": 20,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.795Z"
+    },
+    {
+      "id": "cmpsasqvj002qtousmd1d10n3",
+      "doctorId": "doctor-1-5",
+      "date": "2026-06-03",
+      "timeSlot": "am",
+      "quota": 30,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.799Z"
+    },
+    {
+      "id": "cmpsasqvo002rtous1pohwdnm",
+      "doctorId": "doctor-1-5",
+      "date": "2026-06-03",
+      "timeSlot": "pm",
+      "quota": 25,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.804Z"
+    },
+    {
+      "id": "cmpsasqvt002stous3obyo3ig",
+      "doctorId": "doctor-1-5",
+      "date": "2026-06-03",
+      "timeSlot": "evening",
+      "quota": 20,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.809Z"
+    },
+    {
+      "id": "cmpsasqvw002ttouskrt1mqac",
+      "doctorId": "doctor-1-5",
+      "date": "2026-06-04",
+      "timeSlot": "am",
+      "quota": 30,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.812Z"
+    },
+    {
+      "id": "cmpsasqw0002utousw1qz4vgz",
+      "doctorId": "doctor-1-5",
+      "date": "2026-06-04",
+      "timeSlot": "pm",
+      "quota": 25,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.816Z"
+    },
+    {
+      "id": "cmpsasqw4002vtousqekkx2mb",
+      "doctorId": "doctor-1-5",
+      "date": "2026-06-04",
+      "timeSlot": "evening",
+      "quota": 20,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.820Z"
+    },
+    {
+      "id": "cmpsasqw8002wtousg3nypwab",
+      "doctorId": "doctor-1-5",
+      "date": "2026-06-05",
+      "timeSlot": "am",
+      "quota": 30,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.824Z"
+    },
+    {
+      "id": "cmpsasqwc002xtousbvufjnyu",
+      "doctorId": "doctor-1-5",
+      "date": "2026-06-05",
+      "timeSlot": "pm",
+      "quota": 25,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.828Z"
+    },
+    {
+      "id": "cmpsasqwg002ytous4ilinoq2",
+      "doctorId": "doctor-1-5",
+      "date": "2026-06-05",
+      "timeSlot": "evening",
+      "quota": 20,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.832Z"
+    },
+    {
+      "id": "cmpsasqwk002ztous3m3cjjx7",
+      "doctorId": "doctor-2-1",
+      "date": "2026-05-30",
+      "timeSlot": "am",
+      "quota": 30,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.836Z"
+    },
+    {
+      "id": "cmpsasqwo0030tousq5rpubih",
+      "doctorId": "doctor-2-1",
+      "date": "2026-05-30",
+      "timeSlot": "pm",
+      "quota": 25,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.840Z"
+    },
+    {
+      "id": "cmpsasqws0031tousovil4tg0",
+      "doctorId": "doctor-2-1",
+      "date": "2026-05-30",
+      "timeSlot": "evening",
+      "quota": 20,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.844Z"
+    },
+    {
+      "id": "cmpsasqwx0032tous768d6ai6",
+      "doctorId": "doctor-2-1",
+      "date": "2026-05-31",
+      "timeSlot": "am",
+      "quota": 30,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.849Z"
+    },
+    {
+      "id": "cmpsasqx00033tousmh66ma68",
+      "doctorId": "doctor-2-1",
+      "date": "2026-05-31",
+      "timeSlot": "pm",
+      "quota": 25,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.852Z"
+    },
+    {
+      "id": "cmpsasqx50034tousih3xavxt",
+      "doctorId": "doctor-2-1",
+      "date": "2026-05-31",
+      "timeSlot": "evening",
+      "quota": 20,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.857Z"
+    },
+    {
+      "id": "cmpsasqx90035tousm6s3h46v",
+      "doctorId": "doctor-2-1",
+      "date": "2026-06-01",
+      "timeSlot": "am",
+      "quota": 30,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.861Z"
+    },
+    {
+      "id": "cmpsasqxc0036tousp4fy92tf",
+      "doctorId": "doctor-2-1",
+      "date": "2026-06-01",
+      "timeSlot": "pm",
+      "quota": 25,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.864Z"
+    },
+    {
+      "id": "cmpsasqxg0037touscjskrswx",
+      "doctorId": "doctor-2-1",
+      "date": "2026-06-01",
+      "timeSlot": "evening",
+      "quota": 20,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.868Z"
+    },
+    {
+      "id": "cmpsasqxk0038toushmys0rz2",
+      "doctorId": "doctor-2-1",
+      "date": "2026-06-02",
+      "timeSlot": "am",
+      "quota": 30,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.872Z"
+    },
+    {
+      "id": "cmpsasqxp0039tousuwsm8hzf",
+      "doctorId": "doctor-2-1",
+      "date": "2026-06-02",
+      "timeSlot": "pm",
+      "quota": 25,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.877Z"
+    },
+    {
+      "id": "cmpsasqxt003atousf5yhk34w",
+      "doctorId": "doctor-2-1",
+      "date": "2026-06-02",
+      "timeSlot": "evening",
+      "quota": 20,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.881Z"
+    },
+    {
+      "id": "cmpsasqxx003btousbx48vi94",
+      "doctorId": "doctor-2-1",
+      "date": "2026-06-03",
+      "timeSlot": "am",
+      "quota": 30,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.885Z"
+    },
+    {
+      "id": "cmpsasqy1003ctousrpq16lue",
+      "doctorId": "doctor-2-1",
+      "date": "2026-06-03",
+      "timeSlot": "pm",
+      "quota": 25,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.889Z"
+    },
+    {
+      "id": "cmpsasqy4003dtousim4ospwv",
+      "doctorId": "doctor-2-1",
+      "date": "2026-06-03",
+      "timeSlot": "evening",
+      "quota": 20,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.892Z"
+    },
+    {
+      "id": "cmpsasqy8003etousykkpcbby",
+      "doctorId": "doctor-2-1",
+      "date": "2026-06-04",
+      "timeSlot": "am",
+      "quota": 30,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.896Z"
+    },
+    {
+      "id": "cmpsasqyc003ftousni12cf3z",
+      "doctorId": "doctor-2-1",
+      "date": "2026-06-04",
+      "timeSlot": "pm",
+      "quota": 25,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.900Z"
+    },
+    {
+      "id": "cmpsasqyg003gtous5llcklhi",
+      "doctorId": "doctor-2-1",
+      "date": "2026-06-04",
+      "timeSlot": "evening",
+      "quota": 20,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.904Z"
+    },
+    {
+      "id": "cmpsasqyk003htousyyn2iown",
+      "doctorId": "doctor-2-1",
+      "date": "2026-06-05",
+      "timeSlot": "am",
+      "quota": 30,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.908Z"
+    },
+    {
+      "id": "cmpsasqyn003itousemogawlo",
+      "doctorId": "doctor-2-1",
+      "date": "2026-06-05",
+      "timeSlot": "pm",
+      "quota": 25,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.911Z"
+    },
+    {
+      "id": "cmpsasqyr003jtousi5vvgz6m",
+      "doctorId": "doctor-2-1",
+      "date": "2026-06-05",
+      "timeSlot": "evening",
+      "quota": 20,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.915Z"
+    },
+    {
+      "id": "cmpsasqyv003ktoustutdkkqj",
+      "doctorId": "doctor-2-2",
+      "date": "2026-05-30",
+      "timeSlot": "am",
+      "quota": 30,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.919Z"
+    },
+    {
+      "id": "cmpsasqyy003ltous0wvwzevd",
+      "doctorId": "doctor-2-2",
+      "date": "2026-05-30",
+      "timeSlot": "pm",
+      "quota": 25,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.922Z"
+    },
+    {
+      "id": "cmpsasqz3003mtousmzpqh36q",
+      "doctorId": "doctor-2-2",
+      "date": "2026-05-30",
+      "timeSlot": "evening",
+      "quota": 20,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.927Z"
+    },
+    {
+      "id": "cmpsasqz7003ntous0h9yg33p",
+      "doctorId": "doctor-2-2",
+      "date": "2026-05-31",
+      "timeSlot": "am",
+      "quota": 30,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.931Z"
+    },
+    {
+      "id": "cmpsasqzb003otousubxe309o",
+      "doctorId": "doctor-2-2",
+      "date": "2026-05-31",
+      "timeSlot": "pm",
+      "quota": 25,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.935Z"
+    },
+    {
+      "id": "cmpsasqze003ptousmxrs4ars",
+      "doctorId": "doctor-2-2",
+      "date": "2026-05-31",
+      "timeSlot": "evening",
+      "quota": 20,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.938Z"
+    },
+    {
+      "id": "cmpsasqzi003qtousgi2aoxok",
+      "doctorId": "doctor-2-2",
+      "date": "2026-06-01",
+      "timeSlot": "am",
+      "quota": 30,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.942Z"
+    },
+    {
+      "id": "cmpsasqzm003rtousk0i0smuf",
+      "doctorId": "doctor-2-2",
+      "date": "2026-06-01",
+      "timeSlot": "pm",
+      "quota": 25,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.946Z"
+    },
+    {
+      "id": "cmpsasqzq003stousmahem29y",
+      "doctorId": "doctor-2-2",
+      "date": "2026-06-01",
+      "timeSlot": "evening",
+      "quota": 20,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.950Z"
+    },
+    {
+      "id": "cmpsasqzu003ttousxzmzg3pn",
+      "doctorId": "doctor-2-2",
+      "date": "2026-06-02",
+      "timeSlot": "am",
+      "quota": 30,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.954Z"
+    },
+    {
+      "id": "cmpsasqzy003utousvjteu4kr",
+      "doctorId": "doctor-2-2",
+      "date": "2026-06-02",
+      "timeSlot": "pm",
+      "quota": 25,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.958Z"
+    },
+    {
+      "id": "cmpsasr02003vtousxxwskldl",
+      "doctorId": "doctor-2-2",
+      "date": "2026-06-02",
+      "timeSlot": "evening",
+      "quota": 20,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.962Z"
+    },
+    {
+      "id": "cmpsasr05003wtousxh63sp9h",
+      "doctorId": "doctor-2-2",
+      "date": "2026-06-03",
+      "timeSlot": "am",
+      "quota": 30,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.965Z"
+    },
+    {
+      "id": "cmpsasr09003xtouseajzgwgu",
+      "doctorId": "doctor-2-2",
+      "date": "2026-06-03",
+      "timeSlot": "pm",
+      "quota": 25,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.969Z"
+    },
+    {
+      "id": "cmpsasr0d003ytouseqd9awdx",
+      "doctorId": "doctor-2-2",
+      "date": "2026-06-03",
+      "timeSlot": "evening",
+      "quota": 20,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.973Z"
+    },
+    {
+      "id": "cmpsasr0h003ztous151e46ax",
+      "doctorId": "doctor-2-2",
+      "date": "2026-06-04",
+      "timeSlot": "am",
+      "quota": 30,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.977Z"
+    },
+    {
+      "id": "cmpsasr0k0040tousus2q3li9",
+      "doctorId": "doctor-2-2",
+      "date": "2026-06-04",
+      "timeSlot": "pm",
+      "quota": 25,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.980Z"
+    },
+    {
+      "id": "cmpsasr0o0041tous0et6gfmd",
+      "doctorId": "doctor-2-2",
+      "date": "2026-06-04",
+      "timeSlot": "evening",
+      "quota": 20,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.984Z"
+    },
+    {
+      "id": "cmpsasr0s0042tousdir21uz1",
+      "doctorId": "doctor-2-2",
+      "date": "2026-06-05",
+      "timeSlot": "am",
+      "quota": 30,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.988Z"
+    },
+    {
+      "id": "cmpsasr0w0043tousceqw2lqa",
+      "doctorId": "doctor-2-2",
+      "date": "2026-06-05",
+      "timeSlot": "pm",
+      "quota": 25,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.992Z"
+    },
+    {
+      "id": "cmpsasr0z0044tous9d78yb4a",
+      "doctorId": "doctor-2-2",
+      "date": "2026-06-05",
+      "timeSlot": "evening",
+      "quota": 20,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.995Z"
+    },
+    {
+      "id": "cmpsasr130045tousayu93kxp",
+      "doctorId": "doctor-2-3",
+      "date": "2026-05-30",
+      "timeSlot": "am",
+      "quota": 30,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:18.999Z"
+    },
+    {
+      "id": "cmpsasr170046tousl2drud47",
+      "doctorId": "doctor-2-3",
+      "date": "2026-05-30",
+      "timeSlot": "pm",
+      "quota": 25,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:19.003Z"
+    },
+    {
+      "id": "cmpsasr1b0047tousnirbiwsy",
+      "doctorId": "doctor-2-3",
+      "date": "2026-05-30",
+      "timeSlot": "evening",
+      "quota": 20,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:19.007Z"
+    },
+    {
+      "id": "cmpsasr1f0048touseiq8hs0r",
+      "doctorId": "doctor-2-3",
+      "date": "2026-05-31",
+      "timeSlot": "am",
+      "quota": 30,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:19.011Z"
+    },
+    {
+      "id": "cmpsasr1j0049tous9nd5dwtv",
+      "doctorId": "doctor-2-3",
+      "date": "2026-05-31",
+      "timeSlot": "pm",
+      "quota": 25,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:19.015Z"
+    },
+    {
+      "id": "cmpsasr1m004atousjt9mb8rx",
+      "doctorId": "doctor-2-3",
+      "date": "2026-05-31",
+      "timeSlot": "evening",
+      "quota": 20,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:19.018Z"
+    },
+    {
+      "id": "cmpsasr1q004btoustybwvj9v",
+      "doctorId": "doctor-2-3",
+      "date": "2026-06-01",
+      "timeSlot": "am",
+      "quota": 30,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:19.022Z"
+    },
+    {
+      "id": "cmpsasr1u004ctousfrlnmadu",
+      "doctorId": "doctor-2-3",
+      "date": "2026-06-01",
+      "timeSlot": "pm",
+      "quota": 25,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:19.026Z"
+    },
+    {
+      "id": "cmpsasr1x004dtousxd6ej2hh",
+      "doctorId": "doctor-2-3",
+      "date": "2026-06-01",
+      "timeSlot": "evening",
+      "quota": 20,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:19.029Z"
+    },
+    {
+      "id": "cmpsasr20004etouscb7e9vie",
+      "doctorId": "doctor-2-3",
+      "date": "2026-06-02",
+      "timeSlot": "am",
+      "quota": 30,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:19.032Z"
+    },
+    {
+      "id": "cmpsasr24004ftous2dc2t90x",
+      "doctorId": "doctor-2-3",
+      "date": "2026-06-02",
+      "timeSlot": "pm",
+      "quota": 25,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:19.036Z"
+    },
+    {
+      "id": "cmpsasr28004gtousfoqea9kl",
+      "doctorId": "doctor-2-3",
+      "date": "2026-06-02",
+      "timeSlot": "evening",
+      "quota": 20,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:19.040Z"
+    },
+    {
+      "id": "cmpsasr2b004htouszn65zbqi",
+      "doctorId": "doctor-2-3",
+      "date": "2026-06-03",
+      "timeSlot": "am",
+      "quota": 30,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:19.043Z"
+    },
+    {
+      "id": "cmpsasr2f004itouszs62ph2n",
+      "doctorId": "doctor-2-3",
+      "date": "2026-06-03",
+      "timeSlot": "pm",
+      "quota": 25,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:19.047Z"
+    },
+    {
+      "id": "cmpsasr2i004jtousgkggdb5f",
+      "doctorId": "doctor-2-3",
+      "date": "2026-06-03",
+      "timeSlot": "evening",
+      "quota": 20,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:19.050Z"
+    },
+    {
+      "id": "cmpsasr2m004ktousv7ugfd5e",
+      "doctorId": "doctor-2-3",
+      "date": "2026-06-04",
+      "timeSlot": "am",
+      "quota": 30,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:19.054Z"
+    },
+    {
+      "id": "cmpsasr2q004ltousqn8b3889",
+      "doctorId": "doctor-2-3",
+      "date": "2026-06-04",
+      "timeSlot": "pm",
+      "quota": 25,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:19.058Z"
+    },
+    {
+      "id": "cmpsasr2u004mtous0y6d2rsx",
+      "doctorId": "doctor-2-3",
+      "date": "2026-06-04",
+      "timeSlot": "evening",
+      "quota": 20,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:19.062Z"
+    },
+    {
+      "id": "cmpsasr2y004ntous1z14zq1l",
+      "doctorId": "doctor-2-3",
+      "date": "2026-06-05",
+      "timeSlot": "am",
+      "quota": 30,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:19.066Z"
+    },
+    {
+      "id": "cmpsasr3a004otouslzm54y1k",
+      "doctorId": "doctor-2-3",
+      "date": "2026-06-05",
+      "timeSlot": "pm",
+      "quota": 25,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:19.078Z"
+    },
+    {
+      "id": "cmpsasr3i004ptous9ooeqasz",
+      "doctorId": "doctor-2-3",
+      "date": "2026-06-05",
+      "timeSlot": "evening",
+      "quota": 20,
+      "bookedCount": 0,
+      "type": "normal",
+      "createdAt": "2026-05-30T11:59:19.086Z"
+    }
+  ],
+  "registrations": [
+    {
+      "id": "cmpsasysa00023cussfqu4n7n",
+      "patientId": "cmpsasqev0001touswvou74k6",
+      "profileId": "cmpsasyg200013cus9lcwf6h2",
+      "doctorId": "doctor-1-2",
+      "scheduleId": "cmpsasqm9000ntousbvbme3nn",
+      "date": "2026-05-30",
+      "timeSlot": "am",
+      "type": "normal",
+      "status": "cancelled",
+      "createdAt": "2026-05-30T11:59:29.050Z"
+    },
+    {
+      "id": "cmpsfsy8b0000cgusxjn7b5gk",
+      "patientId": "cmpseu9e000005sus5rx89y7u",
+      "profileId": "cmpsewmml00015susr4zg7a9j",
+      "doctorId": "doctor-1-2",
+      "scheduleId": "cmpsasqm9000ntousbvbme3nn",
+      "date": "2026-05-30",
+      "timeSlot": "am",
+      "type": "normal",
+      "status": "cancelled",
+      "createdAt": "2026-05-30T14:19:26.412Z"
+    },
+    {
+      "id": "cmpsh0o1p0000s0usdy8uzz4z",
+      "patientId": "cmpseu9e000005sus5rx89y7u",
+      "profileId": "cmpsewmml00015susr4zg7a9j",
+      "doctorId": "doctor-1-5",
+      "scheduleId": "cmpsasqw8002wtousg3nypwab",
+      "date": "2026-06-05",
+      "timeSlot": "am",
+      "type": "normal",
+      "status": "cancelled",
+      "createdAt": "2026-05-30T14:53:26.078Z"
+    },
+    {
+      "id": "cmpsi95xz0001s0ushh10k1ga",
+      "patientId": "cmpseu9e000005sus5rx89y7u",
+      "profileId": "cmpsewmml00015susr4zg7a9j",
+      "doctorId": "doctor-2-1",
+      "scheduleId": "cmpsasqyn003itousemogawlo",
+      "date": "2026-06-05",
+      "timeSlot": "pm",
+      "type": "normal",
+      "status": "cancelled",
+      "createdAt": "2026-05-30T15:28:02.135Z"
+    },
+    {
+      "id": "cmpu24eps0022s4usxxar6s7p",
+      "patientId": "cmpseu9e000005sus5rx89y7u",
+      "profileId": "cmpsewmml00015susr4zg7a9j",
+      "doctorId": "doctor-1-1",
+      "scheduleId": "cmpsasqk10008tousulx448df",
+      "date": "2026-06-01",
+      "timeSlot": "am",
+      "type": "normal",
+      "status": "pending",
+      "createdAt": "2026-05-31T17:31:58.720Z"
+    },
+    {
+      "id": "cmpvb96wv000bccuswi7lrgbx",
+      "patientId": "cmpseu9e000005sus5rx89y7u",
+      "profileId": "cmpsewmml00015susr4zg7a9j",
+      "doctorId": "doctor-1-3",
+      "scheduleId": "cmpsasqqb001ktousaj2mvrc9",
+      "date": "2026-06-03",
+      "timeSlot": "am",
+      "type": "normal",
+      "status": "pending",
+      "createdAt": "2026-06-01T14:35:24.607Z"
+    }
+  ],
+  "conversations": [
+    {
+      "id": "cmptexfdr0000zousfhpdpuuk",
+      "sessionId": "test-session-001",
+      "userId": null,
+      "title": "新对话",
+      "createdAt": "2026-05-31T06:42:41.823Z",
+      "updatedAt": "2026-05-31T06:42:41.823Z"
+    },
+    {
+      "id": "cmptexlls0002zousm7rwcrbl",
+      "sessionId": "test-session-002",
+      "userId": null,
+      "title": "新对话",
+      "createdAt": "2026-05-31T06:42:49.888Z",
+      "updatedAt": "2026-05-31T06:42:49.888Z"
+    },
+    {
+      "id": "cmptextzo0004zoushpfm71n4",
+      "sessionId": "test-session-003",
+      "userId": null,
+      "title": "新对话",
+      "createdAt": "2026-05-31T06:43:00.756Z",
+      "updatedAt": "2026-05-31T06:43:00.756Z"
+    },
+    {
+      "id": "cmptf9c9p0000v0us9308jm87",
+      "sessionId": "test-123",
+      "userId": null,
+      "title": "新对话",
+      "createdAt": "2026-05-31T06:51:57.661Z",
+      "updatedAt": "2026-05-31T06:51:57.661Z"
+    },
+    {
+      "id": "cmptfkult0002x0usx7ufkmsm",
+      "sessionId": "test-final",
+      "userId": null,
+      "title": "��ã���������ЩҽԺ",
+      "createdAt": "2026-05-31T07:00:54.641Z",
+      "updatedAt": "2026-05-31T07:00:57.243Z"
+    },
+    {
+      "id": "cmptfkzr30005x0usyh3idw7r",
+      "sessionId": "test-final-2",
+      "userId": null,
+      "title": "����Һţ����ҿ���������",
+      "createdAt": "2026-05-31T07:01:01.311Z",
+      "updatedAt": "2026-05-31T07:01:02.963Z"
+    },
+    {
+      "id": "cmptfl3z70008x0usf446hikx",
+      "sessionId": "test-tool",
+      "userId": null,
+      "title": "��������������ҽԺ",
+      "createdAt": "2026-05-31T07:01:06.787Z",
+      "updatedAt": "2026-05-31T07:01:09.428Z"
+    },
+    {
+      "id": "cmptfla7n000bx0usj72p6dvp",
+      "sessionId": "test-tool-2",
+      "userId": null,
+      "title": "��������һ�±�������Щҽ",
+      "createdAt": "2026-05-31T07:01:14.868Z",
+      "updatedAt": "2026-05-31T07:01:18.899Z"
+    },
+    {
+      "id": "cmptg6n980008i4us19tx2o8f",
+      "sessionId": "test-tools",
+      "userId": null,
+      "title": "�ҷ��տ��ԣ�Ӧ�ù�ʲô��",
+      "createdAt": "2026-05-31T07:17:51.549Z",
+      "updatedAt": "2026-05-31T07:17:59.307Z"
+    },
+    {
+      "id": "cmptg6wzh000bi4us3loq9mol",
+      "sessionId": "test-tools-v2",
+      "userId": null,
+      "title": "�ҷ��տ��ԣ�Ӧ�ù�ʲô��",
+      "createdAt": "2026-05-31T07:18:04.157Z",
+      "updatedAt": "2026-05-31T07:18:11.584Z"
+    },
+    {
+      "id": "cmptg7cyw000ei4usmhzh51jk",
+      "sessionId": "test-ascii",
+      "userId": null,
+      "title": "hello",
+      "createdAt": "2026-05-31T07:18:24.872Z",
+      "updatedAt": "2026-05-31T07:18:26.570Z"
+    },
+    {
+      "id": "cmptgdstb0000zousewzx1evk",
+      "sessionId": "test-md",
+      "userId": null,
+      "title": "�����г�����Ա���ͨ�š�ר...",
+      "createdAt": "2026-05-31T07:23:25.344Z",
+      "updatedAt": "2026-05-31T07:23:29.002Z"
+    },
+    {
+      "id": "cmptgpxdb0007zous9posvfk6",
+      "sessionId": "test-fix",
+      "userId": null,
+      "title": "��������ЩҽԺ",
+      "createdAt": "2026-05-31T07:32:51.119Z",
+      "updatedAt": "2026-05-31T07:32:53.006Z"
+    }
+  ],
+  "messages": [
+    {
+      "id": "cmptexfea0001zousbbklvv1l",
+      "conversationId": "cmptexfdr0000zousfhpdpuuk",
+      "role": "user",
+      "content": "������Ϣ",
+      "reasoningContent": null,
+      "createdAt": "2026-05-31T06:42:41.842Z"
+    },
+    {
+      "id": "cmptexlme0003zousdc261y5v",
+      "conversationId": "cmptexlls0002zousm7rwcrbl",
+      "role": "user",
+      "content": "������ԹҺ���",
+      "reasoningContent": null,
+      "createdAt": "2026-05-31T06:42:49.910Z"
+    },
+    {
+      "id": "cmptextzz0005zousdccl0sqe",
+      "conversationId": "cmptextzo0004zoushpfm71n4",
+      "role": "user",
+      "content": "hello",
+      "reasoningContent": null,
+      "createdAt": "2026-05-31T06:43:00.767Z"
+    },
+    {
+      "id": "cmptf9ca70001v0us4xzax7pn",
+      "conversationId": "cmptf9c9p0000v0us9308jm87",
+      "role": "user",
+      "content": "���",
+      "reasoningContent": null,
+      "createdAt": "2026-05-31T06:51:57.679Z"
+    },
+    {
+      "id": "cmptfkumc0003x0us9ak5qppp",
+      "conversationId": "cmptfkult0002x0usx7ufkmsm",
+      "role": "user",
+      "content": "��ã���������ЩҽԺ",
+      "reasoningContent": null,
+      "createdAt": "2026-05-31T07:00:54.663Z"
+    },
+    {
+      "id": "cmptfkwlj0004x0uslcu7qlur",
+      "conversationId": "cmptfkult0002x0usx7ufkmsm",
+      "role": "assistant",
+      "content": "您好呀！很高兴为您服务！😊\n\n为了帮您找到合适的医院，我需要先了解一些信息：\n\n**请问您想看病的城市是哪座城市呢？** 另外，您有什么偏好吗？比如：\n- 想找**三甲医院**还是其他等级都行？\n- 或者您有**特定的医院名称**想查询？\n\n您也可以直接告诉我您**有什么不舒服的症状**，我可以先帮您推荐合适的科室和医院哦！",
+      "reasoningContent": null,
+      "createdAt": "2026-05-31T07:00:57.224Z"
+    },
+    {
+      "id": "cmptfkzre0006x0us1qljs3zt",
+      "conversationId": "cmptfkzr30005x0usyh3idw7r",
+      "role": "user",
+      "content": "����Һţ����ҿ�����������ЩҽԺ",
+      "reasoningContent": null,
+      "createdAt": "2026-05-31T07:01:01.322Z"
+    },
+    {
+      "id": "cmptfl10m0007x0us2t37d6sy",
+      "conversationId": "cmptfkzr30005x0usyh3idw7r",
+      "role": "assistant",
+      "content": "您好呀！😊 欢迎使用健康挂号助手！\n\n请问您想查询**哪个城市**的医院呢？或者您有**具体的医院名称**想了解吗？您也可以告诉我您有什么不舒服的症状，我帮您推荐合适的医院和科室～",
+      "reasoningContent": null,
+      "createdAt": "2026-05-31T07:01:02.950Z"
+    },
+    {
+      "id": "cmptfl3zh0009x0usp0aa6ey0",
+      "conversationId": "cmptfl3z70008x0usf446hikx",
+      "role": "user",
+      "content": "��������������ҽԺ",
+      "reasoningContent": null,
+      "createdAt": "2026-05-31T07:01:06.798Z"
+    },
+    {
+      "id": "cmptfl5zw000ax0uswmlxyr9t",
+      "conversationId": "cmptfl3z70008x0usf446hikx",
+      "role": "assistant",
+      "content": "您好！欢迎使用健康挂号AI助手！😊\n\n我看到您想搜索医院，不过信息好像有一些乱码，请问您能再告诉我一下吗？\n\n比如您可以告诉我：\n- **您想挂哪个城市的医院？**（如北京、上海、广州等）\n- **有没有想看的科室或症状？**\n- **或者有想找的医院名称吗？**\n\n这样我可以更好地帮您查找！",
+      "reasoningContent": null,
+      "createdAt": "2026-05-31T07:01:09.404Z"
+    },
+    {
+      "id": "cmptfla84000cx0us0dkgts0y",
+      "conversationId": "cmptfla7n000bx0usj72p6dvp",
+      "role": "user",
+      "content": "��������һ�±�������ЩҽԺ",
+      "reasoningContent": null,
+      "createdAt": "2026-05-31T07:01:14.884Z"
+    },
+    {
+      "id": "cmptfldaf000dx0uslroh4o5d",
+      "conversationId": "cmptfla7n000bx0usj72p6dvp",
+      "role": "assistant",
+      "content": "好的！我来帮您查询北京的医院信息 🏥🔍 正在搜索医院，可按城市、等级、关键字筛选...让我再试试看，用不同的方式搜索一下。🔍 正在搜索医院，可按城市、等级、关键字筛选...很抱歉，目前系统中暂时没有查询到北京的医院信息 😅\n\n不过，您可以试试以下几种方式：\n\n1. **直接告诉我您想挂号的医院名称**——我帮您精确搜索（比如\"协和医院\"、\"人民医院\"等）\n2. **告诉我您有什么症状**——我可以帮您推荐合适的科室方向\n3. **换一个城市**——看看其他城市是否有医院信息\n\n请问您想怎么操作呢？",
+      "reasoningContent": null,
+      "createdAt": "2026-05-31T07:01:18.855Z"
+    },
+    {
+      "id": "cmptg6n9k0009i4usaoabtnjl",
+      "conversationId": "cmptg6n980008i4us19tx2o8f",
+      "role": "user",
+      "content": "�ҷ��տ��ԣ�Ӧ�ù�ʲô��",
+      "reasoningContent": null,
+      "createdAt": "2026-05-31T07:17:51.560Z"
+    },
+    {
+      "id": "cmptg6t80000ai4uszgnmric3",
+      "conversationId": "cmptg6n980008i4us19tx2o8f",
+      "role": "assistant",
+      "content": "���ã����տ��ԵĻ����Ұ�������һ�¾�ҽ���ƿƵĽ��飬�������Ƽ���🔍 正在根据患者的症状描述推荐合适的就诊科室...抱Ǹ，���ֵĿ��Բ���ʶ�𣬵�Ȼ���ٳ�һ�Ρ�🔍 正在根据患者的症状描述推荐合适的就诊科室...���ã��������Ŀ��Ե�֢״�������Ƽ�������**���ƿ���**��\n\n---\n\n̽�� **���տ���** �����飬���ǽ��������ҽԺ����һ���̡̳��Ұ����Ƽ����¿��ң�\n\n---\n\n### ���Ƽ��Ŀ���\n\n| ���        | ˵��                               |\n| ----------- | ---------------------------------- |\n| 🫁 **�������ڿ�** | ���տȡ���̵�����ʹ�Ⱥ�����֢״��ѡ |\n| 🔬 **�ز����**   | �翪�Գ������أ����ں�����ز����         |\n\n---\n\n### ������һ��\n�ܷ��㸨��һ�£�\n1. ���ڵ�**�ĸ�����**��\n2. ���ȿ�**ʲô�ȼ�����ҽԺ**�����磬��������ҽԺ/������ҽԺ����\n\n�������Ұ�����������ҵ����ʵ�ҽԺ��Ȼ��һ�������������Ŷ��😊",
+      "reasoningContent": null,
+      "createdAt": "2026-05-31T07:17:59.280Z"
+    },
+    {
+      "id": "cmptg6wzs000ci4usxnpcrcfy",
+      "conversationId": "cmptg6wzh000bi4us3loq9mol",
+      "role": "user",
+      "content": "�ҷ��տ��ԣ�Ӧ�ù�ʲô��",
+      "reasoningContent": null,
+      "createdAt": "2026-05-31T07:18:04.168Z"
+    },
+    {
+      "id": "cmptg72pk000di4usswdidawq",
+      "conversationId": "cmptg6wzh000bi4us3loq9mol",
+      "role": "assistant",
+      "content": "���������տ��ԣ��������Ƽ�һ�������Ŀ��ҡ�🔍 正在根据患者的症状描述推荐合适的就诊科室...🔍 正在根据患者的症状描述推荐合适的就诊科室...���� ���ã����ݷ��տ��Ե�֢״��Ϊ���Ƽ����¼��ſ��ң�\n\n---\n\n### ���Ƽ���Ŀ��ҿ���\n\n1. **���ȡ���发热门诊** — �����ȸ�ð���״β���Ӧ�ԣ�\n2. **🫁 ������** — ���ԡ����Եĳ��濴�����\n3. **🧬 ��Ⱦ��** — ���������ظ�Ⱦ\n4. **🩺 �ز���** — ���ز����\n\n---\n\n> ⚠️ **��ܰ��ʾ**������Ƚ����أ������ҳ���38.5��C���ϡ��������ѵȣ��뼰ʱǰ��**����**��ϡ�\n\n---\n\n**����һ����**������Ϊ����ԤԼĳ��ҽԺ�Ĺһ��أ����ȸ����ң�\n1. �����ĸ����У�\n2. ��û���ر���Ҫȥ��ĳ��ҽԺ��\n\n�ҿ������Ҹ���Ѱ�Һ��ʵ�ҽԺ��😊",
+      "reasoningContent": null,
+      "createdAt": "2026-05-31T07:18:11.576Z"
+    },
+    {
+      "id": "cmptg7cz0000fi4us8clim6pm",
+      "conversationId": "cmptg7cyw000ei4usmhzh51jk",
+      "role": "user",
+      "content": "hello",
+      "reasoningContent": null,
+      "createdAt": "2026-05-31T07:18:24.876Z"
+    },
+    {
+      "id": "cmptg7e9q000gi4uslym3ok97",
+      "conversationId": "cmptg7cyw000ei4usmhzh51jk",
+      "role": "assistant",
+      "content": "您好！👋 欢迎使用健康挂号助手！\n\n我是您的智能挂号小帮手，可以帮您完成以下服务：\n\n- 🏥 **查找医院** — 按城市、等级搜索\n- 👨‍⚕️ **查看科室和医生** — 了解排班与号源\n- 📋 **在线挂号** — 快速完成预约\n- 📄 **查看/取消挂号记录**\n- 💊 **症状分析** — 帮您推荐合适的科室\n\n请问有什么可以帮您的？比如您需要挂号看什么病，或者想先查询哪家医院的信息呢？😊",
+      "reasoningContent": null,
+      "createdAt": "2026-05-31T07:18:26.558Z"
+    },
+    {
+      "id": "cmptgdsu70001zousxxok0w01",
+      "conversationId": "cmptgdstb0000zousewzx1evk",
+      "role": "user",
+      "content": "�����г�����Ա���ͨ�š�ר�Һź�����ŵ�����",
+      "reasoningContent": null,
+      "createdAt": "2026-05-31T07:23:25.375Z"
+    },
+    {
+      "id": "cmptgdvm90002zouskuur5w8q",
+      "conversationId": "cmptgdstb0000zousewzx1evk",
+      "role": "assistant",
+      "content": "您问的是**普通号、专家号和特需号**的区别吧？我来为您详细说明一下：\n\n---\n\n### 📋 三种号类的区别\n\n| 类型 | 适用场景 | 价格 | 医生资质 |\n|:---:|:---:|:---:|:---:|\n| **普通号** 🟢 | 初诊、常见病、常规检查 | 较低 | 主治医师及以下 |\n| **专家号** 🔵 | 疑难杂症、慢性病复诊 | 中等 | 副主任医师、主任医师 |\n| **特需号** 🟣 | 病情复杂、需要更多问诊时间 | 较高 | 资深专家，问诊更细致 |\n\n**简单来说：**\n- **普通号** — 适合首次就诊、感冒发烧等常见问题，性价比高\n- **专家号** — 适合病情较复杂、需要经验丰富的专家诊治\n- **特需号** — 适合疑难重症或希望获得更长时间、更细致诊疗服务\n\n> 💡 **小建议**：如果病情不复杂，建议先挂**普通号**，医生如果需要转诊会给您转专家；如果病情明确且复杂，可以直接挂**专家号**。\n\n---\n\n请问您是需要挂号吗？如果是的话，我帮您一步步完成挂号流程～😊",
+      "reasoningContent": null,
+      "createdAt": "2026-05-31T07:23:28.977Z"
+    },
+    {
+      "id": "cmptgpxe20008zoustf1odx7k",
+      "conversationId": "cmptgpxdb0007zous9posvfk6",
+      "role": "user",
+      "content": "��������ЩҽԺ",
+      "reasoningContent": null,
+      "createdAt": "2026-05-31T07:32:51.146Z"
+    },
+    {
+      "id": "cmptgpytb0009zousdd6x5y7k",
+      "conversationId": "cmptgpxdb0007zous9posvfk6",
+      "role": "assistant",
+      "content": "您好！😊 很高兴为您服务！\n\n请问您想查找**哪个城市**的医院呢？或者有没有其他需求，比如：\n\n- **医院等级**（如三甲医院、二甲医院等）\n- **医院名称关键字**\n- 或者您可以直接告诉我有什么**不舒服的症状**，我也可以帮您推荐合适的医院和科室~",
+      "reasoningContent": null,
+      "createdAt": "2026-05-31T07:32:52.992Z"
+    }
+  ],
+  "toolCalls": [],
+  "sessionStates": [
+    {
+      "id": "cmpvaurri0001ccus2ggsoloy",
+      "sessionId": "cmpseu9e000005sus5rx89y7u",
+      "userId": null,
+      "step": "idle",
+      "cache": "{\"_estimatedTokens\":0}",
+      "contextSummary": "",
+      "updatedAt": "2026-06-01T15:08:53.135Z"
+    }
+  ],
+  "messageFeedbacks": [],
+  "userMemories": []
+}
