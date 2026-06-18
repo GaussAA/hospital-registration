@@ -1,6 +1,6 @@
 import Link from "next/link";
-import DoctorCard from "@/features/hospital/components/DoctorCard";
-import type { DoctorCardData } from "@/features/hospital/components/DoctorCard";
+import { DoctorCard } from "@/features/hospital";
+import type { DoctorCardData } from "@/features/hospital";
 import type { PageProps } from "@/types/next";
 import type { ApiResponse } from "@/types/api";
 

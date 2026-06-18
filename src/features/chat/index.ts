@@ -18,14 +18,6 @@ export {
   persistAssistantResponse,
 } from "./actions";
 
-// Queries
-export {
-  listConversations,
-  getConversation,
-  loadConversationHistory,
-  getOrCreateConversation,
-} from "./queries";
-
 // Types
 export type {
   StreamMessage,

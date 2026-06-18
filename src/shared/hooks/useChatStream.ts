@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useCallback, useEffect } from "react";
-import type { StreamMessage, ConversationSummary } from "@/features/chat/types";
+import type { StreamMessage, ConversationSummary } from "@/features/chat";
 
 /* ── Internal types ── */
 

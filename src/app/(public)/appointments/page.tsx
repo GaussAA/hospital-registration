@@ -2,8 +2,7 @@ import Link from "next/link";
 import { cookies } from "next/headers";
 import type { PaginatedData } from "@/types/api";
 import { verifyToken } from "@/shared/utils/jwt";
-import { listRegistrations } from "@/features/registration";
-import AppointmentList from "@/features/registration/components/AppointmentList";
+import { listRegistrations, AppointmentList } from "@/features/registration";
 
 /**
  * Appointments list page (server component).

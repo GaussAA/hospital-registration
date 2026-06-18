@@ -15,9 +15,7 @@ import {
 import type {
   HospitalDTO,
   HospitalDetailDTO,
-  DepartmentDTO,
   DoctorDTO,
-  ScheduleDTO,
   CreateHospitalDTO,
   CreateDepartmentDTO,
   CreateDoctorDTO,

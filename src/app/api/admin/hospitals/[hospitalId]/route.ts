@@ -3,7 +3,8 @@ import { getPrisma } from "@/shared/db";
 import { success } from "@/shared/utils/response";
 import { apiHandler } from "@/shared/utils/api-handler";
 import { NotFoundError } from "@/shared/utils/errors";
-import { getHospitalById } from "@/features/hospital";
+// eslint-disable-next-line no-restricted-imports
+import { getHospitalById } from "@/features/hospital/queries";
 
 export const GET = apiHandler<{ hospitalId: string }>(async (req, { params }) => {
   const { hospitalId } = await params;

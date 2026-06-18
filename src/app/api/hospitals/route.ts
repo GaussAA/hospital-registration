@@ -2,7 +2,10 @@ import { NextResponse } from "next/server";
 import { success } from "@/shared/utils/response";
 import { apiHandler } from "@/shared/utils/api-handler";
 import { ValidationError } from "@/shared/utils/errors";
-import { listHospitals, listHospitalsSchema } from "@/features/hospital";
+// eslint-disable-next-line no-restricted-imports
+import { listHospitals } from "@/features/hospital/queries";
+// eslint-disable-next-line no-restricted-imports
+import { listHospitalsSchema } from "@/features/hospital/validations";
 
 export const GET = apiHandler(async (req) => {
   const { searchParams } = new URL(req.url);

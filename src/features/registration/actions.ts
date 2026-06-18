@@ -1,7 +1,5 @@
 "use server";
 
-import { getPrisma } from "@/shared/db";
-import { NotFoundError, ConflictError } from "@/shared/utils/errors";
 import { revalidatePath } from "next/cache";
 import {
   createRegistration as createRegistrationQuery,
@@ -9,7 +7,7 @@ import {
   getRegistrationById as getRegistrationByIdQuery,
   cancelRegistration as cancelRegistrationQuery,
 } from "./queries";
-import type { RegistrationDTO, CreateRegistrationDTO, RegistrationFilterDTO } from "./types";
+import type { CreateRegistrationDTO, RegistrationFilterDTO } from "./types";
 
 // ==================== Public Queries ====================
 

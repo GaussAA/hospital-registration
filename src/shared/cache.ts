@@ -1,3 +1,5 @@
+import "server-only";
+
 /**
  * Redis 缓存模块
  *

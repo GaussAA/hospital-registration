@@ -3,7 +3,6 @@ import { NotFoundError, ConflictError } from "@/shared/utils/errors";
 import type { Prisma } from "@generated/prisma/client";
 import type { RegistrationStatus } from "./types";
 
-
 // Registration with full include shape returned by create/cancel/get operations
 type RegistrationWithIncludes = Prisma.RegistrationGetPayload<{
   include: {
@@ -138,9 +137,7 @@ export async function listRegistrations(
 /**
  * Get a single registration by ID, including doctor and profile info.
  */
-export async function getRegistrationById(
-  id: string,
-): Promise<RegistrationWithIncludes> {
+export async function getRegistrationById(id: string): Promise<RegistrationWithIncludes> {
   const prisma = await getPrisma();
 
   const registration = await prisma.registration.findUnique({
@@ -165,10 +162,7 @@ export async function getRegistrationById(
  * Cancel a registration (only if status is "pending").
  * Uses a transaction to decrement bookedCount and update status.
  */
-export async function cancelRegistration(
-  id: string,
-  patientId: string,
-): Promise<RegistrationWithIncludes> {
+export async function cancelRegistration(id: string, patientId: string): Promise<RegistrationWithIncludes> {
   const prisma = await getPrisma();
 
   return prisma.$transaction(async (tx) => {

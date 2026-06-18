@@ -1,11 +1,6 @@
 import Header from "@/shared/ui/Header";
 import Footer from "@/shared/ui/Footer";
-import HeroSection from "@/features/home/components/HeroSection";
-import StatsSection from "@/features/home/components/StatsSection";
-import ServiceCards from "@/features/home/components/ServiceCards";
-import FeaturedHospitals from "@/features/home/components/FeaturedHospitals";
-import HowItWorks from "@/features/home/components/HowItWorks";
-import TrustSection from "@/features/home/components/TrustSection";
+import { HeroSection, StatsSection, ServiceCards, FeaturedHospitals, HowItWorks, TrustSection } from "@/features/home";
 
 export default function HomePage() {
   return (

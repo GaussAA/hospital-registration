@@ -1,4 +1,5 @@
-import { listDoctorsByDepartment, getDoctorById } from "@/features/hospital";
+// eslint-disable-next-line no-restricted-imports
+import { listDoctorsByDepartment, getDoctorById } from "@/features/hospital/queries";
 import { fmtDoctor } from "../formatters";
 import { searchDoctorsSchema, getDoctorDetailSchema } from "../validators";
 

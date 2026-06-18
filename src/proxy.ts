@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { requireAuth, requireAdmin } from "@/features/auth/middleware";
+import { requireAuth, requireAdmin } from "@/features/auth";
 import { checkRateLimit, getRateLimitKey } from "@/shared/utils/rate-limit";
 import {
   AUTH_RATE_LIMIT_MAX,

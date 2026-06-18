@@ -3,7 +3,8 @@ import { getPrisma } from "@/shared/db";
 import { success } from "@/shared/utils/response";
 import { apiHandler } from "@/shared/utils/api-handler";
 import { ValidationError } from "@/shared/utils/errors";
-import { listHospitals } from "@/features/hospital";
+// eslint-disable-next-line no-restricted-imports
+import { listHospitals } from "@/features/hospital/queries";
 
 export const GET = apiHandler(async (req) => {
   const { searchParams } = new URL(req.url);

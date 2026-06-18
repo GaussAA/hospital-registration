@@ -1,7 +1,8 @@
 import { HospitalFilter, HospitalCard, Pagination } from "@/features/hospital";
-import type { HospitalCardData } from "@/features/hospital/components/HospitalCard";
+import type { HospitalCardData } from "@/features/hospital";
 import type { PageProps } from "@/types/next";
-import { listHospitals } from "@/features/hospital";
+// eslint-disable-next-line no-restricted-imports
+import { listHospitals } from "@/features/hospital/queries";
 import Image from "next/image";
 
 interface PageSearchParams {

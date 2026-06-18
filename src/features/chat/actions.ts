@@ -3,7 +3,7 @@
 import { ConversationStore } from "./agent/conversation-store";
 import { ConversationPersistence } from "./agent/persistence";
 import { createStreamResponse } from "./agent/stream-agent";
-import type { ChatMessage, ToolContext, StreamMessage, ConversationSummary } from "./types";
+import type { ChatMessage, ToolContext } from "./types";
 
 /**
  * Send a message and get a streaming response.

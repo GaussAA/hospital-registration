@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { AppError } from "./errors";
 import { fail } from "./response";
-import { requireAuth, requireAdmin } from "@/features/auth/middleware";
+import { requireAuth, requireAdmin } from "@/features/auth";
 import type { JwtPayload } from "./jwt";
 
 /* ── Types ── */

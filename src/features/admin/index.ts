@@ -30,9 +30,6 @@ export {
   listRegistrations,
 } from "./actions";
 
-// Queries
-export { getDashboardStats, getAdminOverview } from "./queries";
-
 // Types
 export type {
   DashboardStats,
