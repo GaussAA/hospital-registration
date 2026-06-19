@@ -6,6 +6,8 @@ const mockGetPrisma = vi.hoisted(() => vi.fn());
 const mockVisionCompletion = vi.hoisted(() => vi.fn());
 const mockIsProviderConfigured = vi.hoisted(() => vi.fn(() => true));
 const mockReadFile = vi.hoisted(() => vi.fn());
+const mockGetRegistrationGuideSchemaSafeParse = vi.hoisted(() => vi.fn());
+const mockAnalyzeImageSchemaSafeParse = vi.hoisted(() => vi.fn());
 
 vi.mock("@/shared/db", () => ({
   getPrisma: mockGetPrisma,
@@ -20,19 +22,14 @@ vi.mock("../../formatters", () => ({
   imageTypeLabels: { lab_report: "化验单", exam_report: "检查报告", ct_scan: "CT影像", prescription: "处方", other: "图片" },
 }));
 
-vi.mock("../../validators", () => {
-  // Dynamically import so we can control safeParse per handler
-  const { z } = require("zod");
-  return {
-    getRegistrationGuideSchema: z.object({
-      hospitalId: z.string().optional(),
-    }),
-    analyzeImageSchema: z.object({
-      imageUrl: z.string().min(1, "图片URL不能为空"),
-      imageType: z.string().optional(),
-    }),
-  };
-});
+vi.mock("../../validators", () => ({
+  getRegistrationGuideSchema: {
+    safeParse: mockGetRegistrationGuideSchemaSafeParse,
+  },
+  analyzeImageSchema: {
+    safeParse: mockAnalyzeImageSchemaSafeParse,
+  },
+}));
 
 vi.mock("fs/promises", () => ({
   readFile: mockReadFile,
@@ -47,6 +44,10 @@ describe("handleGetRegistrationGuide", () => {
   });
 
   it("should return general guide without hospital info", async () => {
+    mockGetRegistrationGuideSchemaSafeParse.mockReturnValue({
+      success: true,
+      data: {},
+    });
     const result = await handleGetRegistrationGuide({});
 
     expect(result).toContain("就诊指南");
@@ -58,6 +59,10 @@ describe("handleGetRegistrationGuide", () => {
   });
 
   it("should include hospital info when hospitalId is provided and hospital exists", async () => {
+    mockGetRegistrationGuideSchemaSafeParse.mockReturnValue({
+      success: true,
+      data: { hospitalId: "h-1" },
+    });
     mockGetPrisma.mockResolvedValue({
       hospital: {
         findUnique: vi.fn().mockResolvedValue({
@@ -77,6 +82,10 @@ describe("handleGetRegistrationGuide", () => {
   });
 
   it("should return general guide when hospital is not found", async () => {
+    mockGetRegistrationGuideSchemaSafeParse.mockReturnValue({
+      success: true,
+      data: { hospitalId: "invalid" },
+    });
     mockGetPrisma.mockResolvedValue({
       hospital: {
         findUnique: vi.fn().mockResolvedValue(null),
@@ -97,6 +106,10 @@ describe("handleAnalyzeImage", () => {
   });
 
   it("should analyze remote image successfully", async () => {
+    mockAnalyzeImageSchemaSafeParse.mockReturnValue({
+      success: true,
+      data: { imageUrl: "https://example.com/report.jpg", imageType: "lab_report" },
+    });
     mockIsProviderConfigured.mockReturnValue(true);
     mockVisionCompletion.mockResolvedValue("各项指标正常");
 
@@ -112,6 +125,10 @@ describe("handleAnalyzeImage", () => {
   });
 
   it("should convert local image to base64", async () => {
+    mockAnalyzeImageSchemaSafeParse.mockReturnValue({
+      success: true,
+      data: { imageUrl: "/uploads/report.png", imageType: "lab_report" },
+    });
     mockIsProviderConfigured.mockReturnValue(true);
     mockReadFile.mockResolvedValue(Buffer.from("fake-image-data"));
     mockVisionCompletion.mockResolvedValue("分析完成");
@@ -132,6 +149,10 @@ describe("handleAnalyzeImage", () => {
   });
 
   it("should fallback to original URL when local file read fails", async () => {
+    mockAnalyzeImageSchemaSafeParse.mockReturnValue({
+      success: true,
+      data: { imageUrl: "/uploads/report.jpg", imageType: "lab_report" },
+    });
     mockIsProviderConfigured.mockReturnValue(true);
     mockReadFile.mockRejectedValue(new Error("File not found"));
     mockVisionCompletion.mockResolvedValue("分析完成");
@@ -149,6 +170,10 @@ describe("handleAnalyzeImage", () => {
   });
 
   it("should return message when AI provider is not configured", async () => {
+    mockAnalyzeImageSchemaSafeParse.mockReturnValue({
+      success: true,
+      data: { imageUrl: "https://example.com/report.jpg", imageType: "lab_report" },
+    });
     mockIsProviderConfigured.mockReturnValue(false);
 
     const result = await handleAnalyzeImage({
@@ -162,6 +187,10 @@ describe("handleAnalyzeImage", () => {
   });
 
   it("should handle generic image type (no label)", async () => {
+    mockAnalyzeImageSchemaSafeParse.mockReturnValue({
+      success: true,
+      data: { imageUrl: "https://example.com/photo.jpg" },
+    });
     mockIsProviderConfigured.mockReturnValue(true);
     mockVisionCompletion.mockResolvedValue("这是一张医疗图片");
 
@@ -174,6 +203,11 @@ describe("handleAnalyzeImage", () => {
   });
 
   it("should return parameter error on invalid args", async () => {
+    mockAnalyzeImageSchemaSafeParse.mockReturnValue({
+      success: false,
+      error: { issues: [{ message: "图片URL不能为空" }] },
+    });
+
     const result = await handleAnalyzeImage({});
 
     expect(result).toBe("参数错误：图片URL不能为空");
@@ -181,6 +215,10 @@ describe("handleAnalyzeImage", () => {
   });
 
   it("should handle vision completion error gracefully", async () => {
+    mockAnalyzeImageSchemaSafeParse.mockReturnValue({
+      success: true,
+      data: { imageUrl: "https://example.com/report.jpg", imageType: "lab_report" },
+    });
     mockIsProviderConfigured.mockReturnValue(true);
     mockVisionCompletion.mockRejectedValue(new Error("API rate limit exceeded"));
 
@@ -194,6 +232,10 @@ describe("handleAnalyzeImage", () => {
   });
 
   it("should handle non-Error thrown by visionCompletion", async () => {
+    mockAnalyzeImageSchemaSafeParse.mockReturnValue({
+      success: true,
+      data: { imageUrl: "https://example.com/report.jpg", imageType: "lab_report" },
+    });
     mockIsProviderConfigured.mockReturnValue(true);
     mockVisionCompletion.mockRejectedValue("string error");
 
@@ -207,6 +249,10 @@ describe("handleAnalyzeImage", () => {
   });
 
   it("should determine correct MIME type for various image extensions", async () => {
+    mockAnalyzeImageSchemaSafeParse.mockReturnValue({
+      success: true,
+      data: { imageUrl: "/uploads/report.webp", imageType: "lab_report" },
+    });
     mockIsProviderConfigured.mockReturnValue(true);
     mockReadFile.mockResolvedValue(Buffer.from("data"));
     mockVisionCompletion.mockResolvedValue("ok");
@@ -220,8 +266,11 @@ describe("handleAnalyzeImage", () => {
       expect.any(String),
     );
 
-    vi.clearAllMocks();
-    mockIsProviderConfigured.mockReturnValue(true);
+    mockAnalyzeImageSchemaSafeParse.mockReset();
+    mockAnalyzeImageSchemaSafeParse.mockReturnValue({
+      success: true,
+      data: { imageUrl: "/uploads/report.gif", imageType: "lab_report" },
+    });
     mockReadFile.mockResolvedValue(Buffer.from("data"));
     mockVisionCompletion.mockResolvedValue("ok");
 
@@ -234,8 +283,11 @@ describe("handleAnalyzeImage", () => {
       expect.any(String),
     );
 
-    vi.clearAllMocks();
-    mockIsProviderConfigured.mockReturnValue(true);
+    mockAnalyzeImageSchemaSafeParse.mockReset();
+    mockAnalyzeImageSchemaSafeParse.mockReturnValue({
+      success: true,
+      data: { imageUrl: "/uploads/report.jpeg", imageType: "lab_report" },
+    });
     mockReadFile.mockResolvedValue(Buffer.from("data"));
     mockVisionCompletion.mockResolvedValue("ok");
 

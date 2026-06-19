@@ -79,7 +79,7 @@ describe("apiHandler", () => {
   });
 
   it("should handle AppError and return structured error response", async () => {
-    const handler = vi.fn().mockRejectedValue(new AppError(404, "资源不存在"));
+    const handler = vi.fn().mockRejectedValue(new AppError("资源不存在", "NOT_FOUND", 404));
     const wrapped = apiHandler(handler);
     const req = createRequest();
     const res = await wrapped(req, { params: Promise.resolve({}) });
@@ -88,7 +88,7 @@ describe("apiHandler", () => {
   });
 
   it("should handle 400 AppError", async () => {
-    const handler = vi.fn().mockRejectedValue(new AppError(400, "参数错误"));
+    const handler = vi.fn().mockRejectedValue(new AppError("参数错误", "VALIDATION_ERROR", 400));
     const wrapped = apiHandler(handler);
     const req = createRequest();
     const res = await wrapped(req, { params: Promise.resolve({}) });
@@ -97,7 +97,7 @@ describe("apiHandler", () => {
   });
 
   it("should handle 429 AppError", async () => {
-    const handler = vi.fn().mockRejectedValue(new AppError(429, "请求太频繁"));
+    const handler = vi.fn().mockRejectedValue(new AppError("请求太频繁", "RATE_LIMITED", 429));
     const wrapped = apiHandler(handler);
     const req = createRequest();
     const res = await wrapped(req, { params: Promise.resolve({}) });

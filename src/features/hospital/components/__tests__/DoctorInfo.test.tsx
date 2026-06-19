@@ -3,6 +3,14 @@ import { describe, it, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
 import DoctorInfo from "../DoctorInfo";
 
+vi.mock("next/image", () => ({
+  default: (props: Record<string, unknown>) => <img {...props} />,
+}));
+
+vi.mock("@/features/hospital/assets/doctor-avatar.svg", () => ({
+  default: "doctor-avatar.svg",
+}));
+
 const mockDoctor = {
   id: "doctor-1",
   name: "张医生",
@@ -32,7 +40,8 @@ describe("DoctorInfo", () => {
 
   it("should render specialty", () => {
     render(<DoctorInfo doctor={mockDoctor} />);
-    expect(screen.getByText(/心血管内科/)).toBeDefined();
+    const specialtyElements = screen.getAllByText(/心血管内科/);
+    expect(specialtyElements.length).toBeGreaterThanOrEqual(1);
   });
 
   it("should render introduction when provided", () => {

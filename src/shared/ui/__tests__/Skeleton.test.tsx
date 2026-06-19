@@ -79,9 +79,8 @@ describe("TableSkeleton", () => {
 
   it("should have 4 skeleton columns per row", () => {
     const { container } = render(<TableSkeleton rows={1} />);
-    const headerBars = container.querySelectorAll(
-      ".px-4.py-3 [class*='rounded-xl']",
-    );
+    const header = container.querySelector(".px-4\\.py-3");
+    const headerBars = header?.querySelectorAll("[class*='rounded-xl']") || [];
     expect(headerBars.length).toBe(4);
   });
 });

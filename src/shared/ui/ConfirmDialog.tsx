@@ -87,6 +87,7 @@ export default function ConfirmDialog({
       role="dialog"
       aria-modal="true"
       aria-labelledby="confirm-title"
+      onKeyDown={handleKeyDown}
     >
       {/* Backdrop */}
       <div
@@ -97,7 +98,6 @@ export default function ConfirmDialog({
       {/* Dialog */}
       <div
         className={`relative w-full max-w-md mx-4 rounded-2xl bg-white dark:bg-[#1e293b] shadow-2xl border ${styles.borderColor} animate-[scaleIn_0.15s_ease-out]`}
-        onKeyDown={handleKeyDown}
       >
         <div className="p-6">
           {/* Icon + Title */}

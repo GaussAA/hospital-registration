@@ -49,7 +49,7 @@ describe("Footer", () => {
     render(<Footer />);
     const year = new Date().getFullYear();
     expect(
-      screen.getByText(`${year} 健康挂号 - 在线预约挂号平台`),
+      screen.getByText(`\u00A9 ${year} 健康挂号 - 在线预约挂号平台`),
     ).toBeDefined();
   });
 

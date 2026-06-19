@@ -47,7 +47,8 @@ describe("RegisterForm", () => {
 
     await user.click(screen.getByRole("button", { name: "注册" }));
 
-    expect(screen.getByText("请输入姓名")).toBeInTheDocument();
+    // Component checks email/phone first — both are empty
+    expect(screen.getByText("邮箱和手机号至少填一项")).toBeInTheDocument();
   });
 
   it("shows name too short error", async () => {

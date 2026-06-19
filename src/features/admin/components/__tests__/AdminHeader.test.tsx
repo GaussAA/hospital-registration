@@ -15,7 +15,7 @@ describe("AdminHeader", () => {
   });
 
   it("should render the admin title", () => {
-    render(<AdminHeader />);
+    render(<AdminHeader title="管理后台" />);
     expect(screen.getByText("管理后台")).toBeDefined();
   });
 

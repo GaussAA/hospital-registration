@@ -1,6 +1,13 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import type { ChatMessage, ToolContext } from "../../types";
 
+// Set test env vars BEFORE any imports
+vi.hoisted(() => {
+  process.env.AI_API_KEY = "test-key";
+  process.env.AI_BASE_URL = "https://test-api.example.com";
+  process.env.AI_MODEL = "test-model";
+});
+
 /* ── Mock ALL dependencies ── */
 
 // Mock @/shared/db first (dynamic import)

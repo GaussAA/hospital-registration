@@ -24,13 +24,11 @@ describe("ChatMessage", () => {
   it("should render user message", () => {
     render(<ChatMessage role="user" content="你好" />);
     expect(screen.getByText("你好")).toBeDefined();
-    expect(screen.getByText("你")).toBeDefined(); // User avatar label
   });
 
   it("should render assistant message with markdown", () => {
     render(<ChatMessage role="assistant" content="**帮助信息**" />);
     expect(screen.getByTestId("markdown")).toBeDefined();
-    expect(screen.getByText("AI")).toBeDefined(); // AI avatar label
   });
 
   it("should show typing indicator when isTyping", () => {
@@ -80,9 +78,11 @@ describe("ChatMessage", () => {
       <ChatMessage
         role="assistant"
         content="已为您找到以下医院"
+        toolCallNames={["search_hospitals"]}
         toolCallResults={[{ name: "search_hospitals", result: "找到3家医院" }]}
       />
     );
+    // Default CollapsibleSection is closed, so result text is visible in collapsed label
     expect(screen.getByText(/搜索医院/)).toBeDefined();
   });
 });

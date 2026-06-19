@@ -123,7 +123,7 @@ describe("ConfirmDialog", () => {
         onCancel={onCancel}
       />,
     );
-    const backdrop = container.querySelector(".bg-black/40");
+    const backdrop = container.querySelector(".bg-black\\/40");
     expect(backdrop).toBeDefined();
     if (backdrop) {
       fireEvent.click(backdrop);
@@ -169,12 +169,13 @@ describe("ConfirmDialog", () => {
       <ConfirmDialog
         open={true}
         title="确认"
-        message="处理中..."
+        message="正在处理您的请求..."
         onConfirm={vi.fn()}
         onCancel={vi.fn()}
         loading={true}
       />,
     );
+    expect(screen.getByText("正在处理您的请求...")).toBeDefined();
     expect(screen.getByText("处理中...")).toBeDefined();
     const spinner = document.querySelector(".animate-spin");
     expect(spinner).toBeDefined();
@@ -209,7 +210,7 @@ describe("ConfirmDialog", () => {
         loading={true}
       />,
     );
-    const backdrop = container.querySelector(".bg-black/40");
+    const backdrop = container.querySelector(".bg-black\\/40");
     if (backdrop) {
       fireEvent.click(backdrop);
       expect(onCancel).not.toHaveBeenCalled();

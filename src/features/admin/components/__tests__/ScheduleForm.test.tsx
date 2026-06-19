@@ -43,7 +43,7 @@ describe("ScheduleForm", () => {
     // Clear the date field and set quota to 0 to trigger validation
     const dateInput = screen.getByDisplayValue(/\d{4}-\d{2}-\d{2}/);
     await user.clear(dateInput);
-    const quotaInput = screen.getByRole("spinbutton");
+    const quotaInput = screen.getByDisplayValue("30") as HTMLInputElement;
     await user.clear(quotaInput);
     await user.click(screen.getByRole("button", { name: "保存" }));
 
@@ -57,7 +57,7 @@ describe("ScheduleForm", () => {
     mockOnSave.mockResolvedValueOnce();
     setup();
 
-    const quotaInput = screen.getByRole("spinbutton") as HTMLInputElement;
+    const quotaInput = screen.getByDisplayValue("30") as HTMLInputElement;
     await user.clear(quotaInput);
     await user.type(quotaInput, "50");
 

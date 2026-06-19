@@ -36,7 +36,7 @@ describe("ChatHistory", () => {
 
   it("should show empty state when no conversations", () => {
     render(<ChatHistory {...defaultProps} conversations={[]} />);
-    expect(screen.getByText("暂无对话")).toBeDefined();
+    expect(screen.getByText("暂无对话记录")).toBeDefined();
   });
 
   it("should filter conversations by search query", () => {
@@ -68,7 +68,7 @@ describe("ChatHistory", () => {
     // Find the delete button for the first conversation
     const deleteBtn = deleteButtons.find((b) => b.innerHTML.includes("M14.74"));
     if (deleteBtn) fireEvent.click(deleteBtn);
-    expect(screen.getByText("确定删除?")).toBeDefined();
+    expect(screen.getByText("确认删除？")).toBeDefined();
   });
 
   it("should call onDelete when confirming delete", () => {
@@ -77,7 +77,7 @@ describe("ChatHistory", () => {
     const deleteButtons = screen.getAllByRole("button");
     const deleteBtn = deleteButtons.find((b) => b.innerHTML.includes("M14.74"));
     if (deleteBtn) fireEvent.click(deleteBtn);
-    fireEvent.click(screen.getByText("确定"));
+    fireEvent.click(screen.getByText("删除"));
     expect(onDelete).toHaveBeenCalledWith("conv-1");
   });
 
