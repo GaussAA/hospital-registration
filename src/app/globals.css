@@ -1,4 +1,6 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
 
 /* ── Class‑based dark mode ── */
 @custom-variant dark (&:where(.dark, .dark *));
@@ -8,16 +10,18 @@
    Tailwind v4 custom theme values
    ─────────────────────────────────────────────── */
 @theme {
-  /* ── Semantic colors (CSS variable references) ── */
-  --color-bg-page: var(--bg-page);
-  --color-bg-card: var(--bg-card);
-  --color-bg-muted: var(--bg-muted);
-  --color-bg-hover: var(--bg-hover);
-  --color-text-primary: var(--text-primary);
-  --color-text-secondary: var(--text-secondary);
-  --color-text-muted: var(--text-muted);
-  --color-border-default: var(--border-default);
-  --color-border-light: var(--border-light);
+  /* ── Semantic colors (mapped to shadcn CSS variables) ── */
+  --color-bg-page: var(--background);
+  --color-bg-card: var(--card);
+  --color-bg-muted: var(--muted);
+  --color-bg-hover: var(--accent);
+  --color-text-primary: var(--foreground);
+  --color-text-secondary: var(--muted-foreground);
+  --color-text-muted: var(--muted-foreground);
+  --color-border-default: var(--border);
+  --color-border-light: var(--border);
+
+  /* ── Shadows ── */
   --color-shadow-sm: var(--shadow-sm);
   --color-shadow-md: var(--shadow-md);
   --color-shadow-lg: var(--shadow-lg);
@@ -46,66 +50,151 @@
 }
 
 /* ───────────────────────────────────────────────
-   CSS CUSTOM PROPERTIES — Base layer
-   Includes Light & Dark theme variables
+   shadcn THEME — with our brand colors
+   ─────────────────────────────────────────────── */
+@theme inline {
+  --font-heading: var(--font-sans);
+  --font-sans: var(--font-sans);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --color-foreground: var(--foreground);
+  --color-background: var(--background);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+:root {
+  /* ── shadcn theme variables ── */
+  --background: #f0f5ff;
+  --foreground: #111827;
+  --card: #ffffff;
+  --card-foreground: #111827;
+  --popover: #ffffff;
+  --popover-foreground: #111827;
+  --primary: #2563eb;
+  --primary-foreground: #ffffff;
+  --secondary: #f1f5f9;
+  --secondary-foreground: #1e293b;
+  --muted: #f1f5f9;
+  --muted-foreground: #4b5563;
+  --accent: #f8fafc;
+  --accent-foreground: #1e293b;
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
+  --border: #e2e8f0;
+  --input: #e2e8f0;
+  --ring: #2563eb;
+  --radius: 0.625rem;
+  --chart-1: #3b82f6;
+  --chart-2: #6366f1;
+  --chart-3: #8b5cf6;
+  --chart-4: #a78bfa;
+  --chart-5: #c4b5fd;
+  --sidebar: #ffffff;
+  --sidebar-foreground: #111827;
+  --sidebar-primary: #2563eb;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #f1f5f9;
+  --sidebar-accent-foreground: #1e293b;
+  --sidebar-border: #e2e8f0;
+  --sidebar-ring: #2563eb;
+
+  /* ── Shadows ── */
+  --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.04);
+  --shadow-md: 0 4px 12px -2px rgb(0 0 0 / 0.06);
+  --shadow-lg: 0 12px 32px -6px rgb(0 0 0 / 0.08);
+
+  /* ── Glass (light) ── */
+  --glass-bg: rgba(255, 255, 255, 0.55);
+  --glass-bg-strong: rgba(255, 255, 255, 0.78);
+  --glass-border: rgba(255, 255, 255, 0.25);
+  --glass-shadow: 0 8px 32px rgba(59, 130, 246, 0.08);
+}
+
+.dark {
+  /* ── shadcn theme variables ── */
+  --background: #0b1121;
+  --foreground: #f1f5f9;
+  --card: #151e2f;
+  --card-foreground: #f1f5f9;
+  --popover: #151e2f;
+  --popover-foreground: #f1f5f9;
+  --primary: #3b82f6;
+  --primary-foreground: #ffffff;
+  --secondary: #1e2a40;
+  --secondary-foreground: #f1f5f9;
+  --muted: #1a2438;
+  --muted-foreground: #cbd5e1;
+  --accent: #1e2a40;
+  --accent-foreground: #f1f5f9;
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
+  --border: #1e2a40;
+  --input: #1e2a40;
+  --ring: #3b82f6;
+  --radius: 0.625rem;
+  --chart-1: #3b82f6;
+  --chart-2: #6366f1;
+  --chart-3: #8b5cf6;
+  --chart-4: #a78bfa;
+  --chart-5: #c4b5fd;
+  --sidebar: #151e2f;
+  --sidebar-foreground: #f1f5f9;
+  --sidebar-primary: #3b82f6;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #1e2a40;
+  --sidebar-accent-foreground: #f1f5f9;
+  --sidebar-border: #1e2a40;
+  --sidebar-ring: #3b82f6;
+
+  /* ── Shadows ── */
+  --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.3);
+  --shadow-md: 0 4px 12px -2px rgb(0 0 0 / 0.4);
+  --shadow-lg: 0 12px 32px -6px rgb(0 0 0 / 0.5);
+
+  /* ── Glass (dark) ── */
+  --glass-bg: rgba(21, 30, 47, 0.65);
+  --glass-bg-strong: rgba(21, 30, 47, 0.82);
+  --glass-border: rgba(148, 163, 184, 0.1);
+  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+}
+
+/* ───────────────────────────────────────────────
+   BASE LAYER — Fonts, Selection, Scrollbar, etc.
    ─────────────────────────────────────────────── */
 @layer base {
-  :root {
-    /* ── Backgrounds ── */
-    --bg-page: #f0f5ff;
-    --bg-card: #ffffff;
-    --bg-muted: #f1f5f9;
-    --bg-hover: #f8fafc;
-
-    /* ── Text ── */
-    --text-primary: #111827;
-    --text-secondary: #4b5563;
-    --text-muted: #94a3b8;
-
-    /* ── Borders ── */
-    --border-default: #e2e8f0;
-    --border-light: #f1f5f9;
-
-    /* ── Shadows ── */
-    --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.04);
-    --shadow-md: 0 4px 12px -2px rgb(0 0 0 / 0.06);
-    --shadow-lg: 0 12px 32px -6px rgb(0 0 0 / 0.08);
-
-    /* ── Glass (light) ── */
-    --glass-bg: rgba(255, 255, 255, 0.55);
-    --glass-bg-strong: rgba(255, 255, 255, 0.78);
-    --glass-border: rgba(255, 255, 255, 0.25);
-    --glass-shadow: 0 8px 32px rgba(59, 130, 246, 0.08);
-  }
-
-  .dark {
-    /* ── Backgrounds ── */
-    --bg-page: #0b1121;
-    --bg-card: #151e2f;
-    --bg-muted: #1a2438;
-    --bg-hover: #1e2a40;
-
-    /* ── Text ── */
-    --text-primary: #f1f5f9;
-    --text-secondary: #cbd5e1;
-    --text-muted: #94a3b8;
-
-    /* ── Borders ── */
-    --border-default: #1e2a40;
-    --border-light: #151e2f;
-
-    /* ── Shadows ── */
-    --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.3);
-    --shadow-md: 0 4px 12px -2px rgb(0 0 0 / 0.4);
-    --shadow-lg: 0 12px 32px -6px rgb(0 0 0 / 0.5);
-
-    /* ── Glass (dark) ── */
-    --glass-bg: rgba(21, 30, 47, 0.65);
-    --glass-bg-strong: rgba(21, 30, 47, 0.82);
-    --glass-border: rgba(148, 163, 184, 0.1);
-    --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
-  }
-
   /* ── Font stack ── */
   html {
     font-family:
@@ -120,12 +209,12 @@
   }
 
   body {
-    background-color: var(--bg-page);
-    color: var(--text-primary);
+    background-color: var(--background);
+    color: var(--foreground);
   }
 
   /* Smooth transition for themed CSS variable consumers */
-  html {
+  * {
     transition: background-color 0.15s ease,
                 color 0.15s ease,
                 border-color 0.15s ease;
@@ -213,7 +302,6 @@
      ANIMATIONS
      ─────────────────────────────────────────────── */
 
-  /* ── Fade In ── */
   @keyframes fadeIn {
     from { opacity: 0; }
     to   { opacity: 1; }
@@ -223,7 +311,6 @@
     animation: fadeIn 0.25s ease-out;
   }
 
-  /* ── Fade + Slide Up ── */
   @keyframes slideUpFadeIn {
     from {
       opacity: 0;
@@ -239,7 +326,6 @@
     animation: slideUpFadeIn 0.35s ease-out;
   }
 
-  /* ── Scale In ── */
   @keyframes scaleIn {
     from {
       opacity: 0;
@@ -255,7 +341,6 @@
     animation: scaleIn 0.2s ease-out;
   }
 
-  /* ── Bounce subtle ── */
   @keyframes bounce-subtle {
     0%, 100% { transform: translateY(0); }
     50%      { transform: translateY(-4px); }
@@ -265,7 +350,6 @@
     animation: bounce-subtle 2s ease-in-out infinite;
   }
 
-  /* ── Pulse soft ── */
   @keyframes pulse-soft {
     0%, 100% { opacity: 1; }
     50%      { opacity: 0.6; }
@@ -275,7 +359,6 @@
     animation: pulse-soft 2s ease-in-out infinite;
   }
 
-  /* ── Shimmer skeleton ── */
   @keyframes shimmer {
     0%   { background-position: -200% 0; }
     100% { background-position: 200% 0; }
@@ -294,7 +377,6 @@
     animation: shimmer 1.5s ease-in-out infinite;
   }
 
-  /* ── Float (hover-like breathing) ── */
   @keyframes float {
     0%, 100% { transform: translateY(0); }
     50%      { transform: translateY(-6px); }
@@ -304,7 +386,6 @@
     animation: float 3s ease-in-out infinite;
   }
 
-  /* ── Toast slide in from right ── */
   @keyframes toastSlideIn {
     from {
       opacity: 0;
@@ -335,7 +416,7 @@
     animation: toastSlideOut 0.2s ease-in forwards;
   }
 
-  /* ── Card hover lift (3D effect) ── */
+  /* ── Card hover lift ── */
   .card-hover {
     transition: transform 0.25s ease, box-shadow 0.25s ease;
   }
@@ -347,33 +428,7 @@
 
   /* ── Focus ring ── */
   .focus-ring {
-    @apply outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg-page)];
-  }
-
-  /* ───────────────────────────────────────────────
-     BUTTON BASE (optional utility)
-     ─────────────────────────────────────────────── */
-  .btn-primary {
-    @apply inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-blue-500 to-blue-600
-           px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-blue-500/20
-           hover:from-blue-600 hover:to-blue-700 hover:shadow-blue-500/30
-           active:scale-[0.97] transition-all duration-150
-           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50 focus-visible:ring-offset-2;
-  }
-
-  .btn-secondary {
-    @apply inline-flex items-center justify-center rounded-xl
-           border border-[var(--border-default)] bg-[var(--bg-card)]
-           px-5 py-2.5 text-sm font-semibold text-[var(--text-primary)]
-           hover:bg-[var(--bg-hover)] active:scale-[0.97]
-           transition-all duration-150 shadow-sm;
-  }
-
-  .btn-ghost {
-    @apply inline-flex items-center justify-center rounded-xl
-           px-4 py-2 text-sm font-medium text-[var(--text-secondary)]
-           hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)]
-           active:scale-[0.97] transition-all duration-150;
+    @apply outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50 focus-visible:ring-offset-2;
   }
 
   /* ───────────────────────────────────────────────

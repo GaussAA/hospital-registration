@@ -14,7 +14,7 @@ export default function AdminHeader({ title }: AdminHeaderProps) {
       <div className="flex items-center gap-4">
         <Link
           href="/"
-          className="text-sm text-[var(--text-muted)] hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+          className="text-sm text-muted-foreground hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
         >
           返回前台
         </Link>

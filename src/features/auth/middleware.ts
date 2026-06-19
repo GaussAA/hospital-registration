@@ -15,10 +15,7 @@ export function requireAuth(req: NextRequest): AuthResult {
   const token = req.cookies.get("token")?.value;
   if (!token) {
     return {
-      error: NextResponse.json(
-        { code: 40100, data: null, message: "未认证" },
-        { status: 401 },
-      ),
+      error: NextResponse.json({ code: 40100, data: null, message: "未认证" }, { status: 401 }),
     };
   }
 
@@ -27,10 +24,7 @@ export function requireAuth(req: NextRequest): AuthResult {
     return { user };
   } catch {
     return {
-      error: NextResponse.json(
-        { code: 40100, data: null, message: "Token 无效或已过期" },
-        { status: 401 },
-      ),
+      error: NextResponse.json({ code: 40100, data: null, message: "Token 无效或已过期" }, { status: 401 }),
     };
   }
 }
@@ -45,10 +39,7 @@ export function requireAdmin(req: NextRequest): AuthResult {
 
   if (user!.role !== "admin") {
     return {
-      error: NextResponse.json(
-        { code: 40101, data: null, message: "权限不足" },
-        { status: 403 },
-      ),
+      error: NextResponse.json({ code: 40101, data: null, message: "权限不足" }, { status: 403 }),
     };
   }
 

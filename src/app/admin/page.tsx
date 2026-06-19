@@ -9,14 +9,13 @@ async function getStats() {
   const now = new Date();
   const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
 
-  const [todayAppointments, totalHospitals, totalDoctors] =
-    await Promise.all([
-      prisma.registration.count({
-        where: { date: todayStr },
-      }),
-      prisma.hospital.count(),
-      prisma.doctor.count(),
-    ]);
+  const [todayAppointments, totalHospitals, totalDoctors] = await Promise.all([
+    prisma.registration.count({
+      where: { date: todayStr },
+    }),
+    prisma.hospital.count(),
+    prisma.doctor.count(),
+  ]);
 
   return { todayAppointments, totalHospitals, totalDoctors };
 }
@@ -61,20 +60,13 @@ export default async function AdminDashboardPage() {
       <div className="p-6">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {cards.map((card) => (
-            <div
-              key={card.title}
-              className="bg-white rounded-lg shadow p-6 flex items-center gap-4"
-            >
-              <div
-                className={`w-14 h-14 ${card.color} rounded-lg flex items-center justify-center text-2xl`}
-              >
+            <div key={card.title} className="bg-white rounded-lg shadow p-6 flex items-center gap-4">
+              <div className={`w-14 h-14 ${card.color} rounded-lg flex items-center justify-center text-2xl`}>
                 {card.icon}
               </div>
               <div>
-                <p className="text-sm text-[var(--text-secondary)]">{card.title}</p>
-                <p className="text-3xl font-bold text-[var(--text-primary)]">
-                  {card.value}
-                </p>
+                <p className="text-sm text-[var(--muted-foreground)]">{card.title}</p>
+                <p className="text-3xl font-bold text-[var(--foreground)]">{card.value}</p>
               </div>
             </div>
           ))}

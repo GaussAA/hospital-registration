@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { useTheme } from "@/shared/ui/ThemeProvider";
 import type { ConversationSummary } from "../types";
+import { Search, X, MessageSquare, Trash2, Plus, History, Clock } from "lucide-react";
 
 interface ChatHistoryProps {
   isOpen: boolean;
@@ -87,7 +88,8 @@ export default function ChatHistory({
           className="flex items-center justify-between px-4 py-3 flex-shrink-0"
           style={{ borderBottom: `1px solid ${borderColor}` }}
         >
-          <h2 className="text-sm font-semibold" style={{ color: textColor }}>
+          <h2 className="text-sm font-semibold flex items-center gap-2" style={{ color: textColor }}>
+            <History size={16} />
             对话历史
           </h2>
           <div className="flex items-center gap-1">
@@ -99,10 +101,7 @@ export default function ChatHistory({
                 color: "#fff",
               }}
             >
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                <line x1="12" y1="5" x2="12" y2="19" />
-                <line x1="5" y1="12" x2="19" y2="12" />
-              </svg>
+              <Plus size={12} strokeWidth={2.5} />
               新对话
             </button>
             <button
@@ -112,10 +111,7 @@ export default function ChatHistory({
               onMouseOver={(e) => (e.currentTarget.style.background = hoverBg)}
               onMouseOut={(e) => (e.currentTarget.style.background = "transparent")}
             >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <line x1="18" y1="6" x2="6" y2="18" />
-                <line x1="6" y1="6" x2="18" y2="18" />
-              </svg>
+              <X size={14} />
             </button>
           </div>
         </div>
@@ -129,10 +125,7 @@ export default function ChatHistory({
               color: mutedColor,
             }}
           >
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <circle cx="11" cy="11" r="8" />
-              <line x1="21" y1="21" x2="16.65" y2="16.65" />
-            </svg>
+            <Search size={12} />
             <input
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
@@ -146,10 +139,7 @@ export default function ChatHistory({
                 className="p-0.5 rounded"
                 style={{ color: mutedColor }}
               >
-                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <line x1="18" y1="6" x2="6" y2="18" />
-                  <line x1="6" y1="6" x2="18" y2="18" />
-                </svg>
+                <X size={10} />
               </button>
             )}
           </div>
@@ -164,10 +154,7 @@ export default function ChatHistory({
                   background: isDark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.03)",
                 }}
               >
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={mutedColor} strokeWidth="1.5">
-                  <circle cx="12" cy="12" r="10" />
-                  <polyline points="12 6 12 12 16 14" />
-                </svg>
+                <Clock size={18} stroke={mutedColor} strokeWidth={1.5} />
               </div>
               <p className="text-xs" style={{ color: mutedColor }}>
                 {searchQuery ? "未找到匹配的对话" : "暂无对话记录"}
@@ -247,13 +234,11 @@ export default function ChatHistory({
                       }}
                     >
                       {/* Icon */}
-                      <svg
-                        width="14" height="14" viewBox="0 0 24 24" fill="none"
+                      <MessageSquare
+                        size={14}
                         stroke={isActive ? "#6366f1" : mutedColor}
-                        strokeWidth="2" className="flex-shrink-0"
-                      >
-                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-                      </svg>
+                        className="flex-shrink-0"
+                      />
 
                       {/* Content */}
                       <div className="flex-1 min-w-0">
@@ -299,10 +284,7 @@ export default function ChatHistory({
                           }
                         }}
                       >
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                          <polyline points="3 6 5 6 21 6" />
-                          <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-                        </svg>
+                        <Trash2 size={12} />
                       </span>
                     </div>
                   )}

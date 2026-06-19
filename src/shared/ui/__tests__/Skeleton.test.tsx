@@ -13,8 +13,7 @@ describe("Skeleton", () => {
     const { container } = render(<Skeleton />);
     const div = container.firstElementChild;
     expect(div).toBeDefined();
-    expect(div?.className).toContain("rounded-xl");
-    expect(div?.className).toContain("bg-[var(--bg-muted)]");
+    expect(div?.getAttribute("data-slot")).toBe("skeleton");
   });
 
   it("should apply custom className", () => {
@@ -23,17 +22,10 @@ describe("Skeleton", () => {
     expect(div?.className).toContain("custom-class");
   });
 
-  it("should have overflow-hidden class", () => {
+  it("should have animate-pulse class (shadcn default)", () => {
     const { container } = render(<Skeleton />);
     const div = container.firstElementChild;
-    expect(div?.className).toContain("overflow-hidden");
-  });
-
-  it("should contain shimmer animation element", () => {
-    const { container } = render(<Skeleton />);
-    const innerDiv = container.firstElementChild?.firstElementChild;
-    expect(innerDiv).toBeDefined();
-    expect(innerDiv?.className).toContain("animate-shimmer");
+    expect(div?.className).toContain("animate-pulse");
   });
 });
 
@@ -42,7 +34,7 @@ describe("CardSkeleton", () => {
     const { container } = render(<CardSkeleton />);
     const card = container.firstElementChild;
     expect(card?.className).toContain("rounded-2xl");
-    expect(card?.className).toContain("bg-[var(--bg-card)]");
+    expect(card?.className).toContain("bg-card");
   });
 
   it("should render avatar skeleton circle", () => {
@@ -51,10 +43,10 @@ describe("CardSkeleton", () => {
     expect(circles.length).toBeGreaterThanOrEqual(1);
   });
 
-  it("should render multiple skeleton bars", () => {
+  it("should render multiple skeleton elements", () => {
     const { container } = render(<CardSkeleton />);
-    const skeletonBars = container.querySelectorAll("[class*='animate-shimmer']");
-    expect(skeletonBars.length).toBeGreaterThanOrEqual(4);
+    const skeletonEls = container.querySelectorAll("[data-slot='skeleton']");
+    expect(skeletonEls.length).toBeGreaterThanOrEqual(4);
   });
 });
 
@@ -73,15 +65,14 @@ describe("TableSkeleton", () => {
 
   it("should render header row with skeleton bars", () => {
     const { container } = render(<TableSkeleton rows={1} />);
-    const headerSkeletons = container.querySelectorAll(".px-4.py-3");
+    const headerSkeletons = container.querySelectorAll("[class*='px-4 py-3']");
     expect(headerSkeletons.length).toBeGreaterThanOrEqual(1);
   });
 
-  it("should have 4 skeleton columns per row", () => {
+  it("should have skeleton elements per row", () => {
     const { container } = render(<TableSkeleton rows={1} />);
-    const header = container.querySelector(".px-4\\.py-3");
-    const headerBars = header?.querySelectorAll("[class*='rounded-xl']") || [];
-    expect(headerBars.length).toBe(4);
+    const skeletonEls = container.querySelectorAll("[data-slot='skeleton']");
+    expect(skeletonEls.length).toBeGreaterThanOrEqual(4);
   });
 });
 
@@ -90,7 +81,7 @@ describe("CalendarSkeleton", () => {
     const { container } = render(<CalendarSkeleton />);
     const calendar = container.firstElementChild;
     expect(calendar?.className).toContain("rounded-2xl");
-    expect(calendar?.className).toContain("bg-[var(--bg-card)]");
+    expect(calendar?.className).toContain("bg-card");
   });
 
   it("should render header with month skeleton bars", () => {

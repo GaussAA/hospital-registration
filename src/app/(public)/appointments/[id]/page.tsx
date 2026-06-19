@@ -14,7 +14,7 @@ const statusLabels: Record<string, string> = {
 const statusStyles: Record<string, string> = {
   pending: "bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-800",
   done: "bg-green-50 dark:bg-green-500/10 text-green-600 dark:text-green-400 border-green-200 dark:border-green-800",
-  cancelled: "bg-[var(--bg-muted)] text-[var(--text-muted)] border-[var(--border-default)]",
+  cancelled: "bg-[var(--muted)] text-[var(--muted-foreground)] border-[var(--border)]",
 };
 
 const statusIcons: Record<string, string> = {
@@ -96,12 +96,12 @@ export default async function AppointmentDetailPage(props: PageProps) {
   return (
     <div className="mx-auto max-w-lg px-4 py-6">
       {/* Breadcrumb */}
-      <nav className="mb-6 text-sm text-[var(--text-muted)]">
+      <nav className="mb-6 text-sm text-[var(--muted-foreground)]">
         <Link href="/appointments" className="transition-colors hover:text-blue-600 dark:hover:text-blue-400">
           我的挂号
         </Link>
         <span className="mx-2">/</span>
-        <span className="text-[var(--text-secondary)]">挂号详情</span>
+        <span className="text-[var(--muted-foreground)]">挂号详情</span>
       </nav>
 
       {/* ── Detail Card (Flat) ── */}
@@ -239,15 +239,15 @@ export default async function AppointmentDetailPage(props: PageProps) {
         </div>
 
         {/* Bottom footer */}
-        <div className="border-t border-dashed border-[var(--border-default)] px-5 py-3 flex items-center justify-between">
-          <span className="text-xs text-[var(--text-muted)]">{formatDateTime(registration.createdAt)} 创建</span>
+        <div className="border-t border-dashed border-[var(--border)] px-5 py-3 flex items-center justify-between">
+          <span className="text-xs text-[var(--muted-foreground)]">{formatDateTime(registration.createdAt)} 创建</span>
           <span
             className={`text-xs font-medium ${
               status === "pending"
                 ? "text-blue-600 dark:text-blue-400"
                 : status === "done"
                   ? "text-green-600 dark:text-green-400"
-                  : "text-[var(--text-muted)]"
+                  : "text-[var(--muted-foreground)]"
             }`}
           >
             {statusLabels[status] ?? status}
@@ -300,17 +300,17 @@ function InfoRow({
       </div>
       {/* Content */}
       <div className="flex-1 min-w-0">
-        <div className="text-xs text-[var(--text-muted)]">{label}</div>
+        <div className="text-xs text-[var(--muted-foreground)]">{label}</div>
         <div className="flex items-center gap-2">
           <span
             className={`text-sm truncate ${
-              highlight ? "font-semibold text-[var(--text-primary)]" : "font-medium text-[var(--text-primary)]"
+              highlight ? "font-semibold text-[var(--foreground)]" : "font-medium text-[var(--foreground)]"
             }`}
           >
             {value}
           </span>
           {extra && (
-            <span className="shrink-0 text-xs text-[var(--text-muted)] bg-[var(--bg-muted)] rounded-md px-1.5 py-0.5">
+            <span className="shrink-0 text-xs text-[var(--muted-foreground)] bg-[var(--muted)] rounded-md px-1.5 py-0.5">
               {extra}
             </span>
           )}

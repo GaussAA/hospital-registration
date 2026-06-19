@@ -3,6 +3,8 @@
 /* eslint-disable react-hooks/set-state-in-effect -- Controlled form init from props */
 
 import { useState, useEffect } from "react";
+import { Input } from "@/shared/ui";
+import { Label } from "@/shared/ui";
 
 interface ScheduleFormData {
   date: string;
@@ -90,16 +92,14 @@ export default function ScheduleForm({
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
+          <Label className="mb-1">
             日期 <span className="text-red-500">*</span>
-          </label>
-          <input
+          </Label>
+          <Input
             type="date"
             value={form.date}
             onChange={(e) => updateField("date", e.target.value)}
-            className={`w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 ${
-              errors.date ? "border-red-500 dark:border-red-400" : "border-gray-300 dark:border-gray-600"
-            }`}
+            className={errors.date ? "border-red-500 dark:border-red-400 focus-visible:ring-red-500/50" : ""}
           />
           {errors.date && (
             <p className="text-red-500 dark:text-red-400 text-xs mt-1">{errors.date}</p>
@@ -107,9 +107,9 @@ export default function ScheduleForm({
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
+          <Label className="mb-1">
             时段
-          </label>
+          </Label>
           <select
             value={form.timeSlot}
             onChange={(e) => updateField("timeSlot", e.target.value)}
@@ -124,10 +124,10 @@ export default function ScheduleForm({
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
+          <Label className="mb-1">
             号源数量 <span className="text-red-500">*</span>
-          </label>
-          <input
+          </Label>
+          <Input
             type="number"
             min={1}
             max={999}
@@ -135,9 +135,7 @@ export default function ScheduleForm({
             onChange={(e) =>
               updateField("quota", parseInt(e.target.value) || 0)
             }
-            className={`w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 ${
-              errors.quota ? "border-red-500 dark:border-red-400" : "border-gray-300 dark:border-gray-600"
-            }`}
+            className={errors.quota ? "border-red-500 dark:border-red-400 focus-visible:ring-red-500/50" : ""}
           />
           {errors.quota && (
             <p className="text-red-500 dark:text-red-400 text-xs mt-1">{errors.quota}</p>
@@ -145,9 +143,9 @@ export default function ScheduleForm({
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
+          <Label className="mb-1">
             号源类型
-          </label>
+          </Label>
           <select
             value={form.type}
             onChange={(e) => updateField("type", e.target.value)}

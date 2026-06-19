@@ -3,6 +3,8 @@
 /* eslint-disable react-hooks/set-state-in-effect -- Controlled form init from props */
 
 import { useState, useEffect } from "react";
+import { Input } from "@/shared/ui";
+import { Label } from "@/shared/ui";
 
 interface DepartmentFormData {
   name: string;
@@ -70,16 +72,14 @@ export default function DepartmentForm({
       <input type="hidden" name="hospitalId" value={hospitalId} />
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
+        <Label className="mb-1">
           科室名称 <span className="text-red-500">*</span>
-        </label>
-        <input
+        </Label>
+        <Input
           type="text"
           value={form.name}
           onChange={(e) => updateField("name", e.target.value)}
-          className={`w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 ${
-            errors.name ? "border-red-500 dark:border-red-400" : "border-gray-300 dark:border-gray-600"
-          }`}
+          className={errors.name ? "border-red-500 dark:border-red-400 focus-visible:ring-red-500/50" : ""}
           placeholder="请输入科室名称"
         />
         {errors.name && (
@@ -88,9 +88,9 @@ export default function DepartmentForm({
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
+        <Label className="mb-1">
           描述
-        </label>
+        </Label>
         <textarea
           value={form.description}
           onChange={(e) => updateField("description", e.target.value)}

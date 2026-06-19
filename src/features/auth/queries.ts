@@ -70,10 +70,7 @@ export async function register(data: RegisterData): Promise<RegisterResult> {
 /**
  * Login with account (email or phone) and password.
  */
-export async function login(
-  account: string,
-  password: string
-): Promise<LoginResult> {
+export async function login(account: string, password: string): Promise<LoginResult> {
   if (!account || !password) {
     throw new ValidationError("请填写账号和密码");
   }
@@ -121,9 +118,7 @@ export async function login(
 
 import type { PatientProfileDTO } from "./types";
 
-export async function getPatientProfilesByUser(
-  userId: string,
-): Promise<PatientProfileDTO[]> {
+export async function getPatientProfilesByUser(userId: string): Promise<PatientProfileDTO[]> {
   const prisma = await getPrisma();
 
   const profiles = await prisma.patientProfile.findMany({

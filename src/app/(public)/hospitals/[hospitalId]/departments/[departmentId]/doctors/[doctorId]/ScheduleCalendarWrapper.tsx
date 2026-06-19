@@ -139,7 +139,7 @@ export default function ScheduleCalendarWrapper({
                 <h3 className="text-base font-semibold text-gray-800 dark:text-gray-100">
                   {step === "profile" ? "选择就诊人" : "确认挂号"}
                 </h3>
-                <p className="text-xs text-[var(--text-secondary)] mt-0.5">
+                <p className="text-xs text-[var(--muted-foreground)] mt-0.5">
                   {doctorName} · {typeLabels[selectedSlot.type] ?? selectedSlot.type} ·
                   {formatDate(selectedSlot.date)} {timeSlotLabels[selectedSlot.timeSlot] ?? selectedSlot.timeSlot}
                 </p>

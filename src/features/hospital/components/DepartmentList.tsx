@@ -4,7 +4,7 @@ import type { DepartmentCardData } from "./DepartmentCard";
 export default function DepartmentList({ departments }: { departments: DepartmentCardData[] }) {
   if (departments.length === 0) {
     return (
-      <div className="text-center py-12 text-[var(--text-muted)]">
+      <div className="text-center py-12 text-[var(--muted-foreground)]">
         <p className="text-lg">暂无科室信息</p>
       </div>
     );

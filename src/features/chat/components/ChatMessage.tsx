@@ -5,6 +5,7 @@ import { useEffect, useRef, useState, type ComponentPropsWithoutRef, type ReactN
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import type { Components } from "react-markdown";
+import { ChevronRight, LoaderCircle, Copy, Check, ThumbsUp, ThumbsDown } from "lucide-react";
 
 /* ── Types ── */
 
@@ -84,15 +85,12 @@ function CollapsibleSection({
         onMouseOver={(e) => (e.currentTarget.style.background = isDark ? "rgba(148,163,184,0.08)" : "rgba(148,163,184,0.06)")}
         onMouseOut={(e) => (e.currentTarget.style.background = isDark ? "rgba(148,163,184,0.04)" : "rgba(148,163,184,0.03)")}
       >
-        {/* Chevron */}
-        <svg
-          width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-          strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
+        <ChevronRight
+          size={10}
           className="flex-shrink-0 transition-transform duration-200"
           style={{ transform: open ? "rotate(90deg)" : "rotate(0deg)" }}
-        >
-          <polyline points="9 18 15 12 9 6" />
-        </svg>
+          strokeWidth={2.5}
+        />
         <span>{icon}</span>
         <span className="font-medium">{label}</span>
       </button>
@@ -266,16 +264,11 @@ export default function ChatMessage({
               }}
             >
               <div className="flex-shrink-0 mt-0.5">
-                <svg
-                  className="animate-pulse"
-                  width="14" height="14" viewBox="0 0 24 24" fill="none"
+                <LoaderCircle
+                  size={14}
+                  className="animate-spin"
                   style={{ color: isDark ? "#c4b5fd" : "#8b5cf6" }}
-                >
-                  <path d="M12 2a10 10 0 0 1 10 10" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-                    <animateTransform attributeName="transform" type="rotate" from="0 12 12" to="360 12 12" dur="1.5s" repeatCount="indefinite" />
-                  </path>
-                  <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.5" opacity="0.2" />
-                </svg>
+                />
               </div>
               <div className="flex-1 min-w-0">
                 <span className="text-xs font-medium" style={{ color: isDark ? "#c4b5fd" : "#8b5cf6" }}>
@@ -309,14 +302,11 @@ export default function ChatMessage({
                 border: `1px solid ${isDark ? "rgba(99,102,241,0.2)" : "rgba(99,102,241,0.1)"}`,
               }}
             >
-              <svg
+              <LoaderCircle
+                size={14}
                 className="animate-spin flex-shrink-0"
-                width="14" height="14" viewBox="0 0 24 24" fill="none"
                 style={{ color: isDark ? "#a5b4fc" : "#6366f1" }}
-              >
-                <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" opacity="0.3" />
-                <path d="M12 2a10 10 0 0 1 10 10" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
-              </svg>
+              />
               <span className="text-xs font-medium" style={{ color: isDark ? "#a5b4fc" : "#6366f1" }}>
                 {getToolLabel(executingToolName)}…
               </span>
@@ -383,17 +373,12 @@ export default function ChatMessage({
                   >
                     {copied ? (
                       <>
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                          <polyline points="20 6 9 17 4 12" />
-                        </svg>
+                        <Check size={12} />
                         已复制
                       </>
                     ) : (
                       <>
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                          <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
-                          <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
-                        </svg>
+                        <Copy size={12} />
                         复制
                       </>
                     )}
@@ -418,9 +403,10 @@ export default function ChatMessage({
                     }}
                     title="有帮助"
                   >
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill={feedbackSent === "helpful" ? "#22c55e" : "none"} stroke="currentColor" strokeWidth="2">
-                      <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3" />
-                    </svg>
+                    <ThumbsUp
+                      size={12}
+                      fill={feedbackSent === "helpful" ? "#22c55e" : "none"}
+                    />
                     {feedbackSent === "helpful" && <span style={{ color: "#22c55e" }}>已赞</span>}
                   </button>
                   <button
@@ -443,10 +429,10 @@ export default function ChatMessage({
                     }}
                     title="没有帮助"
                   >
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill={feedbackSent === "not_helpful" ? "#ef4444" : "none"} stroke="currentColor" strokeWidth="2">
-                      <path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3z" />
-                      <line x1="17" y1="2" x2="22" y2="2" />
-                    </svg>
+                    <ThumbsDown
+                      size={12}
+                      fill={feedbackSent === "not_helpful" ? "#ef4444" : "none"}
+                    />
                     {feedbackSent === "not_helpful" && <span style={{ color: "#ef4444" }}>已踩</span>}
                   </button>
                   {/* 反馈错误提示 */}
@@ -487,14 +473,9 @@ export default function ChatMessage({
           title="复制"
         >
           {copied ? (
-            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-              <polyline points="20 6 9 17 4 12" />
-            </svg>
+            <Check size={10} strokeWidth={2.5} />
           ) : (
-            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-              <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
-              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
-            </svg>
+            <Copy size={10} strokeWidth={2.5} />
           )}
         </button>
       </div>

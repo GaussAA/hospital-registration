@@ -36,12 +36,12 @@ export default function SlotSelector({
 
   if (schedules.length === 0) {
     return (
-      <div className="rounded-2xl border border-[var(--border-default)] bg-[var(--bg-card)] px-8 py-14 text-center">
+      <div className="rounded-2xl border border-[var(--border)] bg-[var(--card)] px-8 py-14 text-center">
         <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-blue-50 dark:bg-blue-500/10 text-3xl mb-4">
           📅
         </div>
-        <p className="text-sm text-[var(--text-secondary)]">暂无可用号源</p>
-        <p className="text-xs text-[var(--text-muted)] mt-1.5">请稍后再来查看或选择其他医生</p>
+        <p className="text-sm text-[var(--muted-foreground)]">暂无可用号源</p>
+        <p className="text-xs text-[var(--muted-foreground)] mt-1.5">请稍后再来查看或选择其他医生</p>
       </div>
     );
   }
@@ -50,7 +50,7 @@ export default function SlotSelector({
     <div className="space-y-4">
       <div className="flex items-center gap-3">
         <div className="w-1 h-6 rounded-full bg-gradient-to-b from-blue-500 to-indigo-500" />
-        <h3 className="text-lg font-semibold text-[var(--text-primary)]">选择就诊时间</h3>
+        <h3 className="text-lg font-semibold text-[var(--foreground)]">选择就诊时间</h3>
       </div>
 
       <SlotSelectorDesktop

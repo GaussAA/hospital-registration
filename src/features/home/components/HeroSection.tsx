@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { Search } from "lucide-react";
 import heroPoster from "@/features/home/assets/hero-medical.jpg";
 
 export default function HeroSection() {
@@ -49,7 +50,7 @@ export default function HeroSection() {
       </div>
 
       {/* ── Bottom gradient transition ── */}
-      <div className="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-[var(--bg-page)] to-transparent" />
+      <div className="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-background to-transparent" />
 
       {/* ── Content ── */}
       <div className="relative w-full max-w-7xl mx-auto px-4 py-24 sm:py-32 lg:py-40">
@@ -83,19 +84,7 @@ export default function HeroSection() {
             <div className="relative group">
               <div className="absolute -inset-1 bg-gradient-to-r from-blue-400/30 via-indigo-400/20 to-cyan-400/30 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
               <div className="relative flex items-center glass rounded-2xl shadow-2xl overflow-hidden group-hover:border-white/30 transition-all duration-300">
-                <svg
-                  className="w-5 h-5 ml-5 text-blue-200/60 shrink-0"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                  />
-                </svg>
+                <Search className="w-5 h-5 ml-5 text-blue-200/60 shrink-0" />
                 <input
                   type="text"
                   value={keyword}

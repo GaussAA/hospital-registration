@@ -16,10 +16,10 @@ export default async function AppointmentsPage() {
   if (!token) {
     return (
       <div className="mx-auto max-w-3xl px-4 py-16 text-center">
-        <h1 className="mb-4 text-2xl font-bold text-[var(--text-primary)]">
+        <h1 className="mb-4 text-2xl font-bold text-[var(--foreground)]">
           请先登录
         </h1>
-        <p className="mb-6 text-[var(--text-secondary)]">
+        <p className="mb-6 text-[var(--muted-foreground)]">
           请先登录后再查看挂号记录
         </p>
         <Link
@@ -38,7 +38,7 @@ export default async function AppointmentsPage() {
   } catch {
     return (
       <div className="mx-auto max-w-3xl px-4 py-16 text-center">
-        <h1 className="mb-4 text-2xl font-bold text-[var(--text-primary)]">
+        <h1 className="mb-4 text-2xl font-bold text-[var(--foreground)]">
           登录已过期
         </h1>
         <Link
@@ -80,7 +80,7 @@ export default async function AppointmentsPage() {
     <div className="mx-auto max-w-3xl px-4 py-6">
       {/* Header */}
       <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-xl font-bold text-[var(--text-primary)]">我的挂号</h1>
+        <h1 className="text-xl font-bold text-[var(--foreground)]">我的挂号</h1>
         <Link
           href="/hospitals"
           className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-blue-700"

@@ -1,29 +1,24 @@
 "use client";
 
+import { Skeleton as ShadcnSkeleton } from "@/components/ui/skeleton";
+
 interface SkeletonProps {
   className?: string;
 }
 
 /**
- * Skeleton — a shimmer placeholder for loading states.
- * Uses the new animate-shimmer global for a more natural effect.
+ * Skeleton — 基础骨架屏组件（使用 shadcn Skeleton）
  */
 export function Skeleton({ className = "" }: SkeletonProps) {
-  return (
-    <div
-      className={`relative overflow-hidden rounded-xl bg-[var(--bg-muted)] ${className}`}
-    >
-      <div className="absolute inset-0 animate-shimmer" />
-    </div>
-  );
+  return <ShadcnSkeleton className={className} />;
 }
 
 /**
- * CardSkeleton — mimics a standard card in the app.
+ * CardSkeleton — 模拟标准卡片加载状态
  */
 export function CardSkeleton() {
   return (
-    <div className="rounded-2xl border border-[var(--border-default)] bg-[var(--bg-card)] p-5 space-y-4">
+    <div className="rounded-2xl border border-border bg-card p-5 space-y-4">
       <div className="flex items-center gap-3">
         <Skeleton className="w-12 h-12 rounded-full" />
         <div className="space-y-2 flex-1">
@@ -39,12 +34,11 @@ export function CardSkeleton() {
 }
 
 /**
- * TableSkeleton — mimics a 5-row table loading state.
+ * TableSkeleton — 模拟表格加载状态
  */
 export function TableSkeleton({ rows = 5 }: { rows?: number }) {
   return (
     <div className="space-y-3 p-4">
-      {/* Header */}
       <div className="flex gap-4 px-4 py-3">
         <Skeleton className="h-4 w-1/4" />
         <Skeleton className="h-4 w-1/4" />
@@ -52,7 +46,7 @@ export function TableSkeleton({ rows = 5 }: { rows?: number }) {
         <Skeleton className="h-4 w-1/6" />
       </div>
       {Array.from({ length: rows }).map((_, i) => (
-        <div key={i} className="flex gap-4 px-4 py-3 border-t border-[var(--border-light)]">
+        <div key={i} className="flex gap-4 px-4 py-3 border-t border-border/60">
           <Skeleton className="h-4 w-1/4" />
           <Skeleton className="h-4 w-1/4" />
           <Skeleton className="h-4 w-1/4" />
@@ -64,12 +58,12 @@ export function TableSkeleton({ rows = 5 }: { rows?: number }) {
 }
 
 /**
- * CalendarSkeleton — mimics the schedule calendar loading state.
+ * CalendarSkeleton — 模拟日历排班加载状态
  */
 export function CalendarSkeleton() {
   return (
-    <div className="rounded-2xl border border-[var(--border-default)] bg-[var(--bg-card)] overflow-hidden">
-      <div className="p-4 border-b border-[var(--border-light)]">
+    <div className="rounded-2xl border border-border bg-card overflow-hidden">
+      <div className="p-4 border-b border-border/60">
         <Skeleton className="h-5 w-28 mb-1" />
         <Skeleton className="h-3 w-36" />
       </div>

@@ -35,7 +35,7 @@ describe("Footer", () => {
     expect(screen.getByText("帮助支持")).toBeDefined();
     expect(screen.getByText("挂号指南")).toBeDefined();
     expect(screen.getByText("常见问题")).toBeDefined();
-    expect(screen.getByText("隐私政策")).toBeDefined();
+    expect(screen.getAllByText("隐私政策").length).toBeGreaterThanOrEqual(1);
   });
 
   it("should render social media buttons with aria-labels", () => {

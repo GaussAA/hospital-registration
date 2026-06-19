@@ -1,14 +1,6 @@
 "use client";
 
-import {
-  createContext,
-  useContext,
-  useState,
-  useEffect,
-  useCallback,
-  startTransition,
-  type ReactNode,
-} from "react";
+import { createContext, useContext, useState, useEffect, useCallback, startTransition, type ReactNode } from "react";
 
 /* ── Types ── */
 interface UserInfo {
@@ -68,9 +60,5 @@ export function UserProvider({ children }: { children: ReactNode }) {
     });
   }, [refreshUser]);
 
-  return (
-    <UserContext.Provider value={{ user, loading, setUser, refreshUser }}>
-      {children}
-    </UserContext.Provider>
-  );
+  return <UserContext.Provider value={{ user, loading, setUser, refreshUser }}>{children}</UserContext.Provider>;
 }

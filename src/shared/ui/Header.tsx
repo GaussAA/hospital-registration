@@ -3,8 +3,10 @@
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import { useState, useEffect, useCallback } from "react";
+import { Plus } from "lucide-react";
 import ThemeToggle from "@/shared/ui/ThemeToggle";
 import { useUser } from "@/features/auth/client";
+import { Button } from "@/components/ui/button";
 
 export default function Header() {
   const router = useRouter();
@@ -40,8 +42,8 @@ export default function Header() {
     <header
       className={`sticky top-0 z-50 transition-all duration-300 ${
         scrolled
-          ? "bg-[var(--bg-header)]/80 backdrop-blur-xl shadow-sm border-b border-[var(--border-default)]"
-          : "bg-[var(--bg-header)] border-b border-transparent"
+          ? "bg-background/80 backdrop-blur-xl shadow-sm border-b border-border"
+          : "bg-background border-b border-transparent"
       }`}
     >
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4">
@@ -51,11 +53,9 @@ export default function Header() {
           className="flex items-center gap-2.5 transition-opacity hover:opacity-80"
         >
           <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-blue-700 text-white shadow-lg shadow-blue-500/20">
-            <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v8M8 12h8" />
-            </svg>
+            <Plus className="h-5 w-5" />
           </div>
-          <span className="text-lg font-bold text-[var(--text-primary)]">
+          <span className="text-lg font-bold text-foreground">
             健康挂号
           </span>
         </Link>
@@ -71,7 +71,7 @@ export default function Header() {
                 className={`rounded-lg px-3.5 py-2 text-sm font-medium transition-colors ${
                   isActive
                     ? "bg-blue-50 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400"
-                    : "text-[var(--text-secondary)] hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)]"
+                    : "text-muted-foreground hover:bg-accent hover:text-foreground"
                 }`}
               >
                 {link.label}
@@ -86,30 +86,29 @@ export default function Header() {
             <div className="flex items-center gap-2">
               <Link
                 href={user.role === "admin" ? "/admin" : "/appointments"}
-                className="hidden rounded-lg px-3 py-1.5 text-sm font-medium text-[var(--text-secondary)] transition-colors hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)] sm:block"
+                className="hidden rounded-lg px-3 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground sm:block"
               >
                 {user.name}
               </Link>
-              <button
+              <Button
+                variant="ghost"
+                size="sm"
                 onClick={handleLogout}
-                className="rounded-lg px-3 py-1.5 text-sm font-medium text-red-500 transition-colors hover:bg-red-50 dark:hover:bg-red-500/10"
+                className="text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10"
               >
                 退出
-              </button>
+              </Button>
             </div>
           ) : (
             <div className="flex items-center gap-1.5">
               <Link
                 href="/auth/login"
-                className="rounded-lg px-3.5 py-2 text-sm font-medium text-[var(--text-secondary)] transition-colors hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)]"
+                className="rounded-lg px-3.5 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
               >
                 登录
               </Link>
-              <Link
-                href="/auth/register"
-                className="rounded-lg bg-blue-600 px-3.5 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700"
-              >
-                注册
+              <Link href="/auth/register">
+                <Button size="sm">注册</Button>
               </Link>
             </div>
           )}

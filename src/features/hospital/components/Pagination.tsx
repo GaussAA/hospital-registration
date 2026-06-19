@@ -1,6 +1,8 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { Button } from "@/shared/ui";
 
 interface PaginationProps {
   page: number;
@@ -25,43 +27,45 @@ export default function Pagination({
 
   return (
     <div className="flex items-center justify-center gap-2 py-4">
-      <button
+      <Button
         type="button"
+        variant="outline"
+        size="sm"
         disabled={page <= 1}
         onClick={() => goToPage(page - 1)}
-        className="px-4 py-2 rounded-lg text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-40 bg-white dark:bg-[#1e293b] text-gray-700 dark:text-gray-200 border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 enabled:active:scale-95"
       >
-        ← 上一页
-      </button>
+        <ChevronLeft className="w-4 h-4" />
+        上一页
+      </Button>
 
       {Array.from({ length: Math.min(totalPages, 10) }, (_, i) => {
         const startPage = Math.max(1, page - 4);
         const p = startPage + i;
         if (p > totalPages) return null;
         return (
-          <button
+          <Button
             key={p}
             type="button"
+            variant={p === page ? "default" : "outline"}
+            size="sm"
             onClick={() => goToPage(p)}
-            className={`px-3 py-2 rounded-lg text-sm font-medium transition-all ${
-              p === page
-                ? "bg-blue-600 text-white shadow-sm scale-105"
-                : "bg-white dark:bg-[#1e293b] text-gray-700 dark:text-gray-200 border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700"
-            }`}
+            className={p === page ? "shadow-sm scale-105" : ""}
           >
             {p}
-          </button>
+          </Button>
         );
       })}
 
-      <button
+      <Button
         type="button"
+        variant="outline"
+        size="sm"
         disabled={page >= totalPages}
         onClick={() => goToPage(page + 1)}
-        className="px-4 py-2 rounded-lg text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-40 bg-white dark:bg-[#1e293b] text-gray-700 dark:text-gray-200 border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 enabled:active:scale-95"
       >
-        下一页 →
-      </button>
+        下一页
+        <ChevronRight className="w-4 h-4" />
+      </Button>
     </div>
   );
 }

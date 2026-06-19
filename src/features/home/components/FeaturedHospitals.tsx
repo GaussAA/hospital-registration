@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import { ArrowRight } from "lucide-react";
 import { CardSkeleton } from "@/shared/ui/Skeleton";
 import hospitalPlaceholder from "@/shared/assets/hospital-placeholder.svg";
 
@@ -43,14 +44,14 @@ export default function FeaturedHospitals() {
 
   if (!loaded) {
     return (
-      <section className="bg-[var(--bg-muted)]/50 py-24">
+      <section className="bg-[var(--muted)]/50 py-24">
         <div className="max-w-7xl mx-auto px-4">
           <div className="text-center mb-12">
             <span className="inline-flex items-center gap-2 rounded-full bg-green-50 dark:bg-green-500/10 px-4 py-1.5 text-xs font-medium text-green-600 dark:text-green-400 mb-4">
               Partners
             </span>
-            <h2 className="text-3xl font-bold text-[var(--text-primary)] mb-3 tracking-tight">合作医院</h2>
-            <p className="text-[var(--text-secondary)] text-sm">为您推荐优质医疗资源</p>
+            <h2 className="text-3xl font-bold text-[var(--foreground)] mb-3 tracking-tight">合作医院</h2>
+            <p className="text-[var(--muted-foreground)] text-sm">为您推荐优质医疗资源</p>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
             <CardSkeleton />
@@ -65,15 +66,15 @@ export default function FeaturedHospitals() {
   if (hospitals.length === 0) return null;
 
   return (
-    <section className="bg-[var(--bg-muted)]/50 py-24">
+    <section className="bg-[var(--muted)]/50 py-24">
       <div className="max-w-7xl mx-auto px-4">
         {/* Section header */}
         <div className="text-center mb-14">
           <span className="inline-flex items-center gap-2 rounded-full bg-green-50 dark:bg-green-500/10 px-4 py-1.5 text-xs font-medium text-green-600 dark:text-green-400 mb-4">
             Partners
           </span>
-          <h2 className="text-3xl font-bold text-[var(--text-primary)] mb-3 tracking-tight">合作医院</h2>
-          <p className="text-[var(--text-secondary)] max-w-xl mx-auto">
+          <h2 className="text-3xl font-bold text-[var(--foreground)] mb-3 tracking-tight">合作医院</h2>
+          <p className="text-[var(--muted-foreground)] max-w-xl mx-auto">
             汇聚全市优质医疗资源，为您提供专业、可靠的医疗服务
           </p>
         </div>
@@ -83,7 +84,7 @@ export default function FeaturedHospitals() {
           {hospitals.map((hospital, i) => (
             <div
               key={hospital.id}
-              className="group bg-[var(--bg-card)] rounded-2xl border border-[var(--border-default)] overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1.5 cursor-pointer animate-slide-up"
+              className="group bg-[var(--card)] rounded-2xl border border-[var(--border)] overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1.5 cursor-pointer animate-slide-up"
               style={{ animationDelay: `${i * 0.06}s` }}
               onClick={() => router.push(`/hospitals/${hospital.id}`)}
             >
@@ -119,11 +120,11 @@ export default function FeaturedHospitals() {
 
               {/* Info */}
               <div className="p-5">
-                <h3 className="text-lg font-semibold text-[var(--text-primary)] mb-1.5 line-clamp-1 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                <h3 className="text-lg font-semibold text-[var(--foreground)] mb-1.5 line-clamp-1 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                   {hospital.name}
                 </h3>
-                <p className="text-sm text-[var(--text-secondary)] mb-1 line-clamp-1">{hospital.address}</p>
-                <p className="text-sm text-[var(--text-muted)]">
+                <p className="text-sm text-[var(--muted-foreground)] mb-1 line-clamp-1">{hospital.address}</p>
+                <p className="text-sm text-[var(--muted-foreground)]">
                   {hospital.departmentCount} 个科室 · {hospital.doctorCount} 位医生
                 </p>
               </div>
@@ -133,16 +134,9 @@ export default function FeaturedHospitals() {
 
         {/* View all */}
         <div className="text-center">
-          <button onClick={() => router.push("/hospitals")} className="btn-secondary group">
+          <button onClick={() => router.push("/hospitals")} className="inline-flex items-center justify-center rounded-xl border border-border bg-card px-5 py-2.5 text-sm font-semibold text-foreground hover:bg-accent active:scale-[0.97] transition-all duration-150 shadow-sm group">
             <span>查看全部医院</span>
-            <svg
-              className="w-4 h-4 transition-transform group-hover:translate-x-0.5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-            </svg>
+            <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
           </button>
         </div>
       </div>

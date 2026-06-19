@@ -1,7 +1,12 @@
 "use client";
 
-import { ToastProvider } from "./Toast";
+import { Toaster } from "@/components/ui/sonner";
 
 export default function AdminToastWrapper({ children }: { children: React.ReactNode }) {
-  return <ToastProvider>{children}</ToastProvider>;
+  return (
+    <>
+      {children}
+      <Toaster position="top-right" richColors closeButton />
+    </>
+  );
 }

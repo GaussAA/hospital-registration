@@ -3,6 +3,8 @@
 /* eslint-disable react-hooks/set-state-in-effect -- Controlled form init from props */
 
 import { useState, useEffect } from "react";
+import { Input } from "@/shared/ui";
+import { Label } from "@/shared/ui";
 
 interface HospitalFormData {
   name: string;
@@ -80,16 +82,14 @@ export default function HospitalForm({
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
+          <Label className="mb-1">
             医院名称 <span className="text-red-500">*</span>
-          </label>
-          <input
+          </Label>
+          <Input
             type="text"
             value={form.name}
             onChange={(e) => updateField("name", e.target.value)}
-            className={`w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 ${
-              errors.name ? "border-red-500 dark:border-red-400" : "border-gray-300 dark:border-gray-600"
-            }`}
+            className={errors.name ? "border-red-500 dark:border-red-400 focus-visible:ring-red-500/50" : ""}
             placeholder="请输入医院名称"
           />
           {errors.name && (
@@ -98,16 +98,14 @@ export default function HospitalForm({
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
+          <Label className="mb-1">
             所在城市 <span className="text-red-500">*</span>
-          </label>
-          <input
+          </Label>
+          <Input
             type="text"
             value={form.city}
             onChange={(e) => updateField("city", e.target.value)}
-            className={`w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 ${
-              errors.city ? "border-red-500 dark:border-red-400" : "border-gray-300 dark:border-gray-600"
-            }`}
+            className={errors.city ? "border-red-500 dark:border-red-400 focus-visible:ring-red-500/50" : ""}
             placeholder="请输入城市"
           />
           {errors.city && (
@@ -116,9 +114,9 @@ export default function HospitalForm({
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
+          <Label className="mb-1">
             医院等级
-          </label>
+          </Label>
           <select
             value={form.level}
             onChange={(e) => updateField("level", e.target.value)}
@@ -133,16 +131,14 @@ export default function HospitalForm({
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
+          <Label className="mb-1">
             联系电话 <span className="text-red-500">*</span>
-          </label>
-          <input
+          </Label>
+          <Input
             type="text"
             value={form.phone}
             onChange={(e) => updateField("phone", e.target.value)}
-            className={`w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 ${
-              errors.phone ? "border-red-500 dark:border-red-400" : "border-gray-300 dark:border-gray-600"
-            }`}
+            className={errors.phone ? "border-red-500 dark:border-red-400 focus-visible:ring-red-500/50" : ""}
             placeholder="请输入电话"
           />
           {errors.phone && (
@@ -151,16 +147,14 @@ export default function HospitalForm({
         </div>
 
         <div className="md:col-span-2">
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
+          <Label className="mb-1">
             医院地址 <span className="text-red-500">*</span>
-          </label>
-          <input
+          </Label>
+          <Input
             type="text"
             value={form.address}
             onChange={(e) => updateField("address", e.target.value)}
-            className={`w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 ${
-              errors.address ? "border-red-500 dark:border-red-400" : "border-gray-300 dark:border-gray-600"
-            }`}
+            className={errors.address ? "border-red-500 dark:border-red-400 focus-visible:ring-red-500/50" : ""}
             placeholder="请输入地址"
           />
           {errors.address && (
@@ -169,9 +163,9 @@ export default function HospitalForm({
         </div>
 
         <div className="md:col-span-2">
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
+          <Label className="mb-1">
             描述
-          </label>
+          </Label>
           <textarea
             value={form.description}
             onChange={(e) => updateField("description", e.target.value)}

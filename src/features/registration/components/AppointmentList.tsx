@@ -38,7 +38,7 @@ const statusStyles: Record<RegistrationStatus, string> = {
   pending:
     "bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800",
   done: "bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-300 border-green-200 dark:border-green-800",
-  cancelled: "bg-[var(--bg-muted)] text-[var(--text-muted)] border-[var(--border-default)]",
+  cancelled: "bg-[var(--muted)] text-[var(--muted-foreground)] border-[var(--border)]",
 };
 
 const timeSlotLabels: Record<string, string> = {
@@ -166,7 +166,7 @@ export default function AppointmentList({ initialData }: AppointmentListProps) {
 
       {/* Empty state */}
       {!loading && data.list.length === 0 && (
-        <div className="py-12 text-center text-sm text-[var(--text-secondary)]">
+        <div className="py-12 text-center text-sm text-[var(--muted-foreground)]">
           暂无挂号记录
         </div>
       )}
@@ -186,8 +186,8 @@ export default function AppointmentList({ initialData }: AppointmentListProps) {
                     <span className="font-medium text-gray-800 dark:text-gray-100">
                       {item.doctor.hospital.name}
                     </span>
-                    <span className="text-xs text-[var(--text-muted)]">/</span>
-                    <span className="text-sm text-[var(--text-secondary)]">
+                    <span className="text-xs text-[var(--muted-foreground)]">/</span>
+                    <span className="text-sm text-[var(--muted-foreground)]">
                       {item.doctor.department.name}
                     </span>
                   </div>
@@ -195,11 +195,11 @@ export default function AppointmentList({ initialData }: AppointmentListProps) {
                     <span className="text-sm text-gray-700 dark:text-gray-200">
                       {item.doctor.name}
                     </span>
-                    <span className="text-xs text-[var(--text-muted)]">
+                    <span className="text-xs text-[var(--muted-foreground)]">
                       {item.doctor.title}
                     </span>
                   </div>
-                  <div className="flex items-center gap-3 text-xs text-[var(--text-secondary)]">
+                  <div className="flex items-center gap-3 text-xs text-[var(--muted-foreground)]">
                     <span>{formatDate(item.date)}</span>
                     <span>{timeSlotLabels[item.timeSlot] ?? item.timeSlot}</span>
                     <span>{typeLabels[item.type] ?? item.type}</span>

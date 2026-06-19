@@ -19,7 +19,7 @@ export default async function AppointmentSuccessPage(props: PageProps) {
   if (!token) {
     return (
       <div className="mx-auto max-w-2xl px-4 py-16 text-center">
-        <h1 className="mb-4 text-2xl font-bold text-[var(--text-primary)]">请先登录</h1>
+        <h1 className="mb-4 text-2xl font-bold text-[var(--foreground)]">请先登录</h1>
         <Link href="/login" className="text-blue-600 hover:text-blue-700">
           去登录
         </Link>
@@ -73,7 +73,7 @@ export default async function AppointmentSuccessPage(props: PageProps) {
         </Link>
         <Link
           href="/"
-          className="flex-1 rounded-lg border border-[var(--border-default)] px-4 py-2.5 text-center text-sm font-medium text-[var(--text-secondary)] transition hover:bg-[var(--bg-hover)]"
+          className="flex-1 rounded-lg border border-[var(--border)] px-4 py-2.5 text-center text-sm font-medium text-[var(--muted-foreground)] transition hover:bg-[var(--accent)]"
         >
           返回首页
         </Link>
@@ -85,7 +85,7 @@ export default async function AppointmentSuccessPage(props: PageProps) {
 function InvalidState() {
   return (
     <div className="mx-auto max-w-2xl px-4 py-16 text-center">
-      <h1 className="mb-4 text-2xl font-bold text-[var(--text-primary)]">挂号信息不存在</h1>
+      <h1 className="mb-4 text-2xl font-bold text-[var(--foreground)]">挂号信息不存在</h1>
       <Link href="/appointments" className="text-blue-600 hover:text-blue-700">
         查看挂号记录
       </Link>

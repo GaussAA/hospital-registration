@@ -3,6 +3,8 @@
 import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { Eye, EyeOff } from "lucide-react";
+import { Button, Input } from "@/shared/ui/index";
 
 interface FieldErrors {
   name?: string;
@@ -66,8 +68,11 @@ export default function RegisterForm() {
 
   const handleChange = (field: string, value: string) => {
     const setters: Record<string, (v: string) => void> = {
-      name: setName, email: setEmail, phone: setPhone,
-      password: setPassword, confirmPassword: setConfirmPassword,
+      name: setName,
+      email: setEmail,
+      phone: setPhone,
+      password: setPassword,
+      confirmPassword: setConfirmPassword,
     };
     setters[field]?.(value);
     if (touched[field]) {
@@ -85,11 +90,16 @@ export default function RegisterForm() {
   const getFieldError = (field: string, overrideValue?: string): string | undefined => {
     const v = (overrideValue ?? { name, email, phone, password, confirmPassword }[field]) as string;
     switch (field) {
-      case "name": return validateName(v);
-      case "email": return validateEmail(v);
-      case "phone": return validatePhone(v);
-      case "password": return validatePassword(v);
-      case "confirmPassword": return validateConfirm(v, password);
+      case "name":
+        return validateName(v);
+      case "email":
+        return validateEmail(v);
+      case "phone":
+        return validatePhone(v);
+      case "password":
+        return validatePassword(v);
+      case "confirmPassword":
+        return validateConfirm(v, password);
     }
   };
 
@@ -112,9 +122,7 @@ export default function RegisterForm() {
       password: validatePassword(password),
       confirmPassword: validateConfirm(confirmPassword, password),
     };
-    const filtered = Object.fromEntries(
-      Object.entries(errors).filter(([, v]) => v !== undefined),
-    );
+    const filtered = Object.fromEntries(Object.entries(errors).filter(([, v]) => v !== undefined));
     if (Object.keys(filtered).length > 0) {
       setFieldErrors(errors);
       setTouched({ name: true, email: true, phone: true, password: true, confirmPassword: true });
@@ -158,18 +166,22 @@ export default function RegisterForm() {
 
   return (
     <div className="rounded-xl bg-white dark:bg-[#1e293b] p-8 shadow-lg dark:shadow-none dark:border dark:border-gray-700">
-      <h2 className="mb-6 text-center text-2xl font-semibold text-gray-800 dark:text-gray-100">
-        注册
-      </h2>
+      <h2 className="mb-6 text-center text-2xl font-semibold text-gray-800 dark:text-gray-100">注册</h2>
 
       <form onSubmit={handleSubmit} className="space-y-5" noValidate>
         {/* Name */}
         <div>
-          <label htmlFor="reg-name" className="mb-1 block text-sm font-medium text-gray-600 dark:text-gray-300">姓名</label>
-          <input id="reg-name" type="text" value={name}
+          <label htmlFor="reg-name" className="mb-1 block text-sm font-medium text-gray-600 dark:text-gray-300">
+            姓名
+          </label>
+          <Input
+            id="reg-name"
+            type="text"
+            value={name}
             onChange={(e) => handleChange("name", e.target.value)}
             onBlur={() => handleBlur("name")}
-            placeholder="请输入姓名" required
+            placeholder="请输入姓名"
+            required
             className={inputClass(!!fieldErrors.name)}
           />
           {fieldErrors.name && <p className="mt-1 text-xs text-red-500">{fieldErrors.name}</p>}
@@ -177,8 +189,13 @@ export default function RegisterForm() {
 
         {/* Email */}
         <div>
-          <label htmlFor="reg-email" className="mb-1 block text-sm font-medium text-gray-600 dark:text-gray-300">邮箱</label>
-          <input id="reg-email" type="email" value={email}
+          <label htmlFor="reg-email" className="mb-1 block text-sm font-medium text-gray-600 dark:text-gray-300">
+            邮箱
+          </label>
+          <Input
+            id="reg-email"
+            type="email"
+            value={email}
             onChange={(e) => handleChange("email", e.target.value)}
             onBlur={() => handleBlur("email")}
             placeholder="请输入邮箱（与手机号至少填一项）"
@@ -189,8 +206,13 @@ export default function RegisterForm() {
 
         {/* Phone */}
         <div>
-          <label htmlFor="reg-phone" className="mb-1 block text-sm font-medium text-gray-600 dark:text-gray-300">手机号</label>
-          <input id="reg-phone" type="tel" value={phone}
+          <label htmlFor="reg-phone" className="mb-1 block text-sm font-medium text-gray-600 dark:text-gray-300">
+            手机号
+          </label>
+          <Input
+            id="reg-phone"
+            type="tel"
+            value={phone}
             onChange={(e) => handleChange("phone", e.target.value)}
             onBlur={() => handleBlur("phone")}
             placeholder="请输入手机号（与邮箱至少填一项）"
@@ -201,27 +223,27 @@ export default function RegisterForm() {
 
         {/* Password */}
         <div>
-          <label htmlFor="reg-password" className="mb-1 block text-sm font-medium text-gray-600 dark:text-gray-300">密码</label>
+          <label htmlFor="reg-password" className="mb-1 block text-sm font-medium text-gray-600 dark:text-gray-300">
+            密码
+          </label>
           <div className="relative">
-            <input id="reg-password" type={showPwd ? "text" : "password"} value={password}
+            <Input
+              id="reg-password"
+              type={showPwd ? "text" : "password"}
+              value={password}
               onChange={(e) => handleChange("password", e.target.value)}
               onBlur={() => handleBlur("password")}
-              placeholder="至少 6 位" required minLength={6}
+              placeholder="至少 6 位"
+              required
+              minLength={6}
               className={`${inputClass(!!fieldErrors.password)} pr-10`}
             />
-            <button type="button" onClick={() => setShowPwd(!showPwd)}
+            <button
+              type="button"
+              onClick={() => setShowPwd(!showPwd)}
               className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
             >
-              {showPwd ? (
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88" />
-                </svg>
-              ) : (
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                </svg>
-              )}
+              {showPwd ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
             </button>
           </div>
           {fieldErrors.password && <p className="mt-1 text-xs text-red-500">{fieldErrors.password}</p>}
@@ -229,27 +251,26 @@ export default function RegisterForm() {
 
         {/* Confirm Password */}
         <div>
-          <label htmlFor="reg-confirm" className="mb-1 block text-sm font-medium text-gray-600 dark:text-gray-300">确认密码</label>
+          <label htmlFor="reg-confirm" className="mb-1 block text-sm font-medium text-gray-600 dark:text-gray-300">
+            确认密码
+          </label>
           <div className="relative">
-            <input id="reg-confirm" type={showConfirm ? "text" : "password"} value={confirmPassword}
+            <Input
+              id="reg-confirm"
+              type={showConfirm ? "text" : "password"}
+              value={confirmPassword}
               onChange={(e) => handleChange("confirmPassword", e.target.value)}
               onBlur={() => handleBlur("confirmPassword")}
-              placeholder="请再次输入密码" required
+              placeholder="请再次输入密码"
+              required
               className={`${inputClass(!!fieldErrors.confirmPassword)} pr-10`}
             />
-            <button type="button" onClick={() => setShowConfirm(!showConfirm)}
+            <button
+              type="button"
+              onClick={() => setShowConfirm(!showConfirm)}
               className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
             >
-              {showConfirm ? (
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88" />
-                </svg>
-              ) : (
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                </svg>
-              )}
+              {showConfirm ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
             </button>
           </div>
           {fieldErrors.confirmPassword && <p className="mt-1 text-xs text-red-500">{fieldErrors.confirmPassword}</p>}
@@ -261,16 +282,17 @@ export default function RegisterForm() {
           </div>
         )}
 
-        <button type="submit" disabled={loading}
-          className="w-full rounded-lg bg-gradient-to-r from-blue-500 to-blue-600 px-4 py-2.5 text-sm font-medium text-white transition hover:from-blue-600 hover:to-blue-700 disabled:cursor-not-allowed disabled:opacity-60 shadow-sm"
-        >
+        <Button type="submit" disabled={loading} className="w-full rounded-lg bg-gradient-to-r from-blue-500 to-blue-600 px-4 py-2.5 text-sm font-medium text-white transition hover:from-blue-600 hover:to-blue-700 disabled:cursor-not-allowed disabled:opacity-60 shadow-sm">
           {loading ? "注册中..." : "注册"}
-        </button>
+        </Button>
       </form>
 
-      <p className="mt-6 text-center text-sm text-[var(--text-secondary)]">
+      <p className="mt-6 text-center text-sm text-muted-foreground">
         已有账号？{" "}
-        <Link href="/login" className="font-medium text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300">
+        <Link
+          href="/login"
+          className="font-medium text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
+        >
           去登录
         </Link>
       </p>

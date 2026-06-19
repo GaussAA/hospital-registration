@@ -22,19 +22,13 @@ export async function POST(req: NextRequest) {
     // 验证文件类型
     const allowedTypes = ["image/png", "image/jpeg", "image/webp", "image/gif"];
     if (!allowedTypes.includes(file.type)) {
-      return NextResponse.json(
-        fail(40002, "仅支持 PNG、JPEG、WebP、GIF 格式图片"),
-        { status: 400 }
-      );
+      return NextResponse.json(fail(40002, "仅支持 PNG、JPEG、WebP、GIF 格式图片"), { status: 400 });
     }
 
     // 验证文件大小（10MB）
     const maxSize = 10 * 1024 * 1024;
     if (file.size > maxSize) {
-      return NextResponse.json(
-        fail(40003, "文件大小不能超过 10MB"),
-        { status: 400 }
-      );
+      return NextResponse.json(fail(40003, "文件大小不能超过 10MB"), { status: 400 });
     }
 
     // 生成文件名

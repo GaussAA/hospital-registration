@@ -23,7 +23,7 @@ export default function NotFound() {
         <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">
           页面未找到
         </h1>
-        <p className="text-sm text-[var(--text-secondary)] mb-8 leading-relaxed">
+        <p className="text-sm text-[var(--muted-foreground)] mb-8 leading-relaxed">
           您访问的页面不存在或已被移除，<br />
           请检查链接是否正确
         </p>

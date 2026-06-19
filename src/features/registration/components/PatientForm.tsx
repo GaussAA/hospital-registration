@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
+import { Input, Label } from "@/shared/ui";
 
 interface PatientFormProps {
   onSuccess?: (profile: { id: string; name: string; idCard: string; phone: string; gender: string }) => void;
@@ -44,69 +45,46 @@ export default function PatientForm({ onSuccess, onCancel }: PatientFormProps) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-100">新增就诊人</h3>
+      <h3 className="text-lg font-semibold text-foreground">新增就诊人</h3>
 
-      <div>
-        <label
-          htmlFor="pf-name"
-          className="mb-1 block text-sm font-medium text-gray-600"
-        >
-          姓名
-        </label>
-        <input
+      <div className="space-y-2">
+        <Label htmlFor="pf-name">姓名</Label>
+        <Input
           id="pf-name"
           type="text"
           value={name}
           onChange={(e) => setName(e.target.value)}
           placeholder="请输入就诊人姓名"
           required
-          className="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-4 py-2.5 text-sm outline-none transition focus:border-indigo-500 dark:focus:border-indigo-400 focus:ring-2 focus:ring-indigo-200 dark:focus:ring-indigo-800"
         />
       </div>
 
-      <div>
-        <label
-          htmlFor="pf-idcard"
-          className="mb-1 block text-sm font-medium text-gray-600"
-        >
-          身份证号
-        </label>
-        <input
+      <div className="space-y-2">
+        <Label htmlFor="pf-idcard">身份证号</Label>
+        <Input
           id="pf-idcard"
           type="text"
           value={idCard}
           onChange={(e) => setIdCard(e.target.value)}
           placeholder="请输入身份证号"
           required
-          className="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-4 py-2.5 text-sm outline-none transition focus:border-indigo-500 dark:focus:border-indigo-400 focus:ring-2 focus:ring-indigo-200 dark:focus:ring-indigo-800"
         />
       </div>
 
-      <div>
-        <label
-          htmlFor="pf-phone"
-          className="mb-1 block text-sm font-medium text-gray-600"
-        >
-          手机号
-        </label>
-        <input
+      <div className="space-y-2">
+        <Label htmlFor="pf-phone">手机号</Label>
+        <Input
           id="pf-phone"
           type="tel"
           value={phone}
           onChange={(e) => setPhone(e.target.value)}
           placeholder="请输入手机号"
           required
-          className="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-4 py-2.5 text-sm outline-none transition focus:border-indigo-500 dark:focus:border-indigo-400 focus:ring-2 focus:ring-indigo-200 dark:focus:ring-indigo-800"
         />
       </div>
 
-      <div>
-        <label
-          htmlFor="pf-gender"
-          className="mb-1 block text-sm font-medium text-gray-600"
-        >
-          性别
-        </label>
+      <div className="space-y-2">
+        <Label htmlFor="pf-gender">性别</Label>
         <select
           id="pf-gender"
           value={gender}

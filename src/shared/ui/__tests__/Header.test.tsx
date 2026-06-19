@@ -145,7 +145,7 @@ describe("Header", () => {
         expect(mockRefresh).toHaveBeenCalled();
       });
 
-      vi.unstubGlobal("fetch");
+      vi.unstubAllGlobals();
     });
 
     it("should handle logout failure gracefully", async () => {
@@ -162,7 +162,7 @@ describe("Header", () => {
         expect(mockPush).not.toHaveBeenCalled();
       });
 
-      vi.unstubGlobal("fetch");
+      vi.unstubAllGlobals();
     });
 
     it("should handle network error on logout", async () => {
@@ -177,7 +177,7 @@ describe("Header", () => {
         expect(mockPush).not.toHaveBeenCalled();
       });
 
-      vi.unstubGlobal("fetch");
+      vi.unstubAllGlobals();
     });
   });
 

@@ -54,14 +54,14 @@ export default function SlotSelectorMobile({
         return (
           <div
             key={dateStr}
-            className="rounded-2xl border border-[var(--border-default)] bg-[var(--bg-card)] overflow-hidden shadow-sm card-hover"
+            className="rounded-2xl border border-border bg-card overflow-hidden shadow-sm card-hover"
           >
             {/* Date header */}
             <div
               className={`px-4 py-2.5 text-sm font-medium flex items-center gap-2 ${
                 isToday
                   ? "bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/20 dark:to-indigo-950/20 text-blue-700 dark:text-blue-300"
-                  : "bg-[var(--bg-muted)] text-[var(--text-primary)]"
+                  : "bg-muted text-foreground"
               }`}
             >
               {isToday && (
@@ -71,13 +71,13 @@ export default function SlotSelectorMobile({
             </div>
 
             {/* Time slot rows */}
-            <div className="divide-y divide-[var(--border-light)]">
+            <div className="divide-y divide-border">
               {timeSlots.map((slot) => {
                 const slots = daySchedules.filter((s) => s.timeSlot === slot);
                 if (slots.length === 0) return null;
                 return (
                   <div key={slot} className="flex items-center gap-3 px-4 py-3">
-                    <span className="shrink-0 w-10 text-xs font-medium text-[var(--text-muted)]">
+                    <span className="shrink-0 w-10 text-xs font-medium text-muted-foreground">
                       {timeSlotLabels[slot]}
                     </span>
                     <div className="flex flex-wrap gap-1.5">
@@ -94,7 +94,7 @@ export default function SlotSelectorMobile({
                               isSelected
                                 ? "bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-sm"
                                 : isFull
-                                  ? "bg-[var(--bg-muted)] text-[var(--text-muted)] cursor-not-allowed line-through opacity-50"
+                                  ? "bg-muted text-muted-foreground cursor-not-allowed line-through opacity-50"
                                   : "bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-300 border border-blue-200/50 dark:border-blue-800/30 hover:bg-blue-100 dark:hover:bg-blue-500/20 active:scale-[0.97]"
                             }`}
                           >

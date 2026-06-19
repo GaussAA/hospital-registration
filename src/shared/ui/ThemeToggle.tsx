@@ -2,6 +2,7 @@
 
 import { useTheme } from "./ThemeProvider";
 import { useEffect, useState, startTransition } from "react";
+import { Sun, Moon } from "lucide-react";
 
 export default function ThemeToggle() {
   const { theme, toggleTheme } = useTheme();
@@ -17,63 +18,31 @@ export default function ThemeToggle() {
     <button
       type="button"
       onClick={toggleTheme}
-      className="relative w-9 h-9 rounded-xl flex items-center justify-center transition-all duration-200 hover:bg-[var(--bg-hover)] active:scale-95"
-      aria-label={
-        mounted
-          ? theme === "light"
-            ? "切换深色模式"
-            : "切换浅色模式"
-          : "切换深色模式"
-      }
-      title={
-        mounted
-          ? theme === "light"
-            ? "深色模式"
-            : "浅色模式"
-          : "深色模式"
-      }
+      className="relative w-9 h-9 rounded-xl flex items-center justify-center transition-all duration-200 hover:bg-accent active:scale-95"
+      aria-label={mounted ? (theme === "light" ? "切换深色模式" : "切换浅色模式") : "切换深色模式"}
+      title={mounted ? (theme === "light" ? "深色模式" : "浅色模式") : "深色模式"}
     >
       {/* Sun icon - shown in dark mode */}
-      <svg
+      <Sun
         className={`w-5 h-5 absolute transition-all duration-500 ease-out ${
           !mounted
             ? "opacity-0"
             : theme === "dark"
               ? "opacity-100 rotate-0 scale-100 text-amber-400"
-              : "opacity-0 rotate-90 scale-75 text-[var(--text-muted)]"
+              : "opacity-0 rotate-90 scale-75 text-muted-foreground"
         }`}
-        fill="none"
-        stroke="currentColor"
-        viewBox="0 0 24 24"
-      >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth={2}
-          d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
-        />
-      </svg>
+      />
 
       {/* Moon icon - shown in light mode */}
-      <svg
+      <Moon
         className={`w-5 h-5 absolute transition-all duration-500 ease-out ${
           !mounted
             ? "opacity-0"
             : theme === "light"
-              ? "opacity-100 rotate-0 scale-100 text-[var(--text-secondary)]"
+              ? "opacity-100 rotate-0 scale-100 text-foreground"
               : "opacity-0 -rotate-90 scale-75 text-slate-400"
         }`}
-        fill="none"
-        stroke="currentColor"
-        viewBox="0 0 24 24"
-      >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth={2}
-          d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
-        />
-      </svg>
+      />
     </button>
   );
 }

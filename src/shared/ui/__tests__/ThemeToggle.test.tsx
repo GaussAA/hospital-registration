@@ -83,7 +83,7 @@ describe("ThemeToggle", () => {
   it("should have hover and click styles class", () => {
     render(<ThemeToggle />);
     const button = screen.getByRole("button");
-    expect(button.className).toContain("hover:bg-[var(--bg-hover)]");
+    expect(button.className).toContain("hover:bg-accent");
     expect(button.className).toContain("active:scale-95");
   });
 

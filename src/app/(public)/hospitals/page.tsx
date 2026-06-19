@@ -52,7 +52,7 @@ export default async function HospitalsPage(props: PageProps) {
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-6">
-      <h1 className="text-2xl font-bold text-[var(--text-primary)] mb-6">医院列表</h1>
+      <h1 className="text-2xl font-bold text-[var(--foreground)] mb-6">医院列表</h1>
 
       {/* Filter bar */}
       <div className="mb-6">
@@ -79,8 +79,8 @@ export default async function HospitalsPage(props: PageProps) {
       ) : (
         <div className="text-center py-20">
           <Image src={emptyResultIcon} alt="无结果" className="mx-auto w-32 h-32 mb-6 opacity-60" width={128} height={128} />
-          <p className="text-base font-medium text-[var(--text-secondary)]">暂无符合条件的医院</p>
-          <p className="text-sm text-[var(--text-muted)] mt-1">请尝试调整筛选条件或搜索关键词</p>
+          <p className="text-base font-medium text-[var(--muted-foreground)]">暂无符合条件的医院</p>
+          <p className="text-sm text-[var(--muted-foreground)] mt-1">请尝试调整筛选条件或搜索关键词</p>
         </div>
       )}
     </div>
