@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { MapPin, Building2, Users, ArrowRight } from "lucide-react";
-import { Card, CardContent } from "@/shared/ui";
+import { Card } from "@/shared/ui";
 
 export interface HospitalCardData {
   id: string;

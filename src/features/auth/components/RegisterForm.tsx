@@ -282,7 +282,11 @@ export default function RegisterForm() {
           </div>
         )}
 
-        <Button type="submit" disabled={loading} className="w-full rounded-lg bg-gradient-to-r from-blue-500 to-blue-600 px-4 py-2.5 text-sm font-medium text-white transition hover:from-blue-600 hover:to-blue-700 disabled:cursor-not-allowed disabled:opacity-60 shadow-sm">
+        <Button
+          type="submit"
+          disabled={loading}
+          className="w-full rounded-lg bg-gradient-to-r from-blue-500 to-blue-600 px-4 py-2.5 text-sm font-medium text-white transition hover:from-blue-600 hover:to-blue-700 disabled:cursor-not-allowed disabled:opacity-60 shadow-sm"
+        >
           {loading ? "注册中..." : "注册"}
         </Button>
       </form>

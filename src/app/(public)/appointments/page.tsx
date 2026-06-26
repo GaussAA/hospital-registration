@@ -23,7 +23,7 @@ export default async function AppointmentsPage() {
           请先登录后再查看挂号记录
         </p>
         <Link
-          href="/auth/login?redirect=/appointments"
+          href="/login?redirect=/appointments"
           className="inline-flex items-center justify-center rounded-lg bg-blue-600 px-6 py-2.5 text-sm font-medium text-white hover:bg-blue-700"
         >
           去登录
@@ -42,7 +42,7 @@ export default async function AppointmentsPage() {
           登录已过期
         </h1>
         <Link
-          href="/auth/login?redirect=/appointments"
+          href="/login?redirect=/appointments"
           className="text-blue-600 hover:text-blue-700"
         >
           重新登录

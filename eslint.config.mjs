@@ -5,16 +5,22 @@ import nextTs from "eslint-config-next/typescript";
 const eslintConfig = defineConfig([
   ...nextVitals,
   ...nextTs,
-  // Override default ignores of eslint-config-next.
+
+  // ── Global ignores ────────────────────────────────
   globalIgnores([
-    // Default ignores of eslint-config-next:
     ".next/**",
     "out/**",
     "build/**",
     "next-env.d.ts",
+    "generated/**",
+    "vitest.workspace.ts",
   ]),
+
+  // ── Disable react rules for ESLint 10 compatibility ─
+  // eslint-plugin-react is not fully compatible with ESLint 10 flat config.
+  // These rules are disabled to prevent crashes.
+  // TODO: Re-enable once eslint-plugin-react adds ESLint 10 flat config support.
   {
-    // eslint-plugin-react 与 ESLint 10 不兼容，禁用所有 react 规则防止崩溃
     rules: {
       "react/display-name": "off",
       "react/no-direct-mutation-state": "off",
@@ -35,11 +41,67 @@ const eslintConfig = defineConfig([
       "react/require-render-return": "off",
     },
   },
-  // ── 模块边界规则 ──────────────────────────────────────────────
-  // TODO: ESLint 10.5 的 no-restricted-imports 语法已变更，
-  // 需使用 { paths: [...] } 格式重新实现模块边界约束
-  // 当前暂不启用，待确认 ESLint 10 的正确配置语法后补充
-  // 開發時請自覺遵守：模块间互调仅通过 barrel 文件（index.ts）
+
+  // ── Project-specific rules (ESLint 10.5+ syntax) ─
+  {
+    rules: {
+      // ── Module boundary constraints ──────────────────
+      // ESLint 10.5+ uses `patterns[].group` (gitignore-style glob)
+      // to restrict imports, replacing the old `patterns` array syntax.
+      //
+      // Allowed:
+      //   @/features/{module}        → index.ts barrel
+      //   @/features/{module}/client → client.ts sub-barrel
+      // Restricted:
+      //   @/features/{module}/components/**
+      //   @/features/{module}/actions.ts
+      //   @/features/{module}/queries.ts
+      //   @/features/{module}/types.ts
+      //   @/features/{module}/validations.ts
+      //   @/features/{module}/middleware.ts
+      //   @/features/{module}/agent/**
+      "no-restricted-imports": ["warn", {
+        patterns: [
+          {
+            group: [
+              "@/features/*/components/**",
+              "@/features/*/actions.ts",
+              "@/features/*/queries.ts",
+              "@/features/*/types.ts",
+              "@/features/*/validations.ts",
+              "@/features/*/middleware.ts",
+              "@/features/*/agent/**",
+            ],
+            message: "模块内的内部文件只能通过桶文件（index.ts 或 client.ts）访问。请使用 @/features/{module-name} 代替。",
+          },
+        ],
+      }],
+
+      // ── TypeScript: tune no-unused-vars ───────────
+      "@typescript-eslint/no-unused-vars": ["warn", {
+        argsIgnorePattern: "^_",
+        varsIgnorePattern: "^_",
+        caughtErrorsIgnorePattern: "^_",
+      }],
+    },
+  },
+
+  // ── Test files: relax rules ───────────────────────
+  {
+    files: ["**/*.{test,spec}.{ts,tsx}", "**/__tests__/**", "**/__mocks__/**"],
+    rules: {
+      // Allow direct imports in test files (for unit testing internal functions)
+      "no-restricted-imports": "off",
+      // Allow require() imports in test files (for mocking)
+      "@typescript-eslint/no-require-imports": "off",
+      // Relax unused vars for test files
+      "@typescript-eslint/no-unused-vars": "off",
+      // Relax Next.js rules for test files (allow <img>, etc.)
+      "@next/next/no-img-element": "off",
+      // Relax a11y rules for test files
+      "jsx-a11y/alt-text": "off",
+    },
+  },
 ]);
 
 export default eslintConfig;

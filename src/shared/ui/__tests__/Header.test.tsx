@@ -192,13 +192,13 @@ describe("Header", () => {
     it("should link login to /auth/login", () => {
       render(<Header />);
       const loginLink = screen.getByText("登录").closest("a");
-      expect(loginLink?.getAttribute("href")).toBe("/auth/login");
+      expect(loginLink?.getAttribute("href")).toBe("/login");
     });
 
     it("should link register to /auth/register", () => {
       render(<Header />);
       const registerLink = screen.getByText("注册").closest("a");
-      expect(registerLink?.getAttribute("href")).toBe("/auth/register");
+      expect(registerLink?.getAttribute("href")).toBe("/register");
     });
   });
 });

@@ -38,7 +38,7 @@ export default async function RegisterPage(props: PageProps) {
           请先登录后再进行挂号操作
         </p>
         <Link
-          href={`/auth/login?redirect=${encodeURIComponent(
+          href={`/login?redirect=${encodeURIComponent(
             `/hospitals/${hospitalId}/departments/${departmentId}/doctors/${doctorId}`
           )}`}
           className="inline-flex items-center justify-center rounded-lg bg-blue-600 px-6 py-2.5 text-sm font-medium text-white hover:bg-blue-700"

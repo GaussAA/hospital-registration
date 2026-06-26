@@ -9,20 +9,23 @@
 ## 快速开始
 
 ```bash
+# 运行基础服务
+docker compose up -d
+
 # 安装依赖
 bun install
 
 # 生成 Prisma client
-bun run prisma:generate
+bun prisma:generate
 
 # 推送数据库 schema
-bun run prisma:push
+bun prisma:push
 
 # 种子数据（创建默认管理员）
-bun run prisma:seed
+bun prisma:seed
 
 # 启动开发服务器
-bun run dev
+bun dev
 ```
 
 访问 [http://localhost:3000](http://localhost:3000)
@@ -34,7 +37,7 @@ bun run dev
 JWT_SECRET=your-jwt-secret
 
 # AI 助手（可选，不配置则正常使用手动流程）
-AI_API_KEY=sk-your-deepseek-api-key
+AI_API_KEY=deepseek-api-key-must-be-set
 AI_BASE_URL=https://api.deepseek.com
 AI_MODEL=deepseek-v4-flash
 

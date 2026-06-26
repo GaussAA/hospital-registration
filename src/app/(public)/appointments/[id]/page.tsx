@@ -57,7 +57,7 @@ export default async function AppointmentDetailPage(props: PageProps) {
       <div className="mx-auto max-w-2xl px-4 py-16 text-center">
         <h1 className="mb-4 text-2xl font-bold text-gray-900 dark:text-gray-100">请先登录</h1>
         <Link
-          href={`/auth/login?redirect=/appointments/${id}`}
+          href={`/login?redirect=/appointments/${id}`}
           className="rounded-lg bg-blue-600 px-6 py-2.5 text-sm font-medium text-white hover:bg-blue-700"
         >
           去登录
@@ -73,7 +73,7 @@ export default async function AppointmentDetailPage(props: PageProps) {
     return (
       <div className="mx-auto max-w-2xl px-4 py-16 text-center">
         <h1 className="mb-4 text-2xl font-bold text-gray-900 dark:text-gray-100">登录已过期</h1>
-        <Link href={`/auth/login?redirect=/appointments/${id}`} className="text-blue-600 hover:text-blue-700">
+        <Link href={`/login?redirect=/appointments/${id}`} className="text-blue-600 hover:text-blue-700">
           重新登录
         </Link>
       </div>

@@ -102,12 +102,12 @@ export default function Header() {
           ) : (
             <div className="flex items-center gap-1.5">
               <Link
-                href="/auth/login"
+                href="/login"
                 className="rounded-lg px-3.5 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
               >
                 登录
               </Link>
-              <Link href="/auth/register">
+              <Link href="/register">
                 <Button size="sm">注册</Button>
               </Link>
             </div>

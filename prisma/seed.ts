@@ -79,7 +79,7 @@ async function main() {
       phone: "0571-56006600",
       description:
         "杭州市第一人民医院是集医疗、教学、科研于一体的三级甲等综合性医院，拥有雄厚的医疗技术力量和先进的医疗设备。",
-      imageUrl: "/images/hospital-1.jpg",
+      imageUrl: "/images/hospital-1.png",
     },
   });
 
@@ -95,7 +95,7 @@ async function main() {
       phone: "0571-88001000",
       description:
         "杭州仁和诊所是一家综合性医疗机构，提供内科、外科、儿科等常见疾病的诊疗服务。",
-      imageUrl: "/images/hospital-2.jpg",
+      imageUrl: "/images/hospital-2.png",
     },
   });
   console.log(`  ✅ Hospitals created: ${hospital1.name}, ${hospital2.name}`);
