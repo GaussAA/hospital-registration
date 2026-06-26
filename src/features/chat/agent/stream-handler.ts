@@ -74,6 +74,8 @@ export function createSSEStream(): {
           break;
         case "done":
           controller.enqueue(encoder.encode("e:finish\n"));
+          controller.close();
+          finished = true;
           break;
         case "error":
           controller.enqueue(
